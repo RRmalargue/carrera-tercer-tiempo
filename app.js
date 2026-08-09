@@ -148,21 +148,52 @@ document.addEventListener('DOMContentLoaded', () => {
         raceTitle.textContent = config.raceName || 'CARRERA DE TRAIL';
         footerRaceName.textContent = config.raceName || 'Trail Running Portal';
         
-        // Carga de imágenes
+        // Carga de descripción de la carrera
+        const raceDescriptionText = document.getElementById('race-description-text');
+        if (raceDescriptionText) {
+            raceDescriptionText.textContent = config.raceDescription || '¡Prepárate para una gran carrera! Los detalles del desafío e inscripciones ya están abiertos.';
+        }
+        
+        // Carga de fondo de la web (Background Overlay)
+        const BACKGROUND_THEMES = {
+            default: './assets/trail_background.jpg',
+            snow: './assets/snow_mountain.jpg',
+            sunset: './assets/sunset_ridge.jpg',
+            rocky: './assets/rocky_valley.jpg',
+            solid: 'none'
+        };
+        const bgPath = BACKGROUND_THEMES[config.themeBackground] || BACKGROUND_THEMES.default;
+        if (bgPath === 'none') {
+            bgOverlay.style.backgroundImage = 'none';
+        } else {
+            bgOverlay.style.backgroundImage = `url('${bgPath}')`;
+        }
+        
+        // Cargar afiche principal visible (Flyer)
+        const posterBanner = document.getElementById('poster-banner');
+        const posterBannerContainer = document.getElementById('poster-banner-container');
         if (config.posterImage) {
-            bgOverlay.style.backgroundImage = `url('${config.posterImage}')`;
-            
-            // Cargar afiche principal visible
-            const posterBanner = document.getElementById('poster-banner');
-            const posterBannerContainer = document.getElementById('poster-banner-container');
             if (posterBanner && posterBannerContainer) {
                 posterBanner.src = config.posterImage;
                 posterBannerContainer.classList.remove('hidden');
             }
         } else {
-            const posterBannerContainer = document.getElementById('poster-banner-container');
             if (posterBannerContainer) {
                 posterBannerContainer.classList.add('hidden');
+            }
+        }
+        
+        // Cargar logo oficial en el encabezado
+        const logoImageElement = document.getElementById('logo-image');
+        const logoHeaderContainer = document.getElementById('logo-header-container');
+        if (config.logoImage) {
+            if (logoImageElement && logoHeaderContainer) {
+                logoImageElement.src = config.logoImage;
+                logoHeaderContainer.classList.remove('hidden');
+            }
+        } else {
+            if (logoHeaderContainer) {
+                logoHeaderContainer.classList.add('hidden');
             }
         }
         
@@ -227,6 +258,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.addEventListener('click', () => selectDistance(card));
                 distancesContainer.appendChild(card);
             });
+
+            // Seleccionar automáticamente la primera distancia para inicializar
+            const firstCard = distancesContainer.querySelector('.selector-card');
+            if (firstCard) {
+                selectDistance(firstCard);
+            }
         }
 
         // Cargar mapa interactivo GPX
@@ -240,15 +277,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         cardElement.classList.add('selected');
 
-        document.getElementById('selected-distance-id').value = cardElement.dataset.id;
-        document.getElementById('selected-distance-price').value = cardElement.dataset.price;
+        const selectedId = cardElement.dataset.id;
+        const selectedPrice = parseFloat(cardElement.dataset.price);
+        const selectedName = cardElement.dataset.name;
+
+        // 1. Guardar en los campos ocultos del formulario
+        document.getElementById('selected-distance-id').value = selectedId;
+        document.getElementById('selected-distance-price').value = selectedPrice;
         
-        // Recalcular categoría ya que la distancia seleccionada influye en la categoría
+        // 2. Actualizar el resumen del formulario
+        document.getElementById('selected-distance-summary-title').textContent = `${selectedId} - ${selectedName}`;
+        document.getElementById('selected-distance-summary-price').textContent = `$${selectedPrice.toLocaleString('es-AR')}`;
+
+        // 3. Actualizar el panel de detalles del dashboard
+        const currentDist = config.distances.find(d => d.id === selectedId);
+        if (currentDist) {
+            document.getElementById('dashboard-dist-title').textContent = `${currentDist.id} - ${currentDist.name}`;
+            document.getElementById('dashboard-dist-price').textContent = `$${currentDist.price.toLocaleString('es-AR')}`;
+            document.getElementById('dashboard-dist-detail').textContent = currentDist.detail || 'Circuito competitivo de trail running con senderos naturales y paisajes desafiantes.';
+
+            // Descargas específicas de la distancia
+            const gpxBtn = document.getElementById('gpx-btn');
+            const kmlBtn = document.getElementById('kml-btn');
+            const startLocationBtn = document.getElementById('start-location-btn');
+
+            if (currentDist.gpxLink && currentDist.gpxLink !== '#') {
+                gpxBtn.href = currentDist.gpxLink;
+                gpxBtn.classList.remove('hidden');
+            } else if (config.gpxLink && config.gpxLink !== '#') {
+                gpxBtn.href = config.gpxLink;
+                gpxBtn.classList.remove('hidden');
+            } else {
+                gpxBtn.classList.add('hidden');
+            }
+
+            // KML y Largada (usar específicos o globales como fallback)
+            if (config.kmlLink && config.kmlLink !== '#') {
+                kmlBtn.href = config.kmlLink;
+                kmlBtn.classList.remove('hidden');
+            } else {
+                kmlBtn.classList.add('hidden');
+            }
+
+            if (config.startLocationMapLink && config.startLocationMapLink !== '#') {
+                startLocationBtn.href = config.startLocationMapLink;
+                startLocationBtn.classList.remove('hidden');
+            } else {
+                startLocationBtn.classList.add('hidden');
+            }
+        }
+        
+        // 4. Cargar altimetría dinámica específica para esta distancia
+        const specAlti = currentDist ? currentDist.altitudeMapImage : null;
+        if (specAlti) {
+            altimetryImage.src = specAlti;
+            document.getElementById('altimetry-card').classList.remove('hidden');
+        } else if (config.altitudeMapImage) {
+            altimetryImage.src = config.altitudeMapImage;
+            document.getElementById('altimetry-card').classList.remove('hidden');
+        } else {
+            document.getElementById('altimetry-card').classList.add('hidden');
+        }
+
+        // Recalcular categoría
         recalculateCategory();
         
         hideError();
 
-        // Cargar mapa dinámico del track correspondiente a esta distancia
+        // Cargar mapa GPX
         loadGpxMap();
     }
 
@@ -900,6 +996,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         }
+    }
+
+    // Evento para mostrar e iniciar la inscripción con scroll suave
+    const btnGoToRegistration = document.getElementById('btn-go-to-registration');
+    const registrationCardWrapper = document.getElementById('registration-card-wrapper');
+    if (btnGoToRegistration && registrationCardWrapper) {
+        btnGoToRegistration.addEventListener('click', () => {
+            registrationCardWrapper.classList.remove('hidden');
+            registrationCardWrapper.scrollIntoView({ behavior: 'smooth' });
+            
+            // Enfocar el primer campo del formulario (Nombre)
+            setTimeout(() => {
+                const nombreInput = document.getElementById('nombre');
+                if (nombreInput) nombreInput.focus();
+            }, 550);
+        });
     }
 
     // INIT

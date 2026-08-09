@@ -18,25 +18,94 @@
 
     <div class="app-container">
         <main class="main-content">
-            <!-- Header Section -->
-            <header class="hero-section">
+            <div class="logo-header-container hidden" id="logo-header-container">
+                <img id="logo-image" src="" alt="Logo Oficial" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5));">
+            </div>
+            <!-- Header Section with dynamic title -->
+            <header class="hero-section" style="margin-bottom: 1.5rem;">
                 <span class="badge" id="race-badge">Trail Running</span>
                 <h1 class="main-title" id="race-title">CARRERA DE MONTAÑA</h1>
-                <p class="subtitle">Desafía tus límites en la naturaleza. Completa tu registro a continuación.</p>
+                <p class="subtitle">Desafía tus límites en la naturaleza. Mira los detalles e inscríbete a continuación.</p>
             </header>
 
-            <!-- Main Wizard Card -->
-            <div class="card-wrapper">
-                <!-- Race Poster Banner -->
-                <div class="poster-banner-container hidden" id="poster-banner-container">
-                    <img id="poster-banner" src="" alt="Afiche Oficial de la Carrera" class="poster-banner-img">
+            <!-- 1. AFICHE (Race Poster Banner) -->
+            <div class="poster-banner-container" id="poster-banner-container" style="margin-bottom: 2rem;">
+                <img id="poster-banner" src="" alt="Afiche Oficial de la Carrera" class="poster-banner-img" style="max-height: 450px; width: 100%; object-fit: contain; border-radius: var(--radius-md); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            </div>
+
+            <!-- 2. BOX DE TEXTO (Race Description) -->
+            <div class="info-card" id="race-description-card" style="margin-bottom: 2rem; background: rgba(30, 30, 30, 0.65); border: 1px solid var(--border-color); backdrop-filter: blur(10px);">
+                <h2 style="color: var(--accent-cyan); font-size: 1.3rem; margin-bottom: 0.8rem;"><i class="fa-solid fa-circle-info"></i> Información de la Carrera</h2>
+                <p id="race-description-text" style="line-height: 1.6; color: #e0e0e0; font-size: 1.05rem; white-space: pre-line;">
+                    <!-- Loaded dynamically from config -->
+                </p>
+            </div>
+
+            <!-- 3. DASHBOARD INTERACTIVO (Distances, Maps, Altimetry) -->
+            <div class="info-card" id="dashboard-card" style="margin-bottom: 2rem; background: rgba(30, 30, 30, 0.65); border: 1px solid var(--border-color); backdrop-filter: blur(10px);">
+                <h2 style="color: var(--accent-orange); font-size: 1.4rem; margin-bottom: 0.3rem;"><i class="fa-solid fa-person-running"></i> Distancias y Recorridos</h2>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem;">Selecciona una distancia para explorar su recorrido, perfil de altimetría y descargar tracks:</p>
+                
+                <!-- Selector de Distancias (Dashboard) -->
+                <div class="cards-container" id="distances-container" style="margin-bottom: 1.5rem; justify-content: center; gap: 1rem;">
+                    <!-- Loaded dynamically from JS -->
                 </div>
 
+                <!-- Detalles de Distancia Seleccionada -->
+                <div id="dashboard-details" class="mt-1" style="background: rgba(0,0,0,0.25); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                        <h3 id="dashboard-dist-title" style="font-size: 1.35rem; color: var(--accent-cyan); margin: 0;">-</h3>
+                        <span id="dashboard-dist-price" style="font-size: 1.3rem; font-weight: 800; color: var(--success); text-shadow: 0 0 8px rgba(0,230,118,0.3);">-</span>
+                    </div>
+                    <p id="dashboard-dist-detail" style="line-height: 1.6; color: #fff; margin-bottom: 1rem; font-size: 1rem;">-</p>
+                    
+                    <!-- Descargas específicas de la distancia -->
+                    <div class="downloads-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem;">
+                        <a href="#" id="gpx-btn" class="btn-secondary gpx-btn" target="_blank">
+                            <i class="fa-solid fa-route"></i> Descargar GPX
+                        </a>
+                        <a href="#" id="kml-btn" class="btn-secondary kml-btn" target="_blank">
+                            <i class="fa-solid fa-earth-americas"></i> Descargar KML
+                        </a>
+                        <a href="#" id="start-location-btn" class="btn-secondary" target="_blank">
+                            <i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Largada (Google Maps)
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mapa del Recorrido Interactivo -->
+                <div class="info-card-sub" id="interactive-map-card" style="margin-top: 1rem; background: rgba(0,0,0,0.15); padding: 1rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="margin: 0; font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-map" style="color: var(--accent-cyan);"></i> Mapa del Recorrido Interactivo</h4>
+                    <div id="map-track" style="height: 400px; width: 100%; border-radius: var(--radius-md); margin-top: 1rem; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 10;"></div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; display: block;">
+                        * Puedes hacer zoom y desplazarte por el mapa para ver la ruta en detalle.
+                    </span>
+                </div>
+                
+                <!-- Perfil de Altimetría -->
+                <div class="info-card-sub" id="altimetry-card" style="margin-top: 1.5rem; background: rgba(0,0,0,0.15); padding: 1rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="margin: 0; font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-chart-area" style="color: var(--accent-orange);"></i> Perfil de Altimetría</h4>
+                    <div class="info-card-content mt-1" style="text-align: center;">
+                        <img id="altimetry-image" src="" alt="Mapa de altitud y elevación" style="max-height: 250px; object-fit: contain; width: 100%; border-radius: var(--radius-sm);">
+                    </div>
+                </div>
+
+                <!-- Botón de Acción para Iniciar Inscripción -->
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="button" id="btn-go-to-registration" class="btn-submit" style="padding: 1.2rem 3rem; font-size: 1.2rem; background: var(--accent-orange); box-shadow: 0 4px 15px var(--accent-orange-glow); font-weight: 800; text-transform: uppercase; border-radius: var(--radius-md); border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                        <i class="fa-solid fa-user-plus"></i> Iniciar Inscripción <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. INSCRIPCIÓN (Wizard Form Card) - Hidden by default until click -->
+            <div class="card-wrapper hidden" id="registration-card-wrapper" style="margin-top: 2rem; border-top: 4px solid var(--accent-orange); transition: all 0.3s ease;">
+                
                 <!-- Progress Header -->
                 <div class="wizard-progress">
                     <div class="step-indicator active" id="indicator-1">
                         <div class="step-number">1</div>
-                        <span class="step-label">Datos y Distancia</span>
+                        <span class="step-label">Datos y Talle</span>
                     </div>
                     <div class="step-indicator" id="indicator-2">
                         <div class="step-number">2</div>
@@ -50,26 +119,26 @@
                     <!-- STEP 1: Personal Data & Distance Selection -->
                     <div class="form-step-content" id="step-1">
                         <div class="step-header">
-                            <h2>Datos Personales y Distancia</h2>
-                            <p>Ingresa tu información e identifica la categoría correspondiente.</p>
+                            <h2>Ficha de Inscripción</h2>
+                            <p>Completa tus datos personales para la categoría de carrera seleccionada.</p>
                         </div>
 
                         <div class="form-grid grid-2">
-                            <!-- Selector de Distancia en Paso 1 (Al principio) -->
-                            <div class="full-width-group" style="grid-column: 1 / -1; margin-bottom: 1.5rem;">
-                                <label class="mb-1" style="font-size: 1.05rem; font-weight: 700; display: block; color: var(--accent-orange);">1. Selecciona tu distancia: <span class="requirement">*</span></label>
-                                <div class="cards-container" id="distances-container">
-                                    <!-- Loaded dynamically from JS -->
+                            <!-- Resumen de la Distancia Elegida arriba del Formulario -->
+                            <div class="full-width-group" style="grid-column: 1 / -1; margin-bottom: 1.5rem; background: rgba(255, 255, 255, 0.05); padding: 1rem 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                                <div>
+                                    <span style="font-size: 0.85rem; color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 600;">Distancia Elegida:</span>
+                                    <strong id="selected-distance-summary-title" style="font-size: 1.25rem; color: var(--accent-cyan);">-</strong>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 0.85rem; color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 600;">Costo de Inscripción:</span>
+                                    <strong id="selected-distance-summary-price" style="font-size: 1.25rem; color: var(--success);">-</strong>
                                 </div>
                                 <input type="hidden" id="selected-distance-id" name="distancia" required>
                                 <input type="hidden" id="selected-distance-price" name="costo">
                             </div>
 
                             <!-- Datos Personales -->
-                            <div class="full-width-group" style="grid-column: 1 / -1; margin-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
-                                <label style="font-size: 1.05rem; font-weight: 700; color: var(--accent-cyan);">2. Completa tus datos personales:</label>
-                            </div>
-
                             <div class="input-group">
                                 <label for="nombre">Nombre <span class="requirement">*</span></label>
                                 <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
@@ -163,11 +232,9 @@
                                     </div>
                                     <div class="summary-row summary-total">
                                         <span>Total a transferir:</span>
-                                        <span id="summary-monto">$0</span>
+                                        <span id="summary-monto">-</span>
                                     </div>
                                 </div>
-
-
                             </div>
 
                             <!-- Right Column: Upload receipt & Waiver download -->
@@ -259,43 +326,6 @@
                         <p style="margin-top: 0.5rem;">Subiendo comprobante de pago y registrando tus datos. No cierres la ventana.</p>
                     </div>
                 </div>
-
-            </div>
-
-            <!-- Additional collapsible race maps / resources -->
-            <div class="collapsible-container">
-                <!-- Maps download / Start point -->
-                <div class="info-card">
-                    <h3><i class="fa-solid fa-map-location-dot"></i> Recorrido e Inicio</h3>
-                    <div class="downloads-grid mt-1">
-                        <a href="#" id="gpx-btn" class="btn-secondary gpx-btn" target="_blank">
-                            <i class="fa-solid fa-route"></i> Descargar Ruta GPX
-                        </a>
-                        <a href="#" id="kml-btn" class="btn-secondary kml-btn" target="_blank">
-                            <i class="fa-solid fa-earth-americas"></i> Descargar Ruta KML
-                        </a>
-                        <a href="#" id="start-location-btn" class="btn-secondary" target="_blank">
-                            <i class="fa-solid fa-location-dot" style="color: var(--accent-orange);"></i> Ver Lugar de Largada (Google Maps)
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Interactive Track Map -->
-                <div class="info-card" id="interactive-map-card" style="margin-top: 1rem;">
-                    <h3><i class="fa-solid fa-map"></i> Mapa del Recorrido Interactivo</h3>
-                    <div id="map-track" style="height: 400px; width: 100%; border-radius: var(--radius-md); margin-top: 1rem; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 10;"></div>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; display: block;">
-                        * Puedes hacer zoom y desplazarte por el mapa. Haz clic sobre el mapa para activar/desactivar el zoom con la rueda del mouse.
-                    </span>
-                </div>
-                
-                <!-- Altitude map graphic -->
-                <div class="info-card" id="altimetry-card">
-                    <h3><i class="fa-solid fa-chart-area"></i> Perfil de Altimetría</h3>
-                    <div class="info-card-content mt-1">
-                        <img id="altimetry-image" src="" alt="Mapa de altitud y elevación">
-                    </div>
-                </div>
             </div>
 
         </main>
@@ -313,13 +343,33 @@
     <script>
         (function() {
             const config = window.RACE_CONFIG;
-            if (config && config.themeColors) {
-                const root = document.documentElement;
-                root.style.setProperty('--accent-orange', config.themeColors.primary);
-                root.style.setProperty('--accent-orange-glow', config.themeColors.primaryGlow);
-                root.style.setProperty('--accent-orange-dim', config.themeColors.primaryDim);
-                root.style.setProperty('--accent-cyan', config.themeColors.secondary);
-                root.style.setProperty('--accent-cyan-glow', config.themeColors.secondaryGlow);
+            if (config) {
+                if (config.themeColors) {
+                    const root = document.documentElement;
+                    root.style.setProperty('--accent-orange', config.themeColors.primary);
+                    root.style.setProperty('--accent-orange-glow', config.themeColors.primaryGlow);
+                    root.style.setProperty('--accent-orange-dim', config.themeColors.primaryDim);
+                    root.style.setProperty('--accent-cyan', config.themeColors.secondary);
+                    root.style.setProperty('--accent-cyan-glow', config.themeColors.secondaryGlow);
+                }
+                if (config.themeBackground) {
+                    const bgOverlay = document.getElementById('bg-overlay');
+                    if (bgOverlay) {
+                        const BACKGROUND_THEMES = {
+                            default: './assets/trail_background.jpg',
+                            snow: './assets/snow_mountain.jpg',
+                            sunset: './assets/sunset_ridge.jpg',
+                            rocky: './assets/rocky_valley.jpg',
+                            solid: 'none'
+                        };
+                        const bgPath = BACKGROUND_THEMES[config.themeBackground] || BACKGROUND_THEMES.default;
+                        if (bgPath === 'none') {
+                            bgOverlay.style.backgroundImage = 'none';
+                        } else {
+                            bgOverlay.style.backgroundImage = "url('" + bgPath + "')";
+                        }
+                    }
+                }
             }
         })();
     </script>

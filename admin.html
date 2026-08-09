@@ -32,9 +32,24 @@
             <section class="admin-section">
                 <h2><i class="fa-solid fa-circle-info"></i> Información General</h2>
                 <div class="form-grid grid-2">
-                    <div class="input-group">
+                    <div class="input-group" style="grid-column: span 2;">
                         <label for="raceName">Nombre de la Carrera <span class="requirement">*</span></label>
                         <input type="text" id="raceName" required placeholder="Ej: DESAFÍO ALPA CHIRI 2026">
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="raceDescription">Descripción o Información de la Carrera</label>
+                        <textarea id="raceDescription" rows="4" placeholder="Ingresa una descripción o información clave sobre la carrera..." style="width: 100%; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: #fff; padding: 0.8rem; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                    </div>
+                    <!-- Logo Image Input -->
+                    <div class="input-group">
+                        <label for="logoImage">Ruta de la Imagen del Logo (Arriba a la Derecha)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="logoImage" placeholder="Ej: ./IMAGENES/LOGO.png" style="flex: 1;">
+                            <input type="file" id="logoImageFile" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('logoImageFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
                     </div>
                     <div class="input-group">
                         <label for="deslindeLink">Enlace del PDF de Deslinde</label>
@@ -98,6 +113,32 @@
                             <!-- Botón Púrpura (Neón) -->
                             <button type="button" class="color-theme-btn" data-theme="purple" style="background: #1a1a1a; border: 2px solid #e040fb; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
                                 <span style="display: inline-block; width: 14px; height: 14px; background: #e040fb; border-radius: 50%;"></span> Púrpura Neón
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="grid-column: span 2; margin-top: 1.2rem;">
+                        <label style="font-weight: 700; color: var(--accent-orange); display: block; margin-bottom: 0.5rem;">⛰️ Personalización de Imagen de Fondo de la Web:</label>
+                        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                            <!-- Fondo Predeterminado -->
+                            <button type="button" class="bg-theme-btn" data-bg="default" style="background: #1a1a1a; border: 2px solid #20b05b; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-tree" style="color: #00e676;"></i> Bosque Verde
+                            </button>
+                            <!-- Fondo Montaña Nevada -->
+                            <button type="button" class="bg-theme-btn" data-bg="snow" style="background: #1a1a1a; border: 2px solid #00b0ff; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-snowflake" style="color: #00b0ff;"></i> Nieve / Alta Montaña
+                            </button>
+                            <!-- Fondo Atardecer -->
+                            <button type="button" class="bg-theme-btn" data-bg="sunset" style="background: #1a1a1a; border: 2px solid #ffab00; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-mountain-sun" style="color: #ffab00;"></i> Atardecer Dorado
+                            </button>
+                            <!-- Fondo Valle Rocoso -->
+                            <button type="button" class="bg-theme-btn" data-bg="rocky" style="background: #1a1a1a; border: 2px solid #a1887f; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-mountain" style="color: #a1887f;"></i> Valle Rocoso
+                            </button>
+                            <!-- Solo Color Oscuro -->
+                            <button type="button" class="bg-theme-btn" data-bg="solid" style="background: #1a1a1a; border: 2px solid #555; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-palette" style="color: #9e9e9e;"></i> Solo Color Oscuro
                             </button>
                         </div>
                     </div>
@@ -239,6 +280,16 @@
                             </button>
                         </div>
                     </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="new-dist-altitude">Imagen de Altimetría específica de esta distancia (opcional)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="new-dist-altitude" placeholder="Ej: ./IMAGENES/altimetria_5k.jpg" style="flex: 1;">
+                            <input type="file" id="new-dist-altitude-file" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('new-dist-altitude-file').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
                     <div class="input-group" style="justify-content: flex-end; margin-top: 1.45rem;">
                         <div style="display: flex; gap: 0.5rem; width: 100%;">
                             <button type="button" class="btn-submit" id="btn-add-distance" style="padding: 0.8rem; flex: 1;">
@@ -341,13 +392,33 @@
     <script>
         (function() {
             const config = window.RACE_CONFIG;
-            if (config && config.themeColors) {
-                const root = document.documentElement;
-                root.style.setProperty('--accent-orange', config.themeColors.primary);
-                root.style.setProperty('--accent-orange-glow', config.themeColors.primaryGlow);
-                root.style.setProperty('--accent-orange-dim', config.themeColors.primaryDim);
-                root.style.setProperty('--accent-cyan', config.themeColors.secondary);
-                root.style.setProperty('--accent-cyan-glow', config.themeColors.secondaryGlow);
+            if (config) {
+                if (config.themeColors) {
+                    const root = document.documentElement;
+                    root.style.setProperty('--accent-orange', config.themeColors.primary);
+                    root.style.setProperty('--accent-orange-glow', config.themeColors.primaryGlow);
+                    root.style.setProperty('--accent-orange-dim', config.themeColors.primaryDim);
+                    root.style.setProperty('--accent-cyan', config.themeColors.secondary);
+                    root.style.setProperty('--accent-cyan-glow', config.themeColors.secondaryGlow);
+                }
+                if (config.themeBackground) {
+                    const bgOverlay = document.getElementById('bg-overlay');
+                    if (bgOverlay) {
+                        const BACKGROUND_THEMES = {
+                            default: './assets/trail_background.jpg',
+                            snow: './assets/snow_mountain.jpg',
+                            sunset: './assets/sunset_ridge.jpg',
+                            rocky: './assets/rocky_valley.jpg',
+                            solid: 'none'
+                        };
+                        const bgPath = BACKGROUND_THEMES[config.themeBackground] || BACKGROUND_THEMES.default;
+                        if (bgPath === 'none') {
+                            bgOverlay.style.backgroundImage = 'none';
+                        } else {
+                            bgOverlay.style.backgroundImage = "url('" + bgPath + "')";
+                        }
+                    }
+                }
             }
         })();
     </script>

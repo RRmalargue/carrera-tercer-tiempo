@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Current Active State
     const state = {
         raceName: '',
+        raceDescription: '',
+        logoImage: '',
         posterImage: '',
         tshirtImage: '',
         altitudeMapImage: '',
@@ -18,11 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
             primaryDim: 'rgba(255, 107, 53, 0.1)',
             secondary: '#00f2fe',
             secondaryGlow: 'rgba(0, 242, 254, 0.35)'
-        }
+        },
+        themeBackground: 'default'
     };
 
     // DOM Elements - General Info
     const inputRaceName = document.getElementById('raceName');
+    const inputRaceDescription = document.getElementById('raceDescription');
+    const inputLogoImage = document.getElementById('logoImage');
+    const inputLogoImageFile = document.getElementById('logoImageFile');
     const inputDeslindeLink = document.getElementById('deslindeLink');
     const inputPosterImage = document.getElementById('posterImage');
     const inputTshirtImage = document.getElementById('tshirtImage');
@@ -43,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputNewDistPrice = document.getElementById('new-dist-price');
     const inputNewDistDetail = document.getElementById('new-dist-detail');
     const inputNewDistGpx = document.getElementById('new-dist-gpx');
+    const inputNewDistAltitude = document.getElementById('new-dist-altitude');
     const btnAddDistance = document.getElementById('btn-add-distance');
     const btnCancelEditDistance = document.getElementById('btn-cancel-edit-distance');
 
@@ -108,6 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateFormFields() {
         inputRaceName.value = state.raceName || '';
+        inputRaceDescription.value = state.raceDescription || '';
+        inputLogoImage.value = state.logoImage || '';
         inputDeslindeLink.value = state.deslindeLink || '';
         inputPosterImage.value = state.posterImage || '';
         inputTshirtImage.value = state.tshirtImage || '';
@@ -129,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadStandardDefaults() {
         state.raceName = 'CROSS TRAIL "TERCER TIEMPO"';
+        state.raceDescription = '¡Prepárate para una aventura inolvidable en la naturaleza! El Cross Trail "Tercer Tiempo" te llevará por senderos únicos, cruces de ríos, subidas técnicas y paisajes increíbles. Contamos con distancias para todos los niveles y categorías por edades. Asegura tu lugar hoy mismo.';
         state.posterImage = './IMAGENES/AFICHE TERCER.jpg';
         state.tshirtImage = './IMAGENES/REMERA TERCER.jpg';
         state.altitudeMapImage = './IMAGENES/MAPA ALTURA.jpg';
@@ -196,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>
                     <small>${dist.detail || '-'}</small>
                     ${dist.gpxLink ? `<br><span class="badge" style="background: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-route"></i> GPX: ${dist.gpxLink}</span>` : ''}
+                    ${dist.altitudeMapImage ? `<br><span class="badge" style="background: rgba(255, 107, 53, 0.1); color: var(--accent-orange); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-chart-area"></i> Altimetría: ${dist.altitudeMapImage}</span>` : ''}
                 </td>
                 <td style="text-align: center; white-space: nowrap;">
                     <button type="button" class="table-action-btn edit-dist-btn" data-index="${index}" title="Editar" style="color: var(--accent-cyan); margin-right: 0.5rem; background: transparent; border: none; cursor: pointer; font-size: 1rem;">
@@ -235,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewDistPrice.value = dist.price;
         inputNewDistDetail.value = dist.detail || '';
         inputNewDistGpx.value = dist.gpxLink || '';
+        inputNewDistAltitude.value = dist.altitudeMapImage || '';
 
         btnAddDistance.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Cambios';
         btnAddDistance.style.background = '#00f2fe';
@@ -252,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewDistPrice.value = '';
         inputNewDistDetail.value = '';
         inputNewDistGpx.value = '';
+        inputNewDistAltitude.value = '';
 
         btnAddDistance.innerHTML = '<i class="fa-solid fa-plus"></i> Agregar';
         btnAddDistance.style.background = '';
@@ -267,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const price = parseFloat(inputNewDistPrice.value);
         const detail = inputNewDistDetail.value.trim();
         const gpxLink = inputNewDistGpx.value.trim();
+        const altitudeMapImage = inputNewDistAltitude.value.trim();
 
         if (!id || !name || isNaN(price)) {
             alert('Por favor, completa los campos obligatorios para agregar o editar la distancia (Código, Nombre y Precio).');
@@ -279,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Ya existe otra distancia con ese mismo código ID.');
                 return;
             }
-            state.distances[editingDistanceIndex] = { id, name, price, detail, gpxLink };
+            state.distances[editingDistanceIndex] = { id, name, price, detail, gpxLink, altitudeMapImage };
             cancelEditingDistance();
         } else {
             // Modo Creación
@@ -287,13 +301,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Ya existe una distancia con ese mismo código ID.');
                 return;
             }
-            state.distances.push({ id, name, price, detail, gpxLink });
+            state.distances.push({ id, name, price, detail, gpxLink, altitudeMapImage });
             
             inputNewDistId.value = '';
             inputNewDistName.value = '';
             inputNewDistPrice.value = '';
             inputNewDistDetail.value = '';
             inputNewDistGpx.value = '';
+            inputNewDistAltitude.value = '';
         }
 
         renderDistances();
@@ -381,6 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. LIVE UPDATE STATE & PREVIEW
     const inputsToSync = [
         { el: inputRaceName, prop: 'raceName' },
+        { el: inputRaceDescription, prop: 'raceDescription' },
+        { el: inputLogoImage, prop: 'logoImage' },
         { el: inputDeslindeLink, prop: 'deslindeLink' },
         { el: inputPosterImage, prop: 'posterImage' },
         { el: inputTshirtImage, prop: 'tshirtImage' },
@@ -539,11 +556,13 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
     // Inicializar subidores
     setupFileUploader('deslindeLinkFile', 'deslindeLink');
     setupFileUploader('posterImageFile', 'posterImage');
+    setupFileUploader('logoImageFile', 'logoImage');
     setupFileUploader('tshirtImageFile', 'tshirtImage');
     setupFileUploader('altitudeMapImageFile', 'altitudeMapImage');
     setupFileUploader('gpxLinkFile', 'gpxLink');
     setupFileUploader('kmlLinkFile', 'kmlLink');
     setupFileUploader('new-dist-gpx-file', 'new-dist-gpx');
+    setupFileUploader('new-dist-altitude-file', 'new-dist-altitude');
 
     // 7. MAPA INTERACTIVO DE LARGADA Y TRAZADO DE RUTA
     function parseCoordsFromUrl(url) {
@@ -960,24 +979,76 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
     }
 
     function highlightActiveThemeButton() {
-        if (!state.themeColors) return;
+        if (state.themeColors) {
+            let activeTheme = 'orange';
+            for (const [name, colors] of Object.entries(COLOR_THEMES)) {
+                if (colors.primary === state.themeColors.primary) {
+                    activeTheme = name;
+                    break;
+                }
+            }
+            selectColorTheme(activeTheme);
+        }
 
-        let activeTheme = 'orange';
-        for (const [name, colors] of Object.entries(COLOR_THEMES)) {
-            if (colors.primary === state.themeColors.primary) {
-                activeTheme = name;
-                break;
+        highlightActiveBgButton();
+    }
+
+    // 9. PERSONALIZACIÓN DE FONDOS DE LA WEB
+    const BACKGROUND_THEMES = {
+        default: './assets/trail_background.jpg',
+        snow: './assets/snow_mountain.jpg',
+        sunset: './assets/sunset_ridge.jpg',
+        rocky: './assets/rocky_valley.jpg',
+        solid: 'none'
+    };
+
+    function selectBgTheme(bgName) {
+        const bgPath = BACKGROUND_THEMES[bgName] || BACKGROUND_THEMES.default;
+        state.themeBackground = bgName;
+
+        const bgOverlay = document.getElementById('bg-overlay');
+        if (bgOverlay) {
+            if (bgPath === 'none') {
+                bgOverlay.style.backgroundImage = 'none';
+            } else {
+                bgOverlay.style.backgroundImage = `url('${bgPath}')`;
             }
         }
 
-        selectColorTheme(activeTheme);
+        // Resaltar el botón activo y desmarcar el resto
+        document.querySelectorAll('.bg-theme-btn').forEach(btn => {
+            const btnBg = btn.getAttribute('data-bg');
+            if (btnBg === bgName) {
+                btn.style.transform = 'scale(1.05)';
+                btn.style.boxShadow = '0 0 12px rgba(255,107,53,0.3)';
+                btn.style.background = 'rgba(255,255,255,0.06)';
+            } else {
+                btn.style.transform = '';
+                btn.style.boxShadow = '';
+                btn.style.background = '#1a1a1a';
+            }
+        });
+
+        updateJsonPreview();
     }
 
-    // Registrar eventos de clic en los botones de selección de tema
+    function highlightActiveBgButton() {
+        const activeBg = state.themeBackground || 'default';
+        selectBgTheme(activeBg);
+    }
+
+    // Registrar eventos de clic en los botones de selección de tema y fondo
     document.querySelectorAll('.color-theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const themeName = btn.getAttribute('data-theme');
             selectColorTheme(themeName);
+        });
+    });
+
+    document.querySelectorAll('.bg-theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const bgName = btn.getAttribute('data-bg');
+            selectBgTheme(bgName);
         });
     });
 
