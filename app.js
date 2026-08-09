@@ -517,7 +517,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         currentStep = step;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const wrapper = document.getElementById('registration-card-wrapper');
+        if (wrapper) {
+            wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     // 6. VALIDACIONES POR PASO

@@ -9,7 +9,7 @@
   "kmlLink": "",
   "startLocationMapLink": "https://maps.google.com/?q=-35.438479,-69.599445",
   "deslindeLink": "./IMAGENES/DESLINDE DE RESPONSABILIDAD Y ASUNCIÓN DE RIESGOS.pdf",
-  "paymentDetails": "Banco de la Nación Argentina\nCBU: 0110599520000001234567\nAlias: ALPACHIRI.TRAIL\nTitular: Trail Running S.A.",
+  "paymentDetails": "ASOCIACION CLUB TECER TIEMPO MALARGUE\n\nAlias: ACCTM2026\n\n.",
   "distances": [
     {
       "id": "15 KMS",
@@ -23,7 +23,9 @@
       "id": "INFANTILES",
       "name": "INFANTILES",
       "price": 18000,
-      "detail": ""
+      "detail": "",
+      "gpxLink": "./IMAGENES/circuito infantiles.gpx",
+      "altitudeMapImage": "./IMAGENES/altura infantiles.jpg"
     },
     {
       "id": "5 KMS",
