@@ -51,6 +51,11 @@
                             </button>
                         </div>
                     </div>
+                    <!-- WhatsApp Contact Input -->
+                    <div class="input-group">
+                        <label for="contactWhatsapp">Teléfono de Soporte WhatsApp (Ej: 5492615555555)</label>
+                        <input type="text" id="contactWhatsapp" placeholder="Ej: 5492615555555 (Solo números con código de país)">
+                    </div>
                     <div class="input-group">
                         <label for="deslindeLink">Enlace del PDF de Deslinde</label>
                         <div style="display: flex; gap: 0.5rem;">
@@ -354,6 +359,45 @@
                 </div>
             </section>
 
+            <!-- SECTION 6: SPONSORS -->
+            <section class="admin-section">
+                <h2><i class="fa-solid fa-handshake"></i> Auspiciantes / Sponsors</h2>
+                <p class="mb-2" style="color: var(--text-secondary); font-size: 0.95rem;">
+                    Agrega imágenes o logotipos de los auspiciantes de la carrera. Se mostrarán en un banner al final del portal público.
+                </p>
+                <div class="form-grid grid-2" style="margin-bottom: 1.5rem; align-items: flex-end;">
+                    <div class="input-group">
+                        <label>Subir Logo de Auspiciante</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="new-sponsor-logo" placeholder="Ej: ./IMAGENES/SPONSOR1.png" style="flex: 1;">
+                            <input type="file" id="sponsor-file-input" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('sponsor-file-input').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <button type="button" class="btn-submit" id="btn-add-sponsor" style="padding: 0.85rem 1rem; width: 100%;">
+                            <i class="fa-solid fa-plus"></i> Agregar Auspiciante
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="distances-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Vista Previa</th>
+                                <th>Ruta del Logo</th>
+                                <th style="width: 100px; text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sponsors-list-body">
+                            <!-- Dynamically loaded -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- SECTION 6: ACTIONS & EXPORT -->
             <section class="admin-section">
                 <h2><i class="fa-solid fa-download"></i> Guardar y Exportar</h2>
@@ -385,6 +429,12 @@
                 </div>
             </section>
         </form>
+        <footer class="app-footer" style="text-align: center; margin-top: 3rem; padding-bottom: 2rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+            <p>&copy; 2026 Panel Administrativo. Todos los derechos reservados.</p>
+            <p style="margin-top: 0.3rem; font-size: 0.8rem; color: var(--text-muted);">
+                Diseño y Programación: <strong>RR Cómputos!</strong>
+            </p>
+        </footer>
     </div>
 
     <!-- Admin JavaScript Configuration & Logic -->

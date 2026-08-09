@@ -197,6 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        // Configurar botón flotante de WhatsApp
+        const whatsappBtn = document.getElementById('whatsapp-btn');
+        if (whatsappBtn) {
+            if (config.contactWhatsapp && config.contactWhatsapp.trim() !== '') {
+                const cleanPhone = config.contactWhatsapp.replace(/\D/g, '');
+                whatsappBtn.href = `https://wa.me/${cleanPhone}?text=Hola!%20Tengo%20una%20consulta%20sobre%20la%20carrera%20${encodeURIComponent(config.raceName || 'Trail')}`;
+                whatsappBtn.classList.remove('hidden');
+            } else {
+                whatsappBtn.classList.add('hidden');
+            }
+        }
+        
         if (config.tshirtImage) {
             tshirtImage.src = config.tshirtImage;
             document.getElementById('tshirt-preview-card').classList.remove('hidden');
@@ -264,6 +276,33 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstCard) {
                 selectDistance(firstCard);
             }
+        }
+
+        // Cargar Auspiciantes (Sponsors)
+        const sponsorsContainer = document.getElementById('sponsors-container');
+        if (sponsorsContainer) {
+            sponsorsContainer.innerHTML = '';
+            const sponsorsList = (config.sponsors && config.sponsors.length > 0) 
+                ? config.sponsors 
+                : [
+                    'Auspiciante 1',
+                    'Auspiciante 2',
+                    'Auspiciante 3',
+                    'Auspiciante 4'
+                ];
+
+            sponsorsList.forEach(sponsor => {
+                const card = document.createElement('div');
+                card.className = 'sponsor-logo-card';
+                
+                if (sponsor.startsWith('data:') || sponsor.startsWith('./') || sponsor.startsWith('http') || sponsor.startsWith('assets/')) {
+                    card.innerHTML = `<img src="${sponsor}" alt="Sponsor" class="sponsor-img">`;
+                } else {
+                    card.innerHTML = `<span class="sponsor-placeholder-text"><i class="fa-solid fa-medal" style="color: var(--accent-cyan); margin-right: 0.3rem;"></i> ${sponsor}</span>`;
+                }
+                
+                sponsorsContainer.appendChild(card);
+            });
         }
 
         // Cargar mapa interactivo GPX
@@ -337,6 +376,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('altimetry-card').classList.remove('hidden');
         } else {
             document.getElementById('altimetry-card').classList.add('hidden');
+        }
+
+        // Configurar obligatoriedad del CUIL si es la distancia INFANTILES
+        const cuilInput = document.getElementById('cuil');
+        const cuilReqIndicator = document.getElementById('cuil-req-indicator');
+        if (selectedId === 'INFANTILES') {
+            if (cuilInput) cuilInput.removeAttribute('required');
+            if (cuilReqIndicator) cuilReqIndicator.innerHTML = '(Opcional - 11 dígitos)';
+        } else {
+            if (cuilInput) cuilInput.setAttribute('required', 'required');
+            if (cuilReqIndicator) cuilReqIndicator.innerHTML = '* (11 dígitos exactos)';
         }
 
         // Recalcular categoría
@@ -551,8 +601,23 @@ document.addEventListener('DOMContentLoaded', () => {
             error = error || checkField(inputNombre, !inputNombre.value.trim(), 'El nombre es obligatorio.');
             error = error || checkField(inputApellido, !inputApellido.value.trim(), 'El apellido es obligatorio.');
             
+            const selectedDistId = document.getElementById('selected-distance-id').value;
             const cuilVal = inputCuil.value.trim();
-            error = error || checkField(inputCuil, !cuilVal || cuilVal.length !== 11, 'El CUIL debe tener exactamente 11 números.');
+            let isCuilInvalid = false;
+            let cuilErrorMsg = '';
+
+            if (selectedDistId === 'INFANTILES') {
+                if (cuilVal.length > 0 && cuilVal.length !== 11) {
+                    isCuilInvalid = true;
+                    cuilErrorMsg = 'Si ingresas el CUIL, debe tener exactamente 11 números.';
+                }
+            } else {
+                if (!cuilVal || cuilVal.length !== 11) {
+                    isCuilInvalid = true;
+                    cuilErrorMsg = 'El CUIL es obligatorio y debe tener exactamente 11 números.';
+                }
+            }
+            error = error || checkField(inputCuil, isCuilInvalid, cuilErrorMsg);
             
             error = error || checkField(inputFechaNacimiento, !inputFechaNacimiento.value, 'La fecha de nacimiento es obligatoria.');
             error = error || checkField(inputGenero, !inputGenero.value, 'Debes seleccionar tu género.');
@@ -765,7 +830,9 @@ document.addEventListener('DOMContentLoaded', () => {
             edad: inputEdad.value.replace(' años', ''),
             categoria: inputCategoria.value,
             telefono: inputTelefono.value.trim(),
+            genero: inputGenero.value,
             talle_remera: inputTalleRemera.value,
+            team_origen: document.getElementById('team_origen').value.trim(),
             distancia: document.getElementById('selected-distance-id').value,
             costo: document.getElementById('selected-distance-price').value,
             comprobante_base64: uploadedFileBase64,

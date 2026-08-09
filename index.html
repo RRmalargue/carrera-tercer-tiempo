@@ -148,7 +148,7 @@
                                 <input type="text" id="apellido" name="apellido" required placeholder="Tu apellido">
                             </div>
                             <div class="input-group">
-                                <label for="cuil">CUIL <span class="requirement">* (11 dígitos exactos)</span></label>
+                                <label for="cuil">CUIL <span class="requirement" id="cuil-req-indicator">* (11 dígitos exactos)</span></label>
                                 <input type="text" id="cuil" name="cuil" required maxlength="11" placeholder="Ej: 20443332221" title="Solo números, sin guiones. Exactamente 11 dígitos.">
                             </div>
                             <div class="input-group">
@@ -189,6 +189,10 @@
                                         <img id="tshirt-image" src="" alt="Remera oficial de la carrera" style="max-height: 140px; object-fit: contain; border-radius: var(--radius-sm);">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="team_origen">Team o Lugar de Origen <span style="font-weight: normal; color: var(--text-muted);">(Opcional)</span></label>
+                                <input type="text" id="team_origen" name="team_origen" placeholder="Ej: Club Aconcagua o San Rafael">
                             </div>
 
                             <!-- Categoría Asignada en Paso 1 (Destacada) -->
@@ -328,10 +332,20 @@
                 </div>
             </div>
 
+            <!-- 5. AUSPICIANTES (Sponsors Banner) -->
+            <div class="info-card" id="sponsors-card" style="margin-top: 2rem; margin-bottom: 1.5rem; background: rgba(30, 30, 30, 0.65); border: 1px solid var(--border-color); text-align: center; backdrop-filter: blur(10px);">
+                <h3 style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 1.5rem;"><i class="fa-solid fa-handshake"></i> Auspiciantes Oficiales</h3>
+                <div class="sponsors-grid" id="sponsors-container" style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                    <!-- Loaded dynamically from config or placeholders -->
+                </div>
+            </div>
         </main>
 
         <footer class="app-footer">
             <p>&copy; 2026 <span id="footer-race-name">Trail Running Portal</span>. Todos los derechos reservados.</p>
+            <p style="margin-top: 0.3rem; font-size: 0.8rem; color: var(--text-muted);">
+                Diseño y Programación: <strong>RR Cómputos!</strong>
+            </p>
             <p style="margin-top: 0.5rem; font-size: 0.75rem;">
                 ¿Eres organizador? <a href="./admin.html"><i class="fa-solid fa-gears"></i> Panel de Configuración</a>
             </p>
@@ -373,6 +387,9 @@
             }
         })();
     </script>
+    <a href="#" class="whatsapp-float-btn hidden" id="whatsapp-btn" target="_blank" title="Hacer una consulta por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
     <script src="./app.js"></script>
 </body>
 </html>

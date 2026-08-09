@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         raceName: '',
         raceDescription: '',
         logoImage: '',
+        contactWhatsapp: '',
         posterImage: '',
         tshirtImage: '',
         altitudeMapImage: '',
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         paymentDetails: '',
         distances: [],
         categories: [],
+        sponsors: [],
         themeColors: {
             primary: '#ff6b35',
             primaryGlow: 'rgba(255, 107, 53, 0.35)',
@@ -29,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputRaceDescription = document.getElementById('raceDescription');
     const inputLogoImage = document.getElementById('logoImage');
     const inputLogoImageFile = document.getElementById('logoImageFile');
+    const inputContactWhatsapp = document.getElementById('contactWhatsapp');
     const inputDeslindeLink = document.getElementById('deslindeLink');
     const inputPosterImage = document.getElementById('posterImage');
     const inputTshirtImage = document.getElementById('tshirtImage');
@@ -41,6 +44,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DOM Elements - Payments
     const inputPaymentDetails = document.getElementById('paymentDetails');
+
+    // DOM Elements - Sponsors
+    const inputNewSponsorLogo = document.getElementById('new-sponsor-logo');
+    const btnAddSponsor = document.getElementById('btn-add-sponsor');
+    const sponsorsListBody = document.getElementById('sponsors-list-body');
+    const sponsorFileInput = document.getElementById('sponsor-file-input');
 
     // DOM Elements - Distances
     const distancesList = document.getElementById('distances-list');
@@ -89,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             populateFormFields();
             renderDistances();
             renderCategories();
+            renderSponsors();
             updateJsonPreview();
         } else {
             try {
@@ -102,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 populateFormFields();
                 renderDistances();
                 renderCategories();
+                renderSponsors();
                 updateJsonPreview();
             } catch (error) {
                 console.warn('No se detectó config.js ni se pudo cargar config.json. Cargando valores predeterminados.', error);
@@ -117,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputRaceName.value = state.raceName || '';
         inputRaceDescription.value = state.raceDescription || '';
         inputLogoImage.value = state.logoImage || '';
+        inputContactWhatsapp.value = state.contactWhatsapp || '';
         inputDeslindeLink.value = state.deslindeLink || '';
         inputPosterImage.value = state.posterImage || '';
         inputTshirtImage.value = state.tshirtImage || '';
@@ -393,11 +405,81 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewCatMax.value = '';
     });
 
+    // 3.5. ADMINISTRACIÓN DE AUSPICIANTES
+    function renderSponsors() {
+        sponsorsListBody.innerHTML = '';
+        if (!state.sponsors || state.sponsors.length === 0) {
+            sponsorsListBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Sin auspiciantes cargados. Aparecerán marcas de prueba en el portal.</td></tr>`;
+            return;
+        }
+
+        state.sponsors.forEach((src, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <img src="${src}" alt="Preview Sponsor" style="max-height: 45px; max-width: 100px; object-fit: contain; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); padding: 0.2rem;">
+                </td>
+                <td style="word-break: break-all; font-size: 0.85rem;"><code>${src.substring(0, 50)}${src.length > 50 ? '...' : ''}</code></td>
+                <td style="text-align: center;">
+                    <button type="button" class="table-action-btn delete-sponsor-btn">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            `;
+
+            row.querySelector('.delete-sponsor-btn').addEventListener('click', () => {
+                state.sponsors.splice(index, 1);
+                renderSponsors();
+                updateJsonPreview();
+            });
+
+            sponsorsListBody.appendChild(row);
+        });
+    }
+
+    if (btnAddSponsor) {
+        btnAddSponsor.addEventListener('click', () => {
+            const val = inputNewSponsorLogo.value.trim();
+            if (!val) {
+                alert('Por favor, ingresa o sube una imagen de auspiciante.');
+                return;
+            }
+
+            if (!state.sponsors) {
+                state.sponsors = [];
+            }
+
+            state.sponsors.push(val);
+            renderSponsors();
+            updateJsonPreview();
+
+            // Clear input
+            inputNewSponsorLogo.value = '';
+        });
+    }
+
+    if (sponsorFileInput) {
+        sponsorFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64 = event.target.result;
+                if (inputNewSponsorLogo) {
+                    inputNewSponsorLogo.value = base64;
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     // 4. LIVE UPDATE STATE & PREVIEW
     const inputsToSync = [
         { el: inputRaceName, prop: 'raceName' },
         { el: inputRaceDescription, prop: 'raceDescription' },
         { el: inputLogoImage, prop: 'logoImage' },
+        { el: inputContactWhatsapp, prop: 'contactWhatsapp' },
         { el: inputDeslindeLink, prop: 'deslindeLink' },
         { el: inputPosterImage, prop: 'posterImage' },
         { el: inputTshirtImage, prop: 'tshirtImage' },

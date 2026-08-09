@@ -53,9 +53,11 @@ function doPost(e) {
         "CUIL", 
         "Fecha Nacimiento", 
         "Edad", 
+        "Género", 
         "Categoría", 
         "Teléfono", 
         "Talle Remera", 
+        "Team o Lugar de Origen",
         "Distancia", 
         "Costo Abonado ($)", 
         "Enlace Comprobante (Drive)"
@@ -81,9 +83,11 @@ function doPost(e) {
       formatCUIL(requestData.cuil),
       requestData.fecha_nacimiento,
       requestData.edad,
+      requestData.genero,
       requestData.categoria,
       requestData.telefono,
       requestData.talle_remera,
+      requestData.team_origen || '',
       requestData.distancia,
       Number(requestData.costo),
       fileUrl
