@@ -129,9 +129,6 @@ h1, h2, h3, h4 {
 }
 
 .logo-header-container {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
     max-width: 110px;
     max-height: 110px;
     transition: all 0.3s ease;
@@ -140,19 +137,13 @@ h1, h2, h3, h4 {
 
 @media (max-width: 1200px) {
     .logo-header-container {
-        right: 1.5rem;
-        top: 1.5rem;
         max-width: 95px;
     }
 }
 
 @media (max-width: 768px) {
     .logo-header-container {
-        position: relative;
-        top: 0;
-        right: 0;
-        margin: 0 auto 1.2rem auto;
-        text-align: center;
+        margin: 0 auto;
         max-width: 90px;
         max-height: 90px;
         display: block !important;
@@ -1199,16 +1190,20 @@ input[readonly] {
     white-space: nowrap;
 }
 
-/* Barra de navegación superior */
-.top-nav-bar {
+/* Barra de navegación superior y área de cabecera */
+.top-header-area {
     display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 1.2rem;
+    margin-bottom: 2.5rem;
     width: 100%;
+}
+.top-nav-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
 .nav-btn {
     background: rgba(255, 255, 255, 0.02);
@@ -1235,6 +1230,18 @@ input[readonly] {
     border-color: var(--accent-orange);
     color: var(--accent-orange);
     box-shadow: 0 4px 15px var(--accent-orange-glow);
+}
+@media (max-width: 768px) {
+    .top-header-area {
+        flex-direction: column;
+        gap: 1.2rem;
+        justify-content: center;
+        text-align: center;
+    }
+    .top-nav-bar {
+        justify-content: center;
+        width: 100%;
+    }
 }
 @media (max-width: 480px) {
     .top-nav-bar {
