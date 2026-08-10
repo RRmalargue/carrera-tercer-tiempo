@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputApellido = document.getElementById('apellido');
     const inputCuil = document.getElementById('cuil');
     const inputFechaNacimiento = document.getElementById('fecha_nacimiento');
+    const birthDayInput = document.getElementById('birth_day');
+    const birthMonthInput = document.getElementById('birth_month');
+    const birthYearInput = document.getElementById('birth_year');
     const inputGenero = document.getElementById('genero');
     const inputEdad = document.getElementById('edad');
     const inputCategoria = document.getElementById('categoria');
@@ -436,10 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const genderVal = inputGenero.value;
         const distanceVal = document.getElementById('selected-distance-id').value;
 
-        if (!birthDateVal) return;
-
-        // Si la fecha tiene formato con barra /, esperar a que esté completa (10 caracteres, ej: DD/MM/AAAA)
-        if (birthDateVal.indexOf('/') !== -1 && birthDateVal.length < 10) {
+        if (!birthDateVal || birthDateVal.indexOf('/') === -1 || birthDateVal.split('/').length !== 3 || !genderVal || !distanceVal) {
             inputEdad.value = '';
             inputCategoria.value = '';
             return;
@@ -457,30 +457,69 @@ document.addEventListener('DOMContentLoaded', () => {
         inputCategoria.value = categoryName;
     }
 
-    // Agregar máscara automática de escritura para fecha DD/MM/AAAA
-    if (inputFechaNacimiento) {
-        inputFechaNacimiento.addEventListener('input', (e) => {
-            let val = inputFechaNacimiento.value.replace(/\D/g, ''); // Solo números
-            if (val.length > 8) val = val.substring(0, 8);
-            
-            let formatted = '';
-            if (val.length > 0) {
-                formatted = val.substring(0, 2);
-                if (val.length > 2) {
-                    formatted += '/' + val.substring(2, 4);
-                    if (val.length > 4) {
-                        formatted += '/' + val.substring(4, 8);
-                    }
-                }
+    // Sincronizar los 3 campos de fecha individuales con el campo oculto y manejar foco automático
+    if (birthDayInput && birthMonthInput && birthYearInput && inputFechaNacimiento) {
+        const updateHiddenDate = () => {
+            const day = birthDayInput.value.trim();
+            const month = birthMonthInput.value.trim();
+            const year = birthYearInput.value.trim();
+
+            if (day.length === 2 && month.length === 2 && year.length === 4) {
+                inputFechaNacimiento.value = `${day}/${month}/${year}`;
+            } else {
+                inputFechaNacimiento.value = '';
             }
-            inputFechaNacimiento.value = formatted;
-            
-            // Forzar recálculo
+
+            // Disparar recálculo de edad y categoría
             recalculateCategory();
+            updateFieldHighlight(inputFechaNacimiento);
+        };
+
+        // Escuchar cambios de forma unificada para evitar conflictos de modificación de .value en el hilo de ejecución
+        birthDayInput.addEventListener('input', () => {
+            const clean = birthDayInput.value.replace(/\D/g, '');
+            if (birthDayInput.value !== clean) {
+                birthDayInput.value = clean;
+            }
+            if (clean.length === 2) {
+                birthMonthInput.focus();
+            }
+            updateHiddenDate();
+        });
+
+        birthMonthInput.addEventListener('input', () => {
+            const clean = birthMonthInput.value.replace(/\D/g, '');
+            if (birthMonthInput.value !== clean) {
+                birthMonthInput.value = clean;
+            }
+            if (clean.length === 2) {
+                birthYearInput.focus();
+            }
+            updateHiddenDate();
+        });
+
+        birthYearInput.addEventListener('input', () => {
+            const clean = birthYearInput.value.replace(/\D/g, '');
+            if (birthYearInput.value !== clean) {
+                birthYearInput.value = clean;
+            }
+            updateHiddenDate();
+        });
+
+        // Salto hacia atrás (Backspace)
+        birthMonthInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && birthMonthInput.value.length === 0) {
+                birthDayInput.focus();
+            }
+        });
+
+        birthYearInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && birthYearInput.value.length === 0) {
+                birthMonthInput.focus();
+            }
         });
     }
 
-    inputFechaNacimiento.addEventListener('change', recalculateCategory);
     inputGenero.addEventListener('change', recalculateCategory);
 
     function calculateAge(birthDateString) {
@@ -657,6 +696,23 @@ document.addEventListener('DOMContentLoaded', () => {
             let firstInvalidEl = null;
 
             function checkField(element, condition, errorMsg) {
+                if (element.id === 'fecha_nacimiento') {
+                    const inputs = [birthDayInput, birthMonthInput, birthYearInput];
+                    inputs.forEach(input => {
+                        if (input) {
+                            if (condition) {
+                                input.classList.add('invalid-field');
+                                input.classList.remove('completed-field');
+                            } else {
+                                input.classList.remove('invalid-field');
+                                input.classList.add('completed-field');
+                            }
+                        }
+                    });
+                    if (condition && !firstInvalidEl) firstInvalidEl = birthDayInput;
+                    return condition ? errorMsg : null;
+                }
+
                 if (condition) {
                     element.classList.add('invalid-field');
                     element.classList.remove('completed-field');
@@ -877,7 +933,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Formatear fecha de nacimiento a DD/MM/YYYY
         let formattedBirthdate = inputFechaNacimiento.value;
-        if (formattedBirthdate) {
+        if (formattedBirthdate === '__/__/____') {
+            formattedBirthdate = '';
+        } else if (formattedBirthdate) {
             const dateParts = formattedBirthdate.split('-');
             if (dateParts.length === 3) {
                 formattedBirthdate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
@@ -990,6 +1048,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!element) return;
         
         let isCompleted = false;
+        
+        if (element.id === 'fecha_nacimiento') {
+            isCompleted = element.value.trim() !== '';
+            const inputs = [birthDayInput, birthMonthInput, birthYearInput];
+            inputs.forEach(input => {
+                if (input) {
+                    if (isCompleted) {
+                        input.classList.add('completed-field');
+                        input.classList.remove('invalid-field');
+                    } else {
+                        input.classList.remove('completed-field');
+                    }
+                }
+            });
+            return;
+        }
         
         if (element.tagName === 'SELECT') {
             isCompleted = element.value !== '';
@@ -1250,8 +1324,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (navBtnInscripciones) {
         navBtnInscripciones.addEventListener('click', () => {
-            // Desplazarse al inicio del portal de inscripciones
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log('Botón Inscripciones clickeado. Desplazando a #dashboard-card...');
+            const targetElement = document.getElementById('dashboard-card');
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
             
             // Activar botón visualmente
             navBtnInscripciones.classList.add('active');
@@ -1275,7 +1354,30 @@ document.addEventListener('DOMContentLoaded', () => {
             inputNombre.value = localStorage.getItem('runner_pref_nombre') || '';
             inputApellido.value = localStorage.getItem('runner_pref_apellido') || '';
             inputCuil.value = localStorage.getItem('runner_pref_cuil') || '';
-            inputFechaNacimiento.value = localStorage.getItem('runner_pref_fecha_nacimiento') || '';
+            let savedDate = localStorage.getItem('runner_pref_fecha_nacimiento') || '';
+            if (savedDate && savedDate.indexOf('-') !== -1) {
+                const parts = savedDate.split('-');
+                if (parts.length === 3) {
+                    savedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+            }
+            
+            // Rellenar campos de fecha individuales y sincronizar
+            if (savedDate && savedDate.indexOf('/') !== -1) {
+                const dateParts = savedDate.split('/');
+                if (dateParts.length === 3) {
+                    if (birthDayInput) birthDayInput.value = dateParts[0];
+                    if (birthMonthInput) birthMonthInput.value = dateParts[1];
+                    if (birthYearInput) birthYearInput.value = dateParts[2];
+                    inputFechaNacimiento.value = savedDate;
+                }
+            } else {
+                inputFechaNacimiento.value = '';
+                if (birthDayInput) birthDayInput.value = '';
+                if (birthMonthInput) birthMonthInput.value = '';
+                if (birthYearInput) birthYearInput.value = '';
+            }
+            
             inputGenero.value = localStorage.getItem('runner_pref_genero') || '';
             inputTelefono.value = localStorage.getItem('runner_pref_telefono') || '';
             inputTalleRemera.value = localStorage.getItem('runner_pref_talle_remera') || '';
@@ -1286,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Si cargamos fecha de nacimiento, forzar el cálculo de la edad y la categoría
             if (inputFechaNacimiento.value) {
-                inputFechaNacimiento.dispatchEvent(new Event('change'));
+                recalculateCategory();
             }
 
             // Actualizar el resaltado visual de los campos precargados
