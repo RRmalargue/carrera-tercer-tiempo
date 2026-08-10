@@ -223,11 +223,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Datos de pago
-        // Datos de pago con resaltado de Alias y CBU
+        // Datos de pago con resaltado de Alias y CBU e interactividad para copiar
         let payText = config.paymentDetails || 'No se han configurado los detalles de pago.';
-        payText = payText.replace(/Alias:\s*([^\n\r]+)/gi, '<strong>Alias:</strong> <span class="highlight-pay">$1</span>');
-        payText = payText.replace(/CBU:\s*([^\n\r]+)/gi, '<strong>CBU:</strong> <span class="highlight-pay">$1</span>');
+        payText = payText.replace(/Alias:\s*([^\n\r]+)/gi, '<strong>Alias:</strong> <span class="highlight-pay clickable-copy" data-copy="$1" title="Toca para copiar">$1 <i class="fa-solid fa-copy" style="font-size: 0.8rem; margin-left: 0.25rem; opacity: 0.7;"></i></span>');
+        payText = payText.replace(/CBU:\s*([^\n\r]+)/gi, '<strong>CBU:</strong> <span class="highlight-pay clickable-copy" data-copy="$1" title="Toca para copiar">$1 <i class="fa-solid fa-copy" style="font-size: 0.8rem; margin-left: 0.25rem; opacity: 0.7;"></i></span>');
         paymentDetailsText.innerHTML = payText;
+
+        // Escuchar clics para copiar al portapapeles con retroalimentación visual
+        paymentDetailsText.addEventListener('click', (e) => {
+            const clickable = e.target.closest('.clickable-copy');
+            if (clickable) {
+                const textToCopy = clickable.getAttribute('data-copy').trim();
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalHTML = clickable.innerHTML;
+                    clickable.innerHTML = `¡Copiado! <i class="fa-solid fa-check" style="color: var(--success);"></i>`;
+                    clickable.style.borderColor = '#00e676';
+                    clickable.style.color = '#00e676';
+                    
+                    setTimeout(() => {
+                        clickable.innerHTML = originalHTML;
+                        clickable.style.borderColor = '';
+                        clickable.style.color = '';
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Error al copiar al portapapeles:', err);
+                });
+            }
+        });
 
         // Links de descargas y mapas
         deslindeDownload.href = config.deslindeLink || '#';

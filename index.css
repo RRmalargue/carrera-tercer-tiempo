@@ -643,6 +643,14 @@ input[readonly] {
     display: inline-block;
     margin-top: 0.1rem;
     margin-bottom: 0.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: all;
+}
+.highlight-pay:hover {
+    background: rgba(0, 242, 254, 0.22);
+    border-color: var(--accent-cyan);
+    transform: scale(1.02);
 }
 
 /* Collapsible Panel / Graphics View */
