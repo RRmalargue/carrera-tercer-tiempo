@@ -1086,6 +1086,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Eventos de barra de navegación superior (Inscripciones y Clasificaciones)
+    const navBtnInscripciones = document.getElementById('nav-btn-inscripciones');
+    const navBtnClasificaciones = document.getElementById('nav-btn-clasificaciones');
+
+    if (navBtnInscripciones) {
+        navBtnInscripciones.addEventListener('click', () => {
+            // Desplazarse al inicio del portal de inscripciones
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Activar botón visualmente
+            navBtnInscripciones.classList.add('active');
+            if (navBtnClasificaciones) navBtnClasificaciones.classList.remove('active');
+        });
+    }
+
+    if (navBtnClasificaciones) {
+        navBtnClasificaciones.addEventListener('click', () => {
+            if (config && config.clasificacionesLink && config.clasificacionesLink.trim() !== '') {
+                window.open(config.clasificacionesLink, '_blank');
+            } else {
+                alert('Las clasificaciones oficiales de la carrera estarán disponibles aquí una vez finalizado el evento. ¡Éxitos a todos los competidores!');
+            }
+        });
+    }
+
     // INIT
     loadConfig();
 });

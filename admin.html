@@ -67,6 +67,16 @@
                         </div>
                     </div>
                     <div class="input-group">
+                        <label for="clasificacionesLink">Enlace del PDF de Clasificaciones (Se sube después de la carrera)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="clasificacionesLink" placeholder="Ej: ./assets/clasificaciones.pdf" style="flex: 1;">
+                            <input type="file" id="clasificacionesLinkFile" accept=".pdf" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('clasificacionesLinkFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
                         <label for="posterImage">Ruta de la Imagen del Afiche (Fondo)</label>
                         <div style="display: flex; gap: 0.5rem;">
                             <input type="text" id="posterImage" placeholder="Ej: ./assets/trail_background.jpg" style="flex: 1;">
@@ -272,8 +282,8 @@
                         <input type="number" id="new-dist-price" placeholder="Ej: 8500">
                     </div>
                     <div class="input-group" style="grid-column: span 3;">
-                        <label for="new-dist-detail">Detalles (Desnivel, Puestos, etc.)</label>
-                        <input type="text" id="new-dist-detail" placeholder="Ej: +550m Desnivel | 3 Puestos de hidratación">
+                        <label for="new-dist-detail">Descripción del Circuito e Información de Distancia</label>
+                        <textarea id="new-dist-detail" rows="3" placeholder="Ej: Recorrido competitivo por senderos técnicos de montaña. Cuenta con 3 puestos de hidratación (Km 4, Km 8 y Km 12). Desnivel positivo acumulado de +650m. Obligatorio llevar silbato y manta térmica."></textarea>
                     </div>
                     <div class="input-group" style="grid-column: span 2;">
                         <label for="new-dist-gpx">Ruta GPX específica de esta distancia (opcional)</label>
@@ -325,7 +335,7 @@
                             <th>Nombre de la Categoría</th>
                             <th>Edad Mínima</th>
                             <th>Edad Máxima</th>
-                            <th style="width: 80px; text-align: center;">Acciones</th>
+                            <th style="width: 100px; text-align: center;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="categories-list">
@@ -351,8 +361,11 @@
                         <label for="new-cat-max">Edad Máxima</label>
                         <input type="number" id="new-cat-max" placeholder="Ej: 39">
                     </div>
-                    <div class="input-group" style="justify-content: flex-end;">
-                        <button type="button" class="btn-submit" id="btn-add-category" style="padding: 0.8rem; width: 100%;">
+                    <div class="input-group" style="justify-content: flex-end; display: flex; gap: 0.5rem; align-items: flex-end;">
+                        <button type="button" class="btn-secondary hidden" id="btn-cancel-cat-edit" style="padding: 0.8rem; width: 100%; height: 46px;">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn-submit" id="btn-add-category" style="padding: 0.8rem; width: 100%; height: 46px;">
                             <i class="fa-solid fa-plus"></i> Agregar
                         </button>
                     </div>

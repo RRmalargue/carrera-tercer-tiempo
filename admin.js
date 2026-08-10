@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         kmlLink: '',
         startLocationMapLink: '',
         deslindeLink: '',
+        clasificacionesLink: '',
         paymentDetails: '',
         distances: [],
         categories: [],
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputLogoImageFile = document.getElementById('logoImageFile');
     const inputContactWhatsapp = document.getElementById('contactWhatsapp');
     const inputDeslindeLink = document.getElementById('deslindeLink');
+    const inputClasificacionesLink = document.getElementById('clasificacionesLink');
     const inputPosterImage = document.getElementById('posterImage');
     const inputTshirtImage = document.getElementById('tshirtImage');
     const inputAltitudeMapImage = document.getElementById('altitudeMapImage');
@@ -78,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputNewCatMax = document.getElementById('new-cat-max');
     const btnAddCategory = document.getElementById('btn-add-category');
     const btnLoadDefaultCategories = document.getElementById('btn-load-default-categories');
+    const btnCancelCatEdit = document.getElementById('btn-cancel-cat-edit');
+    let editingCategoryIndex = null;
 
     // DOM Elements - Output
     const btnSaveDisk = document.getElementById('btn-save-disk');
@@ -130,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputLogoImage.value = state.logoImage || '';
         inputContactWhatsapp.value = state.contactWhatsapp || '';
         inputDeslindeLink.value = state.deslindeLink || '';
+        inputClasificacionesLink.value = state.clasificacionesLink || '';
         inputPosterImage.value = state.posterImage || '';
         inputTshirtImage.value = state.tshirtImage || '';
         inputAltitudeMapImage.value = state.altitudeMapImage || '';
@@ -216,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${dist.name}</td>
                 <td>$${dist.price.toLocaleString('es-AR')}</td>
                 <td>
-                    <small>${dist.detail || '-'}</small>
+                    <small style="display: block; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${dist.detail || ''}">${dist.detail || '-'}</small>
                     ${dist.gpxLink ? `<br><span class="badge" style="background: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-route"></i> GPX: ${dist.gpxLink}</span>` : ''}
                     ${dist.altitudeMapImage ? `<br><span class="badge" style="background: rgba(255, 107, 53, 0.1); color: var(--accent-orange); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-chart-area"></i> Altimetría: ${dist.altitudeMapImage}</span>` : ''}
                 </td>
@@ -342,15 +347,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${cat.name}</td>
                 <td>${cat.minAge} años</td>
                 <td>${cat.maxAge === 120 ? 'Más de 60' : cat.maxAge + ' años'}</td>
-                <td style="text-align: center;">
-                    <button type="button" class="table-action-btn" data-index="${index}">
+                <td style="text-align: center; display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+                    <button type="button" class="table-action-btn edit-cat-btn" data-index="${index}" style="background: rgba(0, 242, 254, 0.1); color: #00f2fe; border: 1px solid rgba(0, 242, 254, 0.2); padding: 0.35rem 0.55rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button type="button" class="table-action-btn delete-cat-btn" data-index="${index}">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </td>
             `;
 
-            row.querySelector('.table-action-btn').addEventListener('click', () => {
+            row.querySelector('.edit-cat-btn').addEventListener('click', () => {
+                editingCategoryIndex = index;
+                inputNewCatId.value = cat.id;
+                inputNewCatName.value = cat.name;
+                inputNewCatMin.value = cat.minAge;
+                inputNewCatMax.value = cat.maxAge;
+                
+                btnAddCategory.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar';
+                if (btnCancelCatEdit) {
+                    btnCancelCatEdit.classList.remove('hidden');
+                }
+                inputNewCatName.focus();
+            });
+
+            row.querySelector('.delete-cat-btn').addEventListener('click', () => {
                 state.categories.splice(index, 1);
+                if (editingCategoryIndex === index) {
+                    resetCategoryEdit();
+                } else if (editingCategoryIndex > index) {
+                    editingCategoryIndex--;
+                }
                 renderCategories();
                 updateJsonPreview();
             });
@@ -359,7 +386,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function resetCategoryEdit() {
+        editingCategoryIndex = null;
+        inputNewCatId.value = '';
+        inputNewCatName.value = '';
+        inputNewCatMin.value = '';
+        inputNewCatMax.value = '';
+        btnAddCategory.innerHTML = '<i class="fa-solid fa-plus"></i> Agregar';
+        if (btnCancelCatEdit) {
+            btnCancelCatEdit.classList.add('hidden');
+        }
+    }
+
+    if (btnCancelCatEdit) {
+        btnCancelCatEdit.addEventListener('click', resetCategoryEdit);
+    }
+
     function loadDefaultCategories() {
+        resetCategoryEdit();
         state.categories = [
             { id: "juveniles", name: "Juveniles (18 a 29 años)", minAge: 18, maxAge: 29 },
             { id: "master_a", name: "Master A (30 a 39 años)", minAge: 30, maxAge: 39 },
@@ -389,20 +433,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (state.categories.some(c => c.id === id)) {
-            alert('Ya existe una categoría con ese identificador interno.');
-            return;
+        if (editingCategoryIndex !== null) {
+            // Modo edición
+            if (state.categories.some((c, idx) => c.id === id && idx !== editingCategoryIndex)) {
+                alert('Ya existe otra categoría con ese identificador interno.');
+                return;
+            }
+            state.categories[editingCategoryIndex] = { id, name, minAge: min, maxAge: max };
+            resetCategoryEdit();
+        } else {
+            // Modo agregar nuevo
+            if (state.categories.some(c => c.id === id)) {
+                alert('Ya existe una categoría con ese identificador interno.');
+                return;
+            }
+            state.categories.push({ id, name, minAge: min, maxAge: max });
+            
+            // Clear Inputs
+            inputNewCatId.value = '';
+            inputNewCatName.value = '';
+            inputNewCatMin.value = '';
+            inputNewCatMax.value = '';
         }
 
-        state.categories.push({ id, name, minAge: min, maxAge: max });
         renderCategories();
         updateJsonPreview();
-
-        // Clear Inputs
-        inputNewCatId.value = '';
-        inputNewCatName.value = '';
-        inputNewCatMin.value = '';
-        inputNewCatMax.value = '';
     });
 
     // 3.5. ADMINISTRACIÓN DE AUSPICIANTES
@@ -481,6 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { el: inputLogoImage, prop: 'logoImage' },
         { el: inputContactWhatsapp, prop: 'contactWhatsapp' },
         { el: inputDeslindeLink, prop: 'deslindeLink' },
+        { el: inputClasificacionesLink, prop: 'clasificacionesLink' },
         { el: inputPosterImage, prop: 'posterImage' },
         { el: inputTshirtImage, prop: 'tshirtImage' },
         { el: inputAltitudeMapImage, prop: 'altitudeMapImage' },
@@ -637,6 +693,7 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
 
     // Inicializar subidores
     setupFileUploader('deslindeLinkFile', 'deslindeLink');
+    setupFileUploader('clasificacionesLinkFile', 'clasificacionesLink');
     setupFileUploader('posterImageFile', 'posterImage');
     setupFileUploader('logoImageFile', 'logoImage');
     setupFileUploader('tshirtImageFile', 'tshirtImage');
