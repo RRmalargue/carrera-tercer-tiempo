@@ -1168,27 +1168,27 @@ input[readonly] {
 
 /* Tarjetas y Grid de Auspiciantes */
 .sponsor-logo-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-sm);
-    padding: 0.8rem 1.8rem;
+    padding: 0.6rem 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 140px;
-    height: 65px;
-    transition: all 0.3s ease;
-    opacity: 0.6;
-    filter: grayscale(100%);
+    min-width: 120px;
+    height: 60px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.82;
+    filter: grayscale(15%);
     user-select: none;
 }
 .sponsor-logo-card:hover {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: var(--accent-cyan-glow);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-cyan);
     opacity: 1;
-    filter: grayscale(0%);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 242, 254, 0.15);
+    filter: grayscale(0%) drop-shadow(0 4px 15px rgba(0, 242, 254, 0.25));
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 6px 15px rgba(0, 242, 254, 0.2);
 }
 .sponsor-img {
     max-width: 100%;

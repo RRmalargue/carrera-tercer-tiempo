@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewFilesize = document.getElementById('preview-filesize');
     const previewIcon = document.getElementById('preview-icon');
     const btnRemoveFile = document.getElementById('btn-remove-file');
-    const acceptTerms = document.getElementById('accept-terms');
 
     // Summary Elements
     const summaryCorredor = document.getElementById('summary-corredor');
@@ -784,16 +783,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // Accept Terms & Validate Submit
-    acceptTerms.addEventListener('change', () => {
-        validateSubmitButton();
-        if (acceptTerms.checked) {
-            document.getElementById('terms-container').classList.remove('error-glow');
-        }
-    });
-
     function validateSubmitButton() {
-        if (uploadedFileBase64 && acceptTerms.checked) {
+        if (uploadedFileBase64) {
             btnSubmit.disabled = false;
         } else {
             btnSubmit.disabled = true;
@@ -807,17 +798,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!uploadedFileBase64) {
             return showError('El comprobante de pago es un archivo obligatorio.');
-        }
-
-        const termsContainer = document.getElementById('terms-container');
-        if (!acceptTerms.checked) {
-            termsContainer.classList.add('error-glow');
-            setTimeout(() => {
-                termsContainer.classList.remove('error-glow');
-            }, 500);
-            return showError('Debes aceptar los términos y el deslinde de responsabilidad.');
-        } else {
-            termsContainer.classList.remove('error-glow');
         }
 
         // Show loading screen
@@ -844,6 +824,23 @@ document.addEventListener('DOMContentLoaded', () => {
             comprobante_tipo: uploadedFileType,
             timestamp: new Date().toISOString()
         };
+
+        // Guardar datos en localStorage para recordar en este dispositivo
+        try {
+            localStorage.setItem('runner_pref_nombre', inputNombre.value.trim());
+            localStorage.setItem('runner_pref_apellido', inputApellido.value.trim());
+            localStorage.setItem('runner_pref_cuil', inputCuil.value.trim());
+            localStorage.setItem('runner_pref_fecha_nacimiento', inputFechaNacimiento.value);
+            localStorage.setItem('runner_pref_genero', inputGenero.value);
+            localStorage.setItem('runner_pref_telefono', inputTelefono.value.trim());
+            localStorage.setItem('runner_pref_talle_remera', inputTalleRemera.value);
+            const teamInput = document.getElementById('team_origen');
+            if (teamInput) {
+                localStorage.setItem('runner_pref_team_origen', teamInput.value.trim());
+            }
+        } catch (storageErr) {
+            console.warn('No se pudo guardar en localStorage:', storageErr);
+        }
 
         // CHECK IF IN MOCK/DEMO MODE
         if (GOOGLE_SCRIPT_URL === 'TU_SCRIPT_URL_AQUI' || GOOGLE_SCRIPT_URL.trim() === '') {
@@ -948,6 +945,81 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ejecutar inicialmente por si hay autocompletado
         updateFieldHighlight(field);
     });
+
+    // Autodetectar género a partir del primer nombre en español/argentino
+    if (inputNombre && inputGenero) {
+        inputNombre.addEventListener('input', () => {
+            const val = inputNombre.value.trim();
+            if (val.length >= 3) {
+                const guessed = guessGender(val);
+                if (guessed) {
+                    inputGenero.value = guessed;
+                    updateFieldHighlight(inputGenero);
+                }
+            }
+        });
+    }
+
+    function guessGender(fullName) {
+        if (!fullName) return null;
+        
+        let firstName = fullName.trim().split(/\s+/)[0];
+        if (!firstName) return null;
+        
+        firstName = firstName.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, ""); // Quitar acentos
+            
+        const femaleNames = new Set([
+            "maria", "ana", "belen", "lujan", "carmen", "pilar", "sol", "luz", "flor", 
+            "ruth", "ester", "abril", "ines", "lucia", "sofia", "rocio", "dolores", 
+            "mercedes", "soledad", "beatriz", "raquel", "isabel", "noemi", "miriam", 
+            "abigail", "elizabeth", "yamila", "camila", "valeria", "micaela", "romina",
+            "florencia", "carolina", "antonela", "antonella", "giuliana", "daiana", 
+            "milagros", "lourdes", "estela", "cecilia", "silvia", "monica", "patricia",
+            "sandra", "marta", "martha", "claudia", "gabriela", "daniela", "andrea",
+            "susana", "liliana", "graciela", "teresa", "alicia"
+        ]);
+        
+        const maleNames = new Set([
+            "luca", "lucas", "bautista", "sasha", "gianluca", "tomas", "matias", 
+            "nicolas", "josue", "rene", "jose", "angel", "ariel"
+        ]);
+
+        if (maleNames.has(firstName)) {
+            return 'Masculino';
+        }
+        
+        if (femaleNames.has(firstName)) {
+            return 'Femenino';
+        }
+        
+        if (firstName.endsWith('a')) {
+            return 'Femenino';
+        }
+        
+        if (firstName.endsWith('o') || firstName.endsWith('os')) {
+            return 'Masculino';
+        }
+        
+        if (
+            firstName.endsWith('el') || 
+            firstName.endsWith('or') || 
+            firstName.endsWith('an') || 
+            firstName.endsWith('on') || 
+            firstName.endsWith('en') || 
+            firstName.endsWith('as') || 
+            firstName.endsWith('is') || 
+            firstName.endsWith('us') || 
+            firstName.endsWith('ur') || 
+            firstName.endsWith('id') || 
+            (firstName.endsWith('es') && !['mercedes', 'dolores', 'ines'].includes(firstName))
+        ) {
+            return 'Masculino';
+        }
+        
+        return null;
+    }
 
     // Escuchar selección de distancia
     document.addEventListener('click', (e) => {
@@ -1113,6 +1185,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Las clasificaciones oficiales de la carrera estarán disponibles aquí una vez finalizado el evento. ¡Éxitos a todos los competidores!');
             }
         });
+    }
+
+    // Cargar datos guardados previamente del usuario en este dispositivo (localStorage)
+    try {
+        if (localStorage.getItem('runner_pref_nombre')) {
+            inputNombre.value = localStorage.getItem('runner_pref_nombre') || '';
+            inputApellido.value = localStorage.getItem('runner_pref_apellido') || '';
+            inputCuil.value = localStorage.getItem('runner_pref_cuil') || '';
+            inputFechaNacimiento.value = localStorage.getItem('runner_pref_fecha_nacimiento') || '';
+            inputGenero.value = localStorage.getItem('runner_pref_genero') || '';
+            inputTelefono.value = localStorage.getItem('runner_pref_telefono') || '';
+            inputTalleRemera.value = localStorage.getItem('runner_pref_talle_remera') || '';
+            const teamInput = document.getElementById('team_origen');
+            if (teamInput) {
+                teamInput.value = localStorage.getItem('runner_pref_team_origen') || '';
+            }
+            
+            // Si cargamos fecha de nacimiento, forzar el cálculo de la edad y la categoría
+            if (inputFechaNacimiento.value) {
+                inputFechaNacimiento.dispatchEvent(new Event('change'));
+            }
+
+            // Actualizar el resaltado visual de los campos precargados
+            fieldsToTrack.forEach(field => {
+                if (field) updateFieldHighlight(field);
+            });
+            const teamInputAfter = document.getElementById('team_origen');
+            if (teamInputAfter) updateFieldHighlight(teamInputAfter);
+        }
+    } catch (e) {
+        console.warn('No se pudo precargar la información de localStorage:', e);
     }
 
     // INIT

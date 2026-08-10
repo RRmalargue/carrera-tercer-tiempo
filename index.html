@@ -128,7 +128,7 @@
                 </div>
 
                 <!-- Form Body -->
-                <form id="registration-form" class="wizard-form" autocomplete="off" novalidate>
+                <form id="registration-form" class="wizard-form" autocomplete="on" novalidate>
                     
                     <!-- STEP 1: Personal Data & Distance Selection -->
                     <div class="form-step-content" id="step-1">
@@ -155,23 +155,23 @@
                             <!-- Datos Personales -->
                             <div class="input-group">
                                 <label for="nombre">Nombre <span class="requirement">*</span></label>
-                                <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+                                <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo" autocomplete="given-name">
                             </div>
                             <div class="input-group">
                                 <label for="apellido">Apellido <span class="requirement">*</span></label>
-                                <input type="text" id="apellido" name="apellido" required placeholder="Tu apellido">
+                                <input type="text" id="apellido" name="apellido" required placeholder="Tu apellido" autocomplete="family-name">
                             </div>
                             <div class="input-group">
                                 <label for="cuil">CUIL <span class="requirement" id="cuil-req-indicator">* (11 dígitos exactos)</span></label>
-                                <input type="text" id="cuil" name="cuil" required maxlength="11" placeholder="Ej: 20443332221" title="Solo números, sin guiones. Exactamente 11 dígitos.">
+                                <input type="text" id="cuil" name="cuil" required maxlength="11" placeholder="Ej: 20443332221" title="Solo números, sin guiones. Exactamente 11 dígitos." autocomplete="off">
                             </div>
                             <div class="input-group">
                                 <label for="fecha_nacimiento">Fecha de Nacimiento <span class="requirement">*</span></label>
-                                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required autocomplete="bday">
                             </div>
                             <div class="input-group">
                                 <label for="genero">Género <span class="requirement">*</span></label>
-                                <select id="genero" name="genero" required>
+                                <select id="genero" name="genero" required autocomplete="sex">
                                     <option value="" disabled selected>Selecciona tu género...</option>
                                     <option value="Femenino">Femenino (Damas)</option>
                                     <option value="Masculino">Masculino (Caballeros)</option>
@@ -183,7 +183,7 @@
                             </div>
                             <div class="input-group">
                                 <label for="telefono">Teléfono de Contacto <span class="requirement">*</span></label>
-                                <input type="tel" id="telefono" name="telefono" required placeholder="Ej: +54 9 261 555-5555">
+                                <input type="tel" id="telefono" name="telefono" required placeholder="Ej: +54 9 261 555-5555" autocomplete="tel">
                             </div>
                             <div class="input-group">
                                 <label for="talle_remera">Talle de Remera <span class="requirement">*</span></label>
@@ -206,7 +206,7 @@
                             </div>
                             <div class="input-group">
                                 <label for="team_origen">Team o Lugar de Origen <span style="font-weight: normal; color: var(--text-muted);">(Opcional)</span></label>
-                                <input type="text" id="team_origen" name="team_origen" placeholder="Ej: Club Aconcagua o San Rafael">
+                                <input type="text" id="team_origen" name="team_origen" placeholder="Ej: Club Aconcagua o San Rafael" autocomplete="organization">
                             </div>
 
                             <!-- Categoría Asignada en Paso 1 (Destacada) -->
@@ -296,12 +296,11 @@
                                     </div>
                                 </div>
 
-                                <div class="terms-highlight-box mt-2" id="terms-container">
-                                    <input type="checkbox" id="accept-terms" required>
-                                    <label for="accept-terms">
-                                        <i class="fa-solid fa-file-signature" style="color: var(--accent-orange); margin-right: 0.3rem;"></i>
-                                        <strong>Acepto los términos de deslinde de responsabilidad</strong> y declaro bajo juramento que los datos ingresados son correctos. <span class="requirement">*</span>
-                                    </label>
+                                <div class="terms-highlight-box mt-2" id="terms-container" style="text-align: center; border: 1px dashed var(--accent-orange); background: rgba(255, 107, 53, 0.08); padding: 1rem; border-radius: var(--radius-md);">
+                                    <p style="font-size: 1.05rem; font-weight: 800; color: #ff8c5a; margin: 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.03em;">
+                                        <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 1.2rem; filter: drop-shadow(0 0 5px rgba(0,230,118,0.4));"></i>
+                                        ¡Ya casi terminas! Sube tu comprobante y estarás INSCRIPTO
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -354,7 +353,7 @@
             <!-- 5. AUSPICIANTES (Sponsors Banner) -->
             <div class="info-card" id="sponsors-card" style="margin-top: 2rem; margin-bottom: 1.5rem; background: rgba(30, 30, 30, 0.65); border: 1px solid var(--border-color); text-align: center; backdrop-filter: blur(10px);">
                 <h3 style="font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 1.5rem;"><i class="fa-solid fa-handshake"></i> Auspiciantes Oficiales</h3>
-                <div class="sponsors-grid" id="sponsors-container" style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                <div class="sponsors-grid" id="sponsors-container" style="display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
                     <!-- Loaded dynamically from config or placeholders -->
                 </div>
             </div>
