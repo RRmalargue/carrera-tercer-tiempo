@@ -75,15 +75,32 @@ function doPost(e) {
       sheet.autoResizeColumns(1, headers.length);
     }
     
+    // Formatear fecha de nacimiento si viene como YYYY-MM-DD
+    var birthDate = requestData.fecha_nacimiento || '';
+    if (birthDate.indexOf('-') !== -1) {
+      var dateParts = birthDate.split('-');
+      if (dateParts.length === 3) {
+        birthDate = dateParts[2] + '/' + dateParts[1] + '/' + dateParts[0];
+      }
+    }
+    
+    // Formatear género
+    var genderVal = requestData.genero || '';
+    if (genderVal === 'Femenino') {
+      genderVal = 'Damas';
+    } else if (genderVal === 'Masculino') {
+      genderVal = 'Caballeros';
+    }
+    
     // Fila con los datos del corredor
     var rowData = [
       formatDate(requestData.timestamp),
       requestData.nombre,
       requestData.apellido,
       formatCUIL(requestData.cuil),
-      requestData.fecha_nacimiento,
+      birthDate,
       requestData.edad,
-      requestData.genero,
+      genderVal,
       requestData.categoria,
       requestData.telefono,
       requestData.talle_remera,

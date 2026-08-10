@@ -827,16 +827,28 @@ document.addEventListener('DOMContentLoaded', () => {
         form.classList.add('hidden');
         loadingScreen.classList.remove('hidden');
 
+        // Formatear fecha de nacimiento a DD/MM/YYYY
+        let formattedBirthdate = inputFechaNacimiento.value;
+        if (formattedBirthdate) {
+            const dateParts = formattedBirthdate.split('-');
+            if (dateParts.length === 3) {
+                formattedBirthdate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+            }
+        }
+
+        // Formatear género a Damas/Caballeros
+        const formattedGender = inputGenero.value === 'Femenino' ? 'Damas' : (inputGenero.value === 'Masculino' ? 'Caballeros' : inputGenero.value);
+
         // Compile payload
         const formData = {
             nombre: inputNombre.value.trim(),
             apellido: inputApellido.value.trim(),
             cuil: inputCuil.value.trim(),
-            fecha_nacimiento: inputFechaNacimiento.value,
+            fecha_nacimiento: formattedBirthdate,
             edad: inputEdad.value.replace(' años', ''),
             categoria: inputCategoria.value,
             telefono: inputTelefono.value.trim(),
-            genero: inputGenero.value,
+            genero: formattedGender,
             talle_remera: inputTalleRemera.value,
             team_origen: document.getElementById('team_origen').value.trim(),
             distancia: document.getElementById('selected-distance-id').value,
