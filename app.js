@@ -224,7 +224,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Datos de pago
-        paymentDetailsText.textContent = config.paymentDetails || 'No se han configurado los detalles de pago.';
+        // Datos de pago con resaltado de Alias y CBU
+        let payText = config.paymentDetails || 'No se han configurado los detalles de pago.';
+        payText = payText.replace(/Alias:\s*([^\n\r]+)/gi, '<strong>Alias:</strong> <span class="highlight-pay">$1</span>');
+        payText = payText.replace(/CBU:\s*([^\n\r]+)/gi, '<strong>CBU:</strong> <span class="highlight-pay">$1</span>');
+        paymentDetailsText.innerHTML = payText;
 
         // Links de descargas y mapas
         deslindeDownload.href = config.deslindeLink || '#';
