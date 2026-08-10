@@ -432,25 +432,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. CÁLCULO DE EDAD Y CATEGORÍA
     function recalculateCategory() {
-        const birthDateVal = inputFechaNacimiento.value;
+        const birthDateVal = inputFechaNacimiento.value.trim();
         const genderVal = inputGenero.value;
         const distanceVal = document.getElementById('selected-distance-id').value;
 
         if (!birthDateVal) return;
 
+        // Si la fecha tiene formato con barra /, esperar a que esté completa (10 caracteres, ej: DD/MM/AAAA)
+        if (birthDateVal.indexOf('/') !== -1 && birthDateVal.length < 10) {
+            inputEdad.value = '';
+            inputCategoria.value = '';
+            return;
+        }
+
         const age = calculateAge(birthDateVal);
+        if (age <= 0 || isNaN(age)) {
+            inputEdad.value = '';
+            inputCategoria.value = '';
+            return;
+        }
         inputEdad.value = `${age} años`;
 
         const categoryName = determineCategory(age, genderVal, distanceVal);
         inputCategoria.value = categoryName;
     }
 
+    // Agregar máscara automática de escritura para fecha DD/MM/AAAA
+    if (inputFechaNacimiento) {
+        inputFechaNacimiento.addEventListener('input', (e) => {
+            let val = inputFechaNacimiento.value.replace(/\D/g, ''); // Solo números
+            if (val.length > 8) val = val.substring(0, 8);
+            
+            let formatted = '';
+            if (val.length > 0) {
+                formatted = val.substring(0, 2);
+                if (val.length > 2) {
+                    formatted += '/' + val.substring(2, 4);
+                    if (val.length > 4) {
+                        formatted += '/' + val.substring(4, 8);
+                    }
+                }
+            }
+            inputFechaNacimiento.value = formatted;
+            
+            // Forzar recálculo
+            recalculateCategory();
+        });
+    }
+
     inputFechaNacimiento.addEventListener('change', recalculateCategory);
     inputGenero.addEventListener('change', recalculateCategory);
 
     function calculateAge(birthDateString) {
+        if (!birthDateString) return 0;
+        let formatted = birthDateString;
+        
+        // Convertir DD/MM/YYYY a YYYY-MM-DD para la API de Date
+        if (formatted.indexOf('/') !== -1) {
+            const parts = formatted.split('/');
+            if (parts.length === 3) {
+                formatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+        }
+        
         const today = new Date();
-        const birthDate = new Date(birthDateString);
+        const birthDate = new Date(formatted);
+        if (isNaN(birthDate.getTime())) return 0;
+        
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
         
