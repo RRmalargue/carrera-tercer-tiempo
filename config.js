@@ -123,11 +123,11 @@ window.RACE_CONFIG = {
     "./IMAGENES/sponsor_auto_0_1786408456064.png"
   ],
   "themeColors": {
-    "primary": "#00e676",
-    "primaryGlow": "rgba(0, 230, 118, 0.35)",
-    "primaryDim": "rgba(0, 230, 118, 0.1)",
-    "secondary": "#00b0ff",
-    "secondaryGlow": "rgba(0, 176, 255, 0.35)"
+    "primary": "#ff6b35",
+    "primaryGlow": "rgba(255, 107, 53, 0.35)",
+    "primaryDim": "rgba(255, 107, 53, 0.1)",
+    "secondary": "#00f2fe",
+    "secondaryGlow": "rgba(0, 242, 254, 0.35)"
   },
-  "themeBackground": "solid"
+  "themeBackground": "sunset"
 };
