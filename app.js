@@ -319,18 +319,65 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Auspiciante 4'
                 ];
 
-            sponsorsList.forEach(sponsor => {
-                const card = document.createElement('div');
-                card.className = 'sponsor-logo-card';
+            // Detectar si hay un único sponsor y es una imagen
+            const isSingleImage = sponsorsList.length === 1 && 
+                (sponsorsList[0].startsWith('data:') || 
+                 sponsorsList[0].startsWith('./') || 
+                 sponsorsList[0].startsWith('http') || 
+                 sponsorsList[0].startsWith('assets/') ||
+                 sponsorsList[0].toLowerCase().endsWith('.png') ||
+                 sponsorsList[0].toLowerCase().endsWith('.jpg') ||
+                 sponsorsList[0].toLowerCase().endsWith('.jpeg'));
+
+            if (isSingleImage) {
+                // Formato de afiche único (A4 o vertical)
+                sponsorsContainer.style.display = 'block';
+                sponsorsContainer.style.textAlign = 'center';
+                sponsorsContainer.innerHTML = `
+                    <div style="margin: 0 auto; max-width: 480px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); box-shadow: 0 8px 24px rgba(0,0,0,0.35); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255, 255, 255, 0.02);" class="single-sponsor-poster-container">
+                        <img src="${sponsorsList[0]}" alt="Auspiciantes Oficiales" style="width: 100%; height: auto; max-height: 650px; object-fit: contain; display: block; filter: grayscale(12%); transition: all 0.3s ease;" class="single-sponsor-img">
+                    </div>
+                `;
                 
-                if (sponsor.startsWith('data:') || sponsor.startsWith('./') || sponsor.startsWith('http') || sponsor.startsWith('assets/')) {
-                    card.innerHTML = `<img src="${sponsor}" alt="Sponsor" class="sponsor-img">`;
-                } else {
-                    card.innerHTML = `<span class="sponsor-placeholder-text"><i class="fa-solid fa-medal" style="color: var(--accent-cyan); margin-right: 0.3rem;"></i> ${sponsor}</span>`;
+                // Añadir interactividad de hover premium
+                const singleCont = sponsorsContainer.querySelector('.single-sponsor-poster-container');
+                const singleImg = sponsorsContainer.querySelector('.single-sponsor-img');
+                if (singleCont && singleImg) {
+                    singleCont.addEventListener('mouseenter', () => {
+                        singleCont.style.transform = 'translateY(-4px) scale(1.015)';
+                        singleCont.style.borderColor = 'var(--accent-cyan)';
+                        singleCont.style.boxShadow = '0 12px 30px rgba(0, 242, 254, 0.25)';
+                        singleImg.style.filter = 'grayscale(0%)';
+                    });
+                    singleCont.style.cursor = 'pointer';
+                    singleCont.addEventListener('mouseleave', () => {
+                        singleCont.style.transform = 'none';
+                        singleCont.style.borderColor = '';
+                        singleCont.style.boxShadow = '';
+                        singleImg.style.filter = 'grayscale(12%)';
+                    });
                 }
-                
-                sponsorsContainer.appendChild(card);
-            });
+            } else {
+                // Formato de grilla normal (múltiples logos)
+                sponsorsContainer.style.display = 'flex';
+                sponsorsContainer.style.justifyContent = 'center';
+                sponsorsContainer.style.alignItems = 'center';
+                sponsorsContainer.style.gap = '1rem';
+                sponsorsContainer.style.flexWrap = 'wrap';
+
+                sponsorsList.forEach(sponsor => {
+                    const card = document.createElement('div');
+                    card.className = 'sponsor-logo-card';
+                    
+                    if (sponsor.startsWith('data:') || sponsor.startsWith('./') || sponsor.startsWith('http') || sponsor.startsWith('assets/')) {
+                        card.innerHTML = `<img src="${sponsor}" alt="Sponsor" class="sponsor-img">`;
+                    } else {
+                        card.innerHTML = `<span class="sponsor-placeholder-text"><i class="fa-solid fa-medal" style="color: var(--accent-cyan); margin-right: 0.3rem;"></i> ${sponsor}</span>`;
+                    }
+                    
+                    sponsorsContainer.appendChild(card);
+                });
+            }
         }
 
         // Cargar mapa interactivo GPX
