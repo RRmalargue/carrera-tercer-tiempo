@@ -129,5 +129,5 @@ window.RACE_CONFIG = {
     "secondary": "#00b0ff",
     "secondaryGlow": "rgba(0, 176, 255, 0.35)"
   },
-  "themeBackground": "sunset"
+  "themeBackground": "solid"
 };
