@@ -12,7 +12,7 @@ window.RACE_CONFIG = {
   "startLocationMapLink": "https://maps.google.com/?q=-35.438479,-69.599445",
   "deslindeLink": "./IMAGENES/DESLINDE DE RESPONSABILIDAD Y ASUNCIÓN DE RIESGOS.pdf",
   "clasificacionesLink": "",
-  "paymentDetails": "ASOCIACION CLUB TECER TIEMPO MALARGUE\n\nAlias: ACCTM2026\n\n.",
+  "paymentDetails": "ASOCIACION CLUB TECER TIEMPO MALARGUE\n\nAlias: ACTTM2026\n\n.",
   "distances": [
     {
       "id": "15 KMS",
