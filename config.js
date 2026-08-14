@@ -123,6 +123,18 @@ window.RACE_CONFIG = {
       "name": "INFANTILES 14 Y 15 AÑOS",
       "minAge": 14,
       "maxAge": 15
+    },
+    {
+      "id": "damas_5_kms_libres",
+      "name": "DISCA 5 KMS LIBRE",
+      "minAge": 0,
+      "maxAge": 70
+    },
+    {
+      "id": "caballeros_5_kms_libres",
+      "name": "DISCA 5 KMS LIBRE",
+      "minAge": 0,
+      "maxAge": 70
     }
   ],
   "sponsors": [
