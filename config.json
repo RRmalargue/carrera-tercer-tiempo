@@ -116,17 +116,29 @@
       "name": "5 KMS LIBRE",
       "minAge": 0,
       "maxAge": 120
+    },
+    {
+      "id": "disca1",
+      "name": "DISCA 5 KMS LIBRE",
+      "minAge": 1,
+      "maxAge": 80
+    },
+    {
+      "id": "menores1",
+      "name": "MENORES 14 Y 15 AÑOS",
+      "minAge": 14,
+      "maxAge": 15
     }
   ],
   "sponsors": [
     "./IMAGENES/sponsor_auto_0_1786408456064.png"
   ],
   "themeColors": {
-    "primary": "#ff6b35",
-    "primaryGlow": "rgba(255, 107, 53, 0.35)",
-    "primaryDim": "rgba(255, 107, 53, 0.1)",
-    "secondary": "#00f2fe",
-    "secondaryGlow": "rgba(0, 242, 254, 0.35)"
+    "primary": "#00f2fe",
+    "primaryGlow": "rgba(0, 242, 254, 0.35)",
+    "primaryDim": "rgba(0, 242, 254, 0.1)",
+    "secondary": "#ff007f",
+    "secondaryGlow": "rgba(255, 0, 127, 0.35)"
   },
   "themeBackground": "sunset"
 }
