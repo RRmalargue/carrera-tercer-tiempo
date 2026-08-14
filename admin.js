@@ -184,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: "infantiles_8_y_9_años", name: "INFANTILES 8 Y 9 AÑOS 400 MTS", minAge: 8, maxAge: 9 },
             { id: "infantiles_10_y_11_años", name: "INFANTILES 10 Y 11 AÑOS 800 MTS", minAge: 10, maxAge: 11 },
             { id: "infantiles_12_y_13_años", name: "INFANTILES 12 Y 13 AÑOS 1200 MTS", minAge: 12, maxAge: 13 },
-            { id: "infantiles_14_y_15_años", name: "INFANTILES 14 Y 15 AÑOS 1500 MTS", minAge: 14, maxAge: 15 },
             { id: "damas_5_kms", name: "DAMAS 5 KMS LIBRE", minAge: 13, maxAge: 80 },
             { id: "caballeros_5_kms_libre", name: "CABALLEROS 5 KMS LIBRE", minAge: 13, maxAge: 80 },
             { id: "damas_15_kms_16_a_19_años", name: "DAMAS 15 KMS 16  A 19 AÑOS", minAge: 16, maxAge: 19 },

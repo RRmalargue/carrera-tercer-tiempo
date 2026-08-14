@@ -117,6 +117,12 @@ window.RACE_CONFIG = {
       "name": "5 KMS LIBRE",
       "minAge": 0,
       "maxAge": 120
+    },
+    {
+      "id": "infantiles6",
+      "name": "INFANTILES 14 Y 15 AÑOS",
+      "minAge": 14,
+      "maxAge": 15
     }
   ],
   "sponsors": [
