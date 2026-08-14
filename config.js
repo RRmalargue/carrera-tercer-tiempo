@@ -39,10 +39,10 @@ window.RACE_CONFIG = {
       "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg"
     },
     {
-      "id": "5 KM",
-      "name": "5 KM DISCA",
+      "id": "5.1 KMS DISCA",
+      "name": "5 KMS DISCA",
       "price": 0,
-      "detail": "",
+      "detail": "LOS PARTICIPANTES NO PAGAN INSCRIPCION, DEBEN PRESENTAR CERTIFICADO DE  DISCAPACIDAD",
       "gpxLink": "",
       "altitudeMapImage": ""
     }
