@@ -471,6 +471,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cargar mapa GPX
         loadGpxMap();
+
+        // Actualizar visibilidad de pago e importes
+        updatePaymentStepVisibility();
     }
 
     // 3. VALIDACIÓN DE CUIL (11 dígitos, solo números)
@@ -594,89 +597,42 @@ document.addEventListener('DOMContentLoaded', () => {
         return age;
     }
 
-    function determineCategory(age, gender, distance) {
-        if (!config || !config.categories || config.categories.length === 0) {
-            return 'General';
+    function determineCategory(age, gender, distanceId) {
+        if (!config || !config.distances) return 'General';
+        
+        const currentDist = config.distances.find(d => d.id === distanceId);
+        if (!currentDist) {
+            return 'Se definirá al seleccionar la distancia';
         }
-        
-        // 1. Filtrar por rango de edad (filtro primario)
-        let candidates = config.categories.filter(cat => age >= cat.minAge && age <= cat.maxAge);
-        if (candidates.length === 0) {
-            return 'Sin categoría asignada (Fuera de rango)';
-        }
-        
-        const genderClean = (gender || '').toLowerCase();
-        const distClean = (distance || '').toLowerCase().replace(/\s+/g, ''); // "5kms" o "15kms"
-        
-        // 2. Filtrar por género (si la categoría discrimina por género)
-        if (genderClean.includes('fem') || genderClean.includes('dam')) {
-            // Eliminar categorías masculinas
-            candidates = candidates.filter(cat => {
-                const name = cat.name.toLowerCase();
-                const id = cat.id.toLowerCase();
-                return !(name.includes('caballeros') || name.includes('masculino') || id.includes('caballeros') || id.includes('masculino') || id.startsWith('m_'));
-            });
-        } else if (genderClean.includes('masc') || genderClean.includes('cab')) {
-            // Eliminar categorías femeninas
-            candidates = candidates.filter(cat => {
-                const name = cat.name.toLowerCase();
-                const id = cat.id.toLowerCase();
-                return !(name.includes('damas') || name.includes('femenino') || id.includes('damas') || id.includes('femenino') || id.startsWith('f_'));
-            });
-        }
-        
-        // Expresiones regulares con límites de palabras (\b) para evitar colisiones de subcadena (evita que "15 kms" contenga "5 km")
-        const matches5k = /\b5\s*k/i;
-        const matches15k = /\b15\s*k/i;
 
-        // 3. Filtrar por distancia (si la distancia ya fue seleccionada)
-        if (distClean) {
-            if (distClean.includes('15')) {
-                // Eliminar categorías de 5K e Infantiles si no aplica
-                candidates = candidates.filter(cat => {
-                    const name = cat.name.toLowerCase();
-                    const id = cat.id.toLowerCase();
-                    return !(matches5k.test(name) || matches5k.test(id) || id.includes('_5k') || id.includes('_5_km') || name.includes('infantil') || id.includes('infantil'));
-                });
-            } else if (distClean.includes('5') && !distClean.includes('15')) {
-                // Para 5K, si existen categorías específicas que mencionan 5K, usar ÚNICAMENTE esas
-                const hasSpecific5k = candidates.some(cat => {
-                    const name = cat.name.toLowerCase();
-                    const id = cat.id.toLowerCase();
-                    return (matches5k.test(name) || matches5k.test(id) || id.includes('_5k') || id.includes('_5_km'));
-                });
-                
-                if (hasSpecific5k) {
-                    candidates = candidates.filter(cat => {
-                        const name = cat.name.toLowerCase();
-                        const id = cat.id.toLowerCase();
-                        return (matches5k.test(name) || matches5k.test(id) || id.includes('_5k') || id.includes('_5_km'));
-                    });
-                }
-            } else if (distClean.includes('infantil')) {
-                // Para infantiles, usar ÚNICAMENTE las categorías que digan infantil
-                candidates = candidates.filter(cat => {
-                    const name = cat.name.toLowerCase();
-                    const id = cat.id.toLowerCase();
-                    return (name.includes('infantil') || id.includes('infantil'));
-                });
-            }
-        } else {
-            // Si no se seleccionó distancia aún, ver si quedan categorías de distintas distancias
-            const has5k = candidates.some(cat => matches5k.test(cat.name.toLowerCase()) || matches5k.test(cat.id.toLowerCase()));
-            const has15k = candidates.some(cat => matches15k.test(cat.name.toLowerCase()) || matches15k.test(cat.id.toLowerCase()));
+        // Si la distancia tiene categorías específicas
+        if (currentDist.categories && currentDist.categories.length > 0) {
+            // 1. Filtrar por rango de edad
+            let candidates = currentDist.categories.filter(cat => age >= cat.minAge && age <= cat.maxAge);
             
-            if (has5k && has15k) {
-                return 'Se definirá al seleccionar la distancia';
+            // 2. Filtrar por género
+            const genderClean = (gender || '').toLowerCase();
+            if (genderClean.includes('fem') || genderClean.includes('dam')) {
+                candidates = candidates.filter(cat => {
+                    const name = cat.name.toLowerCase();
+                    const id = cat.id.toLowerCase();
+                    return !(name.includes('caballeros') || name.includes('masculino') || id.includes('caballeros') || id.includes('masculino') || id.startsWith('m_'));
+                });
+            } else if (genderClean.includes('masc') || genderClean.includes('cab')) {
+                candidates = candidates.filter(cat => {
+                    const name = cat.name.toLowerCase();
+                    const id = cat.id.toLowerCase();
+                    return !(name.includes('damas') || name.includes('femenino') || id.includes('damas') || id.includes('femenino') || id.startsWith('f_'));
+                });
+            }
+
+            if (candidates.length > 0) {
+                return candidates[0].name;
             }
         }
         
-        // Retornar el primer candidato que coincida
-        if (candidates.length > 0) {
-            return candidates[0].name;
-        }
-        
-        return 'Sin categoría asignada';
+        // Fallback: si no coincide ninguna o no tiene categorías, devolvemos el ID de la distancia (ej: "5 KMS")
+        return distanceId || 'General';
     }
 
     // 5. NAVEGACIÓN Y WIZARD FORM
@@ -811,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Validar que la categoría asignada sea válida
             const catVal = inputCategoria.value;
-            error = error || checkField(inputCategoria, !catVal || catVal === 'Sin categoría asignada' || catVal === 'Se definirá al seleccionar la distancia' || catVal.includes('Fuera de rango'), 'No se encontró una categoría válida para tu edad, género y distancia seleccionada.');
+            error = error || checkField(inputCategoria, !catVal || catVal === 'Se definirá al seleccionar la distancia', 'Por favor, asegúrate de seleccionar una distancia válida.');
 
             if (error) {
                 if (firstInvalidEl) {
@@ -833,6 +789,9 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryDistancia.textContent = document.getElementById('selected-distance-id').value;
         summaryCategoria.textContent = inputCategoria.value || 'General';
         summaryMonto.textContent = `$${cost.toLocaleString('es-AR')}`;
+        
+        // Sincronizar visibilidad y estados del paso de pago
+        updatePaymentStepVisibility();
     }
 
     // 7. CARGA DE ARCHIVO Y PREVIEW
@@ -956,12 +915,63 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    function validateSubmitButton() {
-        if (uploadedFileBase64) {
-            btnSubmit.disabled = false;
-        } else {
-            btnSubmit.disabled = true;
+    function checkIfCategoryRequiresPayment() {
+        const selectedDistId = document.getElementById('selected-distance-id').value;
+        const currentDist = (config.distances || []).find(d => d.id === selectedDistId);
+        
+        if (!currentDist) return true;
+
+        const categoryName = inputCategoria.value;
+        
+        if (categoryName && currentDist.categories && currentDist.categories.length > 0) {
+            const matchedCat = currentDist.categories.find(c => c.name === categoryName);
+            if (matchedCat) {
+                return matchedCat.requiresPayment !== false;
+            }
         }
+        
+        return true;
+    }
+
+    function validateSubmitButton() {
+        const requiresPayment = checkIfCategoryRequiresPayment();
+
+        if (requiresPayment) {
+            btnSubmit.disabled = !uploadedFileBase64;
+        } else {
+            btnSubmit.disabled = false;
+        }
+    }
+
+    function updatePaymentStepVisibility() {
+        const requiresPayment = checkIfCategoryRequiresPayment();
+        
+        const paymentInfoBox = document.querySelector('.payment-info-box');
+        const beaconAlert = document.querySelector('.beacon-alert');
+        
+        // Buscar el asterisco de obligatoriedad en el label
+        const uploadLabel = document.querySelector('.file-upload-box').previousElementSibling;
+        const requirementAsterisk = uploadLabel ? uploadLabel.querySelector('.requirement') : null;
+        const dropzoneText = document.querySelector('#file-dropzone p');
+        const summaryTotalText = document.querySelector('.summary-total');
+
+        if (requiresPayment) {
+            if (paymentInfoBox) paymentInfoBox.style.display = 'block';
+            if (beaconAlert) beaconAlert.style.display = 'flex';
+            if (requirementAsterisk) requirementAsterisk.style.display = 'inline';
+            if (dropzoneText) dropzoneText.textContent = 'Arrastra aquí tu comprobante de pago';
+        } else {
+            if (paymentInfoBox) paymentInfoBox.style.display = 'none';
+            if (beaconAlert) beaconAlert.style.display = 'none';
+            if (requirementAsterisk) requirementAsterisk.style.display = 'none';
+            if (dropzoneText) dropzoneText.textContent = 'Arrastra aquí un archivo o foto (Opcional)';
+            
+            // Forzar el monto en el resumen
+            const costEl = document.getElementById('summary-monto');
+            if (costEl) costEl.textContent = 'Sin costo';
+        }
+        
+        validateSubmitButton();
     }
 
     // 8. ENVÍO DE DATOS
@@ -969,7 +979,9 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         hideError();
 
-        if (!uploadedFileBase64) {
+        const requiresPayment = checkIfCategoryRequiresPayment();
+
+        if (requiresPayment && !uploadedFileBase64) {
             return showError('El comprobante de pago es un archivo obligatorio.');
         }
 

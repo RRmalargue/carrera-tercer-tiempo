@@ -20,7 +20,51 @@ window.RACE_CONFIG = {
       "price": 50000,
       "detail": "RECORRIDO COMPETITIVO, POR SENDEROS TECNICO, CON TREPADAS Y LUGARES MUY ATRACTIVOS DE MALARGUE, PUESTO DE HIDRATACION A LOS 2,5 KMS Y 8 KMS",
       "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
-      "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg"
+      "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
+      "categories": [
+        {
+          "id": "prejuveniles",
+          "name": "PREJUVENILES 16 A 19 AÑOS",
+          "minAge": 16,
+          "maxAge": 19,
+          "requiresPayment": true
+        },
+        {
+          "id": "juveniles",
+          "name": "JUVENILES 20 A 29 AÑOS",
+          "minAge": 20,
+          "maxAge": 29,
+          "requiresPayment": true
+        },
+        {
+          "id": "master_a",
+          "name": "Master A (30 a 39 años)",
+          "minAge": 30,
+          "maxAge": 39,
+          "requiresPayment": true
+        },
+        {
+          "id": "master_b",
+          "name": "Master B (40 a 49 años)",
+          "minAge": 40,
+          "maxAge": 49,
+          "requiresPayment": true
+        },
+        {
+          "id": "master_c",
+          "name": "Master C (50 a 59 años)",
+          "minAge": 50,
+          "maxAge": 59,
+          "requiresPayment": true
+        },
+        {
+          "id": "master_d",
+          "name": "Master D (60 años o más)",
+          "minAge": 60,
+          "maxAge": 120,
+          "requiresPayment": true
+        }
+      ]
     },
     {
       "id": "INFANTILES",
@@ -28,7 +72,51 @@ window.RACE_CONFIG = {
       "price": 18000,
       "detail": "RECORRIDO PARA LOS MAS PEQUEÑOS, SE DESARROLLARÁ EN EL LUGAR DE LARGADA, 100 MTS, 200 MTS, 400 MTS, 800 MTS Y 12000 MTS.",
       "gpxLink": "./IMAGENES/circuito infantiles.gpx",
-      "altitudeMapImage": "./IMAGENES/altura infantiles.jpg"
+      "altitudeMapImage": "./IMAGENES/altura infantiles.jpg",
+      "categories": [
+        {
+          "id": "infantiles1",
+          "name": "INFANTILES 4 Y 5 AÑOS",
+          "minAge": 4,
+          "maxAge": 5,
+          "requiresPayment": true
+        },
+        {
+          "id": "infantiles2",
+          "name": "INFANTILES 6 Y 7 AÑOS",
+          "minAge": 6,
+          "maxAge": 7,
+          "requiresPayment": true
+        },
+        {
+          "id": "infantiles3",
+          "name": "INFANTILES 8 Y 9 AÑOS",
+          "minAge": 8,
+          "maxAge": 9,
+          "requiresPayment": true
+        },
+        {
+          "id": "infantiles4",
+          "name": "INFANTILES 10 Y 11 AÑOS",
+          "minAge": 10,
+          "maxAge": 11,
+          "requiresPayment": true
+        },
+        {
+          "id": "infantiles5",
+          "name": "INFANTILES 12 Y 13 AÑOS",
+          "minAge": 12,
+          "maxAge": 13,
+          "requiresPayment": true
+        },
+        {
+          "id": "infantiles6",
+          "name": "INFANTILES 14 Y 15 AÑOS",
+          "minAge": 14,
+          "maxAge": 15,
+          "requiresPayment": true
+        }
+      ]
     },
     {
       "id": "5 KMS",
@@ -36,115 +124,33 @@ window.RACE_CONFIG = {
       "price": 35000,
       "detail": "EL RECORRIDO DE 5 KMS TRANSITARA POR SENDEROS TECNICOS, ARROYOS SECOS, Y ES LA DISTANCIA IDEAL PARA LOS QUE SE ESTAN INICIANDO EN EL CROSS-TRAIL.\nPUESTO DE HIDRATACION A LOS 2,5 KMS.",
       "gpxLink": "./IMAGENES/5 K 3 TIEMPO.gpx",
-      "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg"
-    },
-    {
-      "id": "5.1 KMS DISCA",
-      "name": "5 KMS DISCA",
-      "price": 0,
-      "detail": "LOS PARTICIPANTES NO PAGAN INSCRIPCION, DEBEN PRESENTAR CERTIFICADO DE  DISCAPACIDAD",
-      "gpxLink": "",
-      "altitudeMapImage": ""
+      "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg",
+      "categories": [
+        {
+          "id": "damas_5_kms_libre",
+          "name": "5 KMS LIBRE",
+          "minAge": 0,
+          "maxAge": 120,
+          "requiresPayment": true
+        },
+        {
+          "id": "caballeros_5_kms_libre",
+          "name": "5 KMS LIBRE",
+          "minAge": 0,
+          "maxAge": 120,
+          "requiresPayment": true
+        },
+        {
+          "id": "disca1",
+          "name": "DISCA 5 KMS LIBRE",
+          "minAge": 1,
+          "maxAge": 80,
+          "requiresPayment": false
+        }
+      ]
     }
   ],
-  "categories": [
-    {
-      "id": "master_a",
-      "name": "Master A (30 a 39 años)",
-      "minAge": 30,
-      "maxAge": 39
-    },
-    {
-      "id": "master_b",
-      "name": "Master B (40 a 49 años)",
-      "minAge": 40,
-      "maxAge": 49
-    },
-    {
-      "id": "master_c",
-      "name": "Master C (50 a 59 años)",
-      "minAge": 50,
-      "maxAge": 59
-    },
-    {
-      "id": "master_d",
-      "name": "Master D (60 años o más)",
-      "minAge": 60,
-      "maxAge": 120
-    },
-    {
-      "id": "infantiles1",
-      "name": "INFANTILES 4 Y 5 AÑOS",
-      "minAge": 4,
-      "maxAge": 5
-    },
-    {
-      "id": "infantiles2",
-      "name": "INFANTILES 6 Y 7 AÑOS",
-      "minAge": 6,
-      "maxAge": 7
-    },
-    {
-      "id": "infantiles3",
-      "name": "INFANTILES 8 Y 9 AÑOS",
-      "minAge": 8,
-      "maxAge": 9
-    },
-    {
-      "id": "infantiles4",
-      "name": "INFANTILES 10 Y 11 AÑOS",
-      "minAge": 10,
-      "maxAge": 11
-    },
-    {
-      "id": "infantiles5",
-      "name": "INFANTILES 12 Y 13 AÑOS",
-      "minAge": 12,
-      "maxAge": 13
-    },
-    {
-      "id": "prejuveniles",
-      "name": "PREJUVENILES 16 A 19 AÑOS",
-      "minAge": 16,
-      "maxAge": 19
-    },
-    {
-      "id": "juveniles",
-      "name": "JUVENILES 20 A 29 AÑOS",
-      "minAge": 20,
-      "maxAge": 29
-    },
-    {
-      "id": "damas_5_kms_libre",
-      "name": "5 KMS LIBRE",
-      "minAge": 0,
-      "maxAge": 120
-    },
-    {
-      "id": "caballeros_5_kms_libre",
-      "name": "5 KMS LIBRE",
-      "minAge": 0,
-      "maxAge": 120
-    },
-    {
-      "id": "infantiles6",
-      "name": "INFANTILES 14 Y 15 AÑOS",
-      "minAge": 14,
-      "maxAge": 15
-    },
-    {
-      "id": "damas_5_kms_libres",
-      "name": "DISCA 5 KMS LIBRE",
-      "minAge": 0,
-      "maxAge": 70
-    },
-    {
-      "id": "caballeros_5_kms_libres",
-      "name": "DISCA 5 KMS LIBRE",
-      "minAge": 0,
-      "maxAge": 70
-    }
-  ],
+  "categories": [],
   "sponsors": [
     "./IMAGENES/sponsor_auto_0_1786408456064.png"
   ],

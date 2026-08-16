@@ -74,10 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DOM Elements - Categories
     const categoriesList = document.getElementById('categories-list');
+    const selectCatDistance = document.getElementById('select-cat-distance');
     const inputNewCatId = document.getElementById('new-cat-id');
     const inputNewCatName = document.getElementById('new-cat-name');
     const inputNewCatMin = document.getElementById('new-cat-min');
     const inputNewCatMax = document.getElementById('new-cat-max');
+    const inputNewCatRequiresPayment = document.getElementById('new-cat-requires-payment');
     const btnAddCategory = document.getElementById('btn-add-category');
     const btnLoadDefaultCategories = document.getElementById('btn-load-default-categories');
     const btnCancelCatEdit = document.getElementById('btn-cancel-cat-edit');
@@ -99,9 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     state[key] = data[key];
                 }
             });
+            migrateGlobalCategoriesToDistances();
             populateFormFields();
             renderDistances();
-            renderCategories();
+            updateCategoriesDistanceSelector();
             renderSponsors();
             updateJsonPreview();
         } else {
@@ -113,9 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         state[key] = data[key];
                     }
                 });
+                migrateGlobalCategoriesToDistances();
                 populateFormFields();
                 renderDistances();
-                renderCategories();
+                updateCategoriesDistanceSelector();
                 renderSponsors();
                 updateJsonPreview();
             } catch (error) {
@@ -126,6 +130,44 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Inicializar el mapa de administración al final
         initAdminMap();
+    }
+
+    // Migrar las categorías del modelo antiguo al nuevo modelo por distancias
+    function migrateGlobalCategoriesToDistances() {
+        if (state.distances && state.distances.length > 0) {
+            state.distances.forEach(dist => {
+                if (!dist.categories) {
+                    dist.categories = [];
+                }
+            });
+
+            if (state.categories && state.categories.length > 0) {
+                state.categories.forEach(cat => {
+                    const catId = cat.id.toLowerCase();
+                    
+                    state.distances.forEach(dist => {
+                        const distId = dist.id.toLowerCase();
+                        let isMatch = false;
+                        
+                        if (distId.includes('15') && (catId.includes('15') || catId.includes('master') || catId.includes('juvenil') || catId.includes('prejuvenil'))) {
+                            isMatch = true;
+                        } else if (distId.includes('5') && !distId.includes('15') && (catId.includes('5') || catId.includes('libre'))) {
+                            isMatch = true;
+                        } else if (distId.includes('infant') && catId.includes('infant')) {
+                            isMatch = true;
+                        } else if (!distId.includes('15') && !distId.includes('5') && !distId.includes('infant')) {
+                            isMatch = true;
+                        }
+
+                        if (isMatch) {
+                            if (!dist.categories.some(c => c.id === cat.id)) {
+                                dist.categories.push({ ...cat });
+                            }
+                        }
+                    });
+                });
+            }
+        }
     }
 
     function populateFormFields() {
@@ -211,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         distancesList.innerHTML = '';
         if (state.distances.length === 0) {
             distancesList.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Sin distancias configuradas.</td></tr>`;
+            updateCategoriesDistanceSelector();
             return;
         }
 
@@ -252,6 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             distancesList.appendChild(row);
         });
+
+        // Actualizar el selector de distancias para las categorías
+        updateCategoriesDistanceSelector();
     }
 
     function startEditingDistance(index) {
@@ -310,7 +356,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Ya existe otra distancia con ese mismo código ID.');
                 return;
             }
-            state.distances[editingDistanceIndex] = { id, name, price, detail, gpxLink, altitudeMapImage };
+            const existingDist = state.distances[editingDistanceIndex];
+            state.distances[editingDistanceIndex] = { 
+                id, 
+                name, 
+                price, 
+                detail, 
+                gpxLink, 
+                altitudeMapImage, 
+                categories: existingDist.categories || []
+            };
             cancelEditingDistance();
         } else {
             // Modo Creación
@@ -318,7 +373,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Ya existe una distancia con ese mismo código ID.');
                 return;
             }
-            state.distances.push({ id, name, price, detail, gpxLink, altitudeMapImage });
+            state.distances.push({ 
+                id, 
+                name, 
+                price, 
+                detail, 
+                gpxLink, 
+                altitudeMapImage, 
+                categories: []
+            });
             
             inputNewDistId.value = '';
             inputNewDistName.value = '';
@@ -332,26 +395,84 @@ document.addEventListener('DOMContentLoaded', () => {
         updateJsonPreview();
     });
 
+    function updateCategoriesDistanceSelector() {
+        if (!selectCatDistance) return;
+        
+        const previousValue = selectCatDistance.value;
+        selectCatDistance.innerHTML = '';
+        
+        if (state.distances.length === 0) {
+            selectCatDistance.innerHTML = '<option value="">-- Primero agrega una distancia --</option>';
+            selectCatDistance.disabled = true;
+            renderCategories();
+            return;
+        }
+        
+        selectCatDistance.disabled = false;
+        state.distances.forEach(dist => {
+            const opt = document.createElement('option');
+            opt.value = dist.id;
+            opt.textContent = `${dist.name} (${dist.id})`;
+            selectCatDistance.appendChild(opt);
+        });
+        
+        // Mantener selección anterior si todavía existe
+        if (previousValue && state.distances.some(d => d.id === previousValue)) {
+            selectCatDistance.value = previousValue;
+        } else {
+            selectCatDistance.value = state.distances[0].id;
+        }
+        
+        renderCategories();
+    }
+
+    if (selectCatDistance) {
+        selectCatDistance.addEventListener('change', () => {
+            resetCategoryEdit();
+            renderCategories();
+        });
+    }
+
     // 3. GESTIÓN DE CATEGORÍAS
     function renderCategories() {
         categoriesList.innerHTML = '';
-        if (state.categories.length === 0) {
-            categoriesList.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Sin categorías configuradas.</td></tr>`;
+        
+        const selectedDistId = selectCatDistance ? selectCatDistance.value : '';
+        if (!selectedDistId) {
+            categoriesList.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Sin distancia seleccionada. Agrega distancias primero.</td></tr>`;
             return;
         }
 
-        state.categories.forEach((cat, index) => {
+        const currentDist = state.distances.find(d => d.id === selectedDistId);
+        if (!currentDist) {
+            categoriesList.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">La distancia seleccionada no es válida.</td></tr>`;
+            return;
+        }
+
+        if (!currentDist.categories) {
+            currentDist.categories = [];
+        }
+
+        if (currentDist.categories.length === 0) {
+            categoriesList.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Sin categorías configuradas para esta distancia.</td></tr>`;
+            return;
+        }
+
+        currentDist.categories.forEach((cat, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><code>${cat.id}</code></td>
                 <td>${cat.name}</td>
                 <td>${cat.minAge} años</td>
                 <td>${cat.maxAge === 120 ? 'Más de 60' : cat.maxAge + ' años'}</td>
+                <td style="color: ${cat.requiresPayment !== false ? 'var(--accent-orange)' : 'var(--success)'}; font-weight: bold;">
+                    ${cat.requiresPayment !== false ? 'Sí' : 'No'}
+                </td>
                 <td style="text-align: center; display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
-                    <button type="button" class="table-action-btn edit-cat-btn" data-index="${index}" style="background: rgba(0, 242, 254, 0.1); color: #00f2fe; border: 1px solid rgba(0, 242, 254, 0.2); padding: 0.35rem 0.55rem; font-size: 0.85rem;">
+                    <button type="button" class="table-action-btn edit-cat-btn" data-index="${index}" style="background: rgba(0, 242, 254, 0.1); color: #00f2fe; border: 1px solid rgba(0, 242, 254, 0.2); padding: 0.35rem 0.55rem; font-size: 0.85rem; cursor: pointer;">
                         <i class="fa-solid fa-pen"></i>
                     </button>
-                    <button type="button" class="table-action-btn delete-cat-btn" data-index="${index}">
+                    <button type="button" class="table-action-btn delete-cat-btn" data-index="${index}" style="background: rgba(255, 107, 53, 0.1); color: var(--accent-orange); border: 1px solid rgba(255, 107, 53, 0.2); padding: 0.35rem 0.55rem; font-size: 0.85rem; cursor: pointer;">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </td>
@@ -363,8 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 inputNewCatName.value = cat.name;
                 inputNewCatMin.value = cat.minAge;
                 inputNewCatMax.value = cat.maxAge;
+                inputNewCatRequiresPayment.checked = cat.requiresPayment !== false;
                 
-                btnAddCategory.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Actualizar';
+                btnAddCategory.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
                 if (btnCancelCatEdit) {
                     btnCancelCatEdit.classList.remove('hidden');
                 }
@@ -372,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             row.querySelector('.delete-cat-btn').addEventListener('click', () => {
-                state.categories.splice(index, 1);
+                currentDist.categories.splice(index, 1);
                 if (editingCategoryIndex === index) {
                     resetCategoryEdit();
                 } else if (editingCategoryIndex > index) {
@@ -392,6 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewCatName.value = '';
         inputNewCatMin.value = '';
         inputNewCatMax.value = '';
+        inputNewCatRequiresPayment.checked = true;
         btnAddCategory.innerHTML = '<i class="fa-solid fa-plus"></i> Agregar';
         if (btnCancelCatEdit) {
             btnCancelCatEdit.classList.add('hidden');
@@ -404,13 +527,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadDefaultCategories() {
         resetCategoryEdit();
-        state.categories = [
-            { id: "juveniles", name: "Juveniles (18 a 29 años)", minAge: 18, maxAge: 29 },
-            { id: "master_a", name: "Master A (30 a 39 años)", minAge: 30, maxAge: 39 },
-            { id: "master_b", name: "Master B (40 a 49 años)", minAge: 40, maxAge: 49 },
-            { id: "master_c", name: "Master C (50 a 59 años)", minAge: 50, maxAge: 59 },
-            { id: "master_d", name: "Master D (60 años o más)", minAge: 60, maxAge: 120 }
+        
+        const selectedDistId = selectCatDistance ? selectCatDistance.value : '';
+        if (!selectedDistId) {
+            alert('Por favor, selecciona una distancia antes de cargar las categorías estándar.');
+            return;
+        }
+
+        const currentDist = state.distances.find(d => d.id === selectedDistId);
+        if (!currentDist) return;
+
+        currentDist.categories = [
+            { id: "juveniles", name: "Juveniles (18 a 29 años)", minAge: 18, maxAge: 29, requiresPayment: true },
+            { id: "master_a", name: "Master A (30 a 39 años)", minAge: 30, maxAge: 39, requiresPayment: true },
+            { id: "master_b", name: "Master B (40 a 49 años)", minAge: 40, maxAge: 49, requiresPayment: true },
+            { id: "master_c", name: "Master C (50 a 59 años)", minAge: 50, maxAge: 59, requiresPayment: true },
+            { id: "master_d", name: "Master D (60 años o más)", minAge: 60, maxAge: 120, requiresPayment: true }
         ];
+
         renderCategories();
         updateJsonPreview();
     }
@@ -418,10 +552,24 @@ document.addEventListener('DOMContentLoaded', () => {
     btnLoadDefaultCategories.addEventListener('click', loadDefaultCategories);
 
     btnAddCategory.addEventListener('click', () => {
+        const selectedDistId = selectCatDistance ? selectCatDistance.value : '';
+        if (!selectedDistId) {
+            alert('Por favor, selecciona una distancia primero.');
+            return;
+        }
+
+        const currentDist = state.distances.find(d => d.id === selectedDistId);
+        if (!currentDist) return;
+
+        if (!currentDist.categories) {
+            currentDist.categories = [];
+        }
+
         const id = inputNewCatId.value.trim().toLowerCase().replace(/\s+/g, '_');
         const name = inputNewCatName.value.trim();
         const min = parseInt(inputNewCatMin.value);
         const max = parseInt(inputNewCatMax.value);
+        const requiresPayment = inputNewCatRequiresPayment.checked;
 
         if (!id || !name || isNaN(min) || isNaN(max)) {
             alert('Por favor, completa todos los campos de la categoría.');
@@ -435,25 +583,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (editingCategoryIndex !== null) {
             // Modo edición
-            if (state.categories.some((c, idx) => c.id === id && idx !== editingCategoryIndex)) {
+            if (currentDist.categories.some((c, idx) => c.id === id && idx !== editingCategoryIndex)) {
                 alert('Ya existe otra categoría con ese identificador interno.');
                 return;
             }
-            state.categories[editingCategoryIndex] = { id, name, minAge: min, maxAge: max };
+            currentDist.categories[editingCategoryIndex] = { id, name, minAge: min, maxAge: max, requiresPayment };
             resetCategoryEdit();
         } else {
             // Modo agregar nuevo
-            if (state.categories.some(c => c.id === id)) {
+            if (currentDist.categories.some(c => c.id === id)) {
                 alert('Ya existe una categoría con ese identificador interno.');
                 return;
             }
-            state.categories.push({ id, name, minAge: min, maxAge: max });
+            currentDist.categories.push({ id, name, minAge: min, maxAge: max, requiresPayment });
             
             // Clear Inputs
             inputNewCatId.value = '';
             inputNewCatName.value = '';
             inputNewCatMin.value = '';
             inputNewCatMax.value = '';
+            inputNewCatRequiresPayment.checked = true;
         }
 
         renderCategories();
