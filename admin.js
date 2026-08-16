@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputNewDistDetail = document.getElementById('new-dist-detail');
     const inputNewDistGpx = document.getElementById('new-dist-gpx');
     const inputNewDistAltitude = document.getElementById('new-dist-altitude');
+    const inputNewDistAutoCategory = document.getElementById('new-dist-auto-category');
     const btnAddDistance = document.getElementById('btn-add-distance');
     const btnCancelEditDistance = document.getElementById('btn-cancel-edit-distance');
 
@@ -252,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDistances() {
         distancesList.innerHTML = '';
         if (state.distances.length === 0) {
-            distancesList.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Sin distancias configuradas.</td></tr>`;
+            distancesList.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Sin distancias configuradas.</td></tr>`;
             updateCategoriesDistanceSelector();
             return;
         }
@@ -263,6 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><strong>${dist.id}</strong></td>
                 <td>${dist.name}</td>
                 <td>$${dist.price.toLocaleString('es-AR')}</td>
+                <td style="color: ${dist.autoCategory !== false ? 'var(--accent-cyan)' : 'var(--accent-orange)'}; font-weight: bold;">
+                    ${dist.autoCategory !== false ? 'Automática' : 'Manual'}
+                </td>
                 <td>
                     <small style="display: block; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${dist.detail || ''}">${dist.detail || '-'}</small>
                     ${dist.gpxLink ? `<br><span class="badge" style="background: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-route"></i> GPX: ${dist.gpxLink}</span>` : ''}
@@ -310,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewDistDetail.value = dist.detail || '';
         inputNewDistGpx.value = dist.gpxLink || '';
         inputNewDistAltitude.value = dist.altitudeMapImage || '';
+        inputNewDistAutoCategory.checked = dist.autoCategory !== false;
 
         btnAddDistance.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Cambios';
         btnAddDistance.style.background = '#00f2fe';
@@ -328,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewDistDetail.value = '';
         inputNewDistGpx.value = '';
         inputNewDistAltitude.value = '';
+        inputNewDistAutoCategory.checked = true;
 
         btnAddDistance.innerHTML = '<i class="fa-solid fa-plus"></i> Agregar';
         btnAddDistance.style.background = '';
@@ -344,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const detail = inputNewDistDetail.value.trim();
         const gpxLink = inputNewDistGpx.value.trim();
         const altitudeMapImage = inputNewDistAltitude.value.trim();
+        const autoCategory = inputNewDistAutoCategory.checked;
 
         if (!id || !name || isNaN(price)) {
             alert('Por favor, completa los campos obligatorios para agregar o editar la distancia (Código, Nombre y Precio).');
@@ -364,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 detail, 
                 gpxLink, 
                 altitudeMapImage, 
+                autoCategory,
                 categories: existingDist.categories || []
             };
             cancelEditingDistance();
@@ -380,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 detail, 
                 gpxLink, 
                 altitudeMapImage, 
+                autoCategory,
                 categories: []
             });
             
@@ -389,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
             inputNewDistDetail.value = '';
             inputNewDistGpx.value = '';
             inputNewDistAltitude.value = '';
+            inputNewDistAutoCategory.checked = true;
         }
 
         renderDistances();

@@ -125,6 +125,7 @@ window.RACE_CONFIG = {
       "detail": "EL RECORRIDO DE 5 KMS TRANSITARA POR SENDEROS TECNICOS, ARROYOS SECOS, Y ES LA DISTANCIA IDEAL PARA LOS QUE SE ESTAN INICIANDO EN EL CROSS-TRAIL.\nPUESTO DE HIDRATACION A LOS 2,5 KMS.",
       "gpxLink": "./IMAGENES/5 K 3 TIEMPO.gpx",
       "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg",
+      "autoCategory": false,
       "categories": [
         {
           "id": "damas_5_kms_libre",

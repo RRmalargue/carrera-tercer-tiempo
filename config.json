@@ -11,7 +11,7 @@
   "startLocationMapLink": "https://maps.google.com/?q=-35.438479,-69.599445",
   "deslindeLink": "./IMAGENES/DESLINDE DE RESPONSABILIDAD Y ASUNCIÓN DE RIESGOS.pdf",
   "clasificacionesLink": "",
-  "paymentDetails": "ASOCIACION CLUB TECER TIEMPO MALARGUE\n\nAlias: ACCTM2026\n\n.",
+  "paymentDetails": "ASOCIACION CLUB TECER TIEMPO MALARGUE\n\nAlias: ACTTM2026\n\n.",
   "distances": [
     {
       "id": "15 KMS",
@@ -124,6 +124,7 @@
       "detail": "EL RECORRIDO DE 5 KMS TRANSITARA POR SENDEROS TECNICOS, ARROYOS SECOS, Y ES LA DISTANCIA IDEAL PARA LOS QUE SE ESTAN INICIANDO EN EL CROSS-TRAIL.\nPUESTO DE HIDRATACION A LOS 2,5 KMS.",
       "gpxLink": "./IMAGENES/5 K 3 TIEMPO.gpx",
       "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg",
+      "autoCategory": false,
       "categories": [
         {
           "id": "damas_5_kms_libre",

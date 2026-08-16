@@ -384,6 +384,20 @@ select {
     padding-right: 2.5rem;
 }
 
+select[size]:not([size="1"]) {
+    background-image: none !important;
+    padding-right: 1.1rem !important;
+    height: auto !important;
+    min-height: 100px;
+}
+
+select[size]:not([size="1"]) option {
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.2rem;
+    cursor: pointer;
+}
+
 input::placeholder {
     color: var(--text-muted);
 }

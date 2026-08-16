@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputGenero = document.getElementById('genero');
     const inputEdad = document.getElementById('edad');
     const inputCategoria = document.getElementById('categoria');
+    const labelCategoria = document.getElementById('categoria-label');
     const inputTelefono = document.getElementById('telefono');
     const inputTalleRemera = document.getElementById('talle_remera');
 
@@ -484,27 +485,176 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. CÁLCULO DE EDAD Y CATEGORÍA
+    function populateCategoryOptions(age, gender, distanceId) {
+        if (!inputCategoria) return;
+
+        const previousSelection = inputCategoria.value;
+
+        // Limpiar opciones anteriores
+        inputCategoria.innerHTML = '';
+
+        if (!distanceId) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Se calculará al elegir fecha, género y distancia';
+            inputCategoria.appendChild(opt);
+            inputCategoria.value = '';
+            return;
+        }
+
+        if (!config || !config.distances) return;
+
+        const currentDist = config.distances.find(d => d.id === distanceId);
+        if (!currentDist) {
+            const opt = document.createElement('option');
+            opt.value = distanceId || 'General';
+            opt.textContent = distanceId || 'General';
+            inputCategoria.appendChild(opt);
+            inputCategoria.value = distanceId || 'General';
+            return;
+        }
+
+        // Si la distancia tiene categorías específicas
+        if (currentDist.categories && currentDist.categories.length > 0) {
+            
+            // Si la distancia no tiene asignación automática, listamos todas
+            if (currentDist.autoCategory === false) {
+                currentDist.categories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.name;
+                    opt.textContent = cat.name;
+                    inputCategoria.appendChild(opt);
+                });
+                if (previousSelection && currentDist.categories.some(c => c.name === previousSelection)) {
+                    inputCategoria.value = previousSelection;
+                } else if (currentDist.categories.length > 0) {
+                    inputCategoria.value = currentDist.categories[0].name;
+                }
+                return;
+            }
+
+            // Si es automática, requiere los otros parámetros y filtra
+            if (!age || !gender) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Se calculará al elegir fecha y género';
+                inputCategoria.appendChild(opt);
+                inputCategoria.value = '';
+                return;
+            }
+
+            // 1. Filtrar por rango de edad
+            let candidates = currentDist.categories.filter(cat => age >= cat.minAge && age <= cat.maxAge);
+
+            // 2. Filtrar por género
+            const genderClean = (gender || '').toLowerCase();
+            if (genderClean.includes('fem') || genderClean.includes('dam')) {
+                candidates = candidates.filter(cat => {
+                    const name = cat.name.toLowerCase();
+                    const id = cat.id.toLowerCase();
+                    return !(name.includes('caballeros') || name.includes('masculino') || id.includes('caballeros') || id.includes('masculino') || id.startsWith('m_'));
+                });
+            } else if (genderClean.includes('masc') || genderClean.includes('cab')) {
+                candidates = candidates.filter(cat => {
+                    const name = cat.name.toLowerCase();
+                    const id = cat.id.toLowerCase();
+                    return !(name.includes('damas') || name.includes('femenino') || id.includes('damas') || id.includes('femenino') || id.startsWith('f_'));
+                });
+            }
+
+            if (candidates.length > 0) {
+                candidates.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.name;
+                    opt.textContent = cat.name;
+                    inputCategoria.appendChild(opt);
+                });
+                if (previousSelection && candidates.some(c => c.name === previousSelection)) {
+                    inputCategoria.value = previousSelection;
+                } else {
+                    inputCategoria.value = candidates[0].name;
+                }
+                return;
+            }
+        }
+        
+        // Fallback: si no coincide ninguna o no tiene categorías, devolvemos la distancia
+        const opt = document.createElement('option');
+        opt.value = distanceId || 'General';
+        opt.textContent = distanceId || 'General';
+        inputCategoria.appendChild(opt);
+        inputCategoria.value = distanceId || 'General';
+    }
+
     function recalculateCategory() {
         const birthDateVal = inputFechaNacimiento.value.trim();
         const genderVal = inputGenero.value;
         const distanceVal = document.getElementById('selected-distance-id').value;
 
-        if (!birthDateVal || birthDateVal.indexOf('/') === -1 || birthDateVal.split('/').length !== 3 || !genderVal || !distanceVal) {
+        if (!distanceVal) {
             inputEdad.value = '';
-            inputCategoria.value = '';
+            populateCategoryOptions(null, null, null);
+            if (labelCategoria) labelCategoria.textContent = 'Categoría Asignada automáticamente';
+            if (inputCategoria) inputCategoria.size = 1;
+            return;
+        }
+
+        const currentDist = config && config.distances ? config.distances.find(d => d.id === distanceVal) : null;
+        const isManual = currentDist && currentDist.autoCategory === false;
+
+        // Si es manual, no depende de la edad o el género para cargar las opciones
+        if (isManual) {
+            // Calcular edad si está ingresada
+            if (birthDateVal && birthDateVal.indexOf('/') !== -1 && birthDateVal.split('/').length === 3) {
+                const age = calculateAge(birthDateVal);
+                if (age > 0 && !isNaN(age)) {
+                    inputEdad.value = `${age} años`;
+                }
+            } else {
+                inputEdad.value = '';
+            }
+
+            if (labelCategoria) labelCategoria.textContent = 'Por favor, seleccione su categoría:';
+            populateCategoryOptions(999, 'both', distanceVal);
+            if (inputCategoria && currentDist.categories) {
+                inputCategoria.size = Math.max(2, currentDist.categories.length);
+            }
+            
+            // Forzar actualización de paso de pago
+            updatePaymentStepVisibility();
+            return;
+        }
+
+        // Si es automática, requiere fecha y género obligatorios para calcular
+        if (labelCategoria) labelCategoria.textContent = 'Categoría Asignada automáticamente';
+        if (inputCategoria) inputCategoria.size = 1;
+
+        if (!birthDateVal || birthDateVal.indexOf('/') === -1 || birthDateVal.split('/').length !== 3 || !genderVal) {
+            inputEdad.value = '';
+            populateCategoryOptions(null, null, null);
             return;
         }
 
         const age = calculateAge(birthDateVal);
         if (age <= 0 || isNaN(age)) {
             inputEdad.value = '';
-            inputCategoria.value = '';
+            populateCategoryOptions(null, null, null);
             return;
         }
         inputEdad.value = `${age} años`;
 
-        const categoryName = determineCategory(age, genderVal, distanceVal);
-        inputCategoria.value = categoryName;
+        populateCategoryOptions(age, genderVal, distanceVal);
+        
+        // Actualizar visualización del paso de pago de acuerdo con la categoría activa seleccionada
+        updatePaymentStepVisibility();
+    }
+
+    if (inputCategoria) {
+        ['change', 'click', 'input'].forEach(evt => {
+            inputCategoria.addEventListener(evt, () => {
+                updatePaymentStepVisibility();
+            });
+        });
     }
 
     // Sincronizar los 3 campos de fecha individuales con el campo oculto y manejar foco automático
@@ -597,43 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return age;
     }
 
-    function determineCategory(age, gender, distanceId) {
-        if (!config || !config.distances) return 'General';
-        
-        const currentDist = config.distances.find(d => d.id === distanceId);
-        if (!currentDist) {
-            return 'Se definirá al seleccionar la distancia';
-        }
 
-        // Si la distancia tiene categorías específicas
-        if (currentDist.categories && currentDist.categories.length > 0) {
-            // 1. Filtrar por rango de edad
-            let candidates = currentDist.categories.filter(cat => age >= cat.minAge && age <= cat.maxAge);
-            
-            // 2. Filtrar por género
-            const genderClean = (gender || '').toLowerCase();
-            if (genderClean.includes('fem') || genderClean.includes('dam')) {
-                candidates = candidates.filter(cat => {
-                    const name = cat.name.toLowerCase();
-                    const id = cat.id.toLowerCase();
-                    return !(name.includes('caballeros') || name.includes('masculino') || id.includes('caballeros') || id.includes('masculino') || id.startsWith('m_'));
-                });
-            } else if (genderClean.includes('masc') || genderClean.includes('cab')) {
-                candidates = candidates.filter(cat => {
-                    const name = cat.name.toLowerCase();
-                    const id = cat.id.toLowerCase();
-                    return !(name.includes('damas') || name.includes('femenino') || id.includes('damas') || id.includes('femenino') || id.startsWith('f_'));
-                });
-            }
-
-            if (candidates.length > 0) {
-                return candidates[0].name;
-            }
-        }
-        
-        // Fallback: si no coincide ninguna o no tiene categorías, devolvemos el ID de la distancia (ej: "5 KMS")
-        return distanceId || 'General';
-    }
 
     // 5. NAVEGACIÓN Y WIZARD FORM
     btnNext.addEventListener('click', () => {
@@ -921,10 +1035,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!currentDist) return true;
 
-        const categoryName = inputCategoria.value;
+        const categoryName = (inputCategoria.value || '').trim().toLowerCase();
         
+        // Failsafe backup rules: si contiene disca o infantil, no paga.
+        if (categoryName.includes('disca') || categoryName.includes('infantil')) {
+            return false;
+        }
+
         if (categoryName && currentDist.categories && currentDist.categories.length > 0) {
-            const matchedCat = currentDist.categories.find(c => c.name === categoryName);
+            const matchedCat = currentDist.categories.find(c => (c.name || '').trim().toLowerCase() === categoryName);
             if (matchedCat) {
                 return matchedCat.requiresPayment !== false;
             }

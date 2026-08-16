@@ -258,6 +258,7 @@
                             <th>ID / Código</th>
                             <th>Nombre de Distancia</th>
                             <th>Costo ($)</th>
+                            <th>¿Auto Cat?</th>
                             <th>Detalles / Hitos</th>
                             <th style="width: 80px; text-align: center;">Acciones</th>
                         </tr>
@@ -280,6 +281,10 @@
                     <div class="input-group">
                         <label for="new-dist-price">Precio ($)</label>
                         <input type="number" id="new-dist-price" placeholder="Ej: 8500">
+                    </div>
+                    <div class="input-group" style="grid-column: span 3; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="checkbox" id="new-dist-auto-category" checked style="width: 22px; height: 22px; cursor: pointer; margin: 0;">
+                        <label for="new-dist-auto-category" style="font-weight: 600; color: var(--accent-orange); cursor: pointer; user-select: none; margin: 0;">Asignar categorías automáticamente según la edad del corredor</label>
                     </div>
                     <div class="input-group" style="grid-column: span 3;">
                         <label for="new-dist-detail">Descripción del Circuito e Información de Distancia</label>
@@ -463,7 +468,7 @@
     </div>
 
     <!-- Admin JavaScript Configuration & Logic -->
-    <script src="./config.js?v=1.4"></script>
+    <script src="./config.js?v=2.1"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -497,6 +502,6 @@
             }
         })();
     </script>
-    <script src="./admin.js?v=1.4"></script>
+    <script src="./admin.js?v=2.1"></script>
 </body>
 </html>
