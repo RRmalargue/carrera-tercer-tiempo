@@ -1037,8 +1037,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const categoryName = (inputCategoria.value || '').trim().toLowerCase();
         
-        // Failsafe backup rules: si contiene disca o infantil, no paga.
-        if (categoryName.includes('disca') || categoryName.includes('infantil')) {
+        // Failsafe backup rules: si contiene disca, no paga.
+        if (categoryName.includes('disca')) {
             return false;
         }
 
