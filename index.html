@@ -6,6 +6,12 @@
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
     <link rel="stylesheet" href="./index.css?v=2.2">
+    <!-- PWA Manifest & Mobile Config -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#00f2fe">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="./IMAGENES/LOGO.jpg">
     <!-- Leaflet.js for interactive GPX route maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -431,6 +437,15 @@
         <span class="whatsapp-btn-text" style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-family: inherit; margin-right: 0.2rem;">Soporte</span>
         <i class="fa-brands fa-whatsapp" style="font-size: 24px;"></i>
     </a>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado para PWA con éxito:', reg.scope))
+                    .catch(err => console.error('Fallo al registrar Service Worker PWA:', err));
+            });
+        }
+    </script>
     <script src="./app.js?v=2.2"></script>
 </body>
 </html>
