@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Configuración | Trail Running Portal</title>
+    <meta name="description" content="Configura y personaliza las carreras de trail. Gestiona distancias, categorías, enlaces de mapas y genera el archivo config.json de forma interactiva.">
+    <link rel="stylesheet" href="./index.css">
+    <!-- Leaflet.js for interactive GPX route maps and start location picker -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="bg-overlay" style="background-image: radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.05) 0%, transparent 40%), radial-gradient(circle at 90% 80%, rgba(255, 107, 53, 0.03) 0%, transparent 40%); background-color: var(--bg-dark);"></div>
+
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="admin-title-group">
+                <h1><i class="fa-solid fa-sliders"></i> Panel de Configuración</h1>
+                <p>Configura los parámetros globales de la carrera y descarga tu archivo <code>config.json</code>.</p>
+            </div>
+            <a href="./index.html" class="btn-header-action">
+                <i class="fa-solid fa-circle-arrow-left"></i> Ir al Formulario Público
+            </a>
+        </header>
+
+        <form id="admin-config-form" autocomplete="off">
+            <!-- SECTION 1: GENERAL INFO -->
+            <section class="admin-section">
+                <h2><i class="fa-solid fa-circle-info"></i> Información General</h2>
+                <div class="form-grid grid-2">
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="raceName">Nombre de la Carrera <span class="requirement">*</span></label>
+                        <input type="text" id="raceName" required placeholder="Ej: DESAFÍO ALPA CHIRI 2026">
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="raceDescription">Descripción o Información de la Carrera</label>
+                        <textarea id="raceDescription" rows="4" placeholder="Ingresa una descripción o información clave sobre la carrera..." style="width: 100%; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: #fff; padding: 0.8rem; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                    </div>
+                    <!-- Logo Image Input -->
+                    <div class="input-group">
+                        <label for="logoImage">Ruta de la Imagen del Logo (Arriba a la Derecha)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="logoImage" placeholder="Ej: ./IMAGENES/LOGO.png" style="flex: 1;">
+                            <input type="file" id="logoImageFile" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('logoImageFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <!-- WhatsApp Contact Input -->
+                    <div class="input-group">
+                        <label for="contactWhatsapp">Teléfono de Soporte WhatsApp (Ej: 5492615555555)</label>
+                        <input type="text" id="contactWhatsapp" placeholder="Ej: 5492615555555 (Solo números con código de país)">
+                    </div>
+                    <div class="input-group">
+                        <label for="deslindeLink">Enlace del PDF de Deslinde</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="deslindeLink" placeholder="Ej: ./assets/deslinde.pdf" style="flex: 1;">
+                            <input type="file" id="deslindeLinkFile" accept=".pdf" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('deslindeLinkFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="clasificacionesLink">Enlace del PDF de Clasificaciones (Se sube después de la carrera)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="clasificacionesLink" placeholder="Ej: ./assets/clasificaciones.pdf" style="flex: 1;">
+                            <input type="file" id="clasificacionesLinkFile" accept=".pdf" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('clasificacionesLinkFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="posterImage">Ruta de la Imagen del Afiche (Fondo)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="posterImage" placeholder="Ej: ./assets/trail_background.jpg" style="flex: 1;">
+                            <input type="file" id="posterImageFile" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('posterImageFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="tshirtImage">Ruta de la Imagen de la Remera</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="tshirtImage" placeholder="Ej: ./assets/remera_oficial.png" style="flex: 1;">
+                            <input type="file" id="tshirtImageFile" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('tshirtImageFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="altitudeMapImage">Ruta de la Imagen de Altimetría</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="altitudeMapImage" placeholder="Ej: ./assets/perfil_elevacion.png" style="flex: 1;">
+                            <input type="file" id="altitudeMapImageFile" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('altitudeMapImageFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                    </div>
+                    
+                    <div class="input-group" style="grid-column: span 2; margin-top: 1rem;">
+                        <label style="font-weight: 700; color: var(--accent-cyan); display: block; margin-bottom: 0.5rem;">🎨 Personalización de Tonos de Color de la Web:</label>
+                        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                            <!-- Botón Naranja (Fuego) -->
+                            <button type="button" class="color-theme-btn" data-theme="orange" style="background: #1a1a1a; border: 2px solid #ff6b35; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <span style="display: inline-block; width: 14px; height: 14px; background: #ff6b35; border-radius: 50%;"></span> Naranja Fuego
+                            </button>
+                            <!-- Botón Verde (Montaña) -->
+                            <button type="button" class="color-theme-btn" data-theme="green" style="background: #1a1a1a; border: 2px solid #00e676; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <span style="display: inline-block; width: 14px; height: 14px; background: #00e676; border-radius: 50%;"></span> Verde Bosque
+                            </button>
+                            <!-- Botón Azul (Glaciar) -->
+                            <button type="button" class="color-theme-btn" data-theme="blue" style="background: #1a1a1a; border: 2px solid #00f2fe; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <span style="display: inline-block; width: 14px; height: 14px; background: #00f2fe; border-radius: 50%;"></span> Azul Glaciar
+                            </button>
+                            <!-- Botón Rojo (Fuego) -->
+                            <button type="button" class="color-theme-btn" data-theme="red" style="background: #1a1a1a; border: 2px solid #ff1744; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <span style="display: inline-block; width: 14px; height: 14px; background: #ff1744; border-radius: 50%;"></span> Rojo Volcán
+                            </button>
+                            <!-- Botón Púrpura (Neón) -->
+                            <button type="button" class="color-theme-btn" data-theme="purple" style="background: #1a1a1a; border: 2px solid #e040fb; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <span style="display: inline-block; width: 14px; height: 14px; background: #e040fb; border-radius: 50%;"></span> Púrpura Neón
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="grid-column: span 2; margin-top: 1.2rem;">
+                        <label style="font-weight: 700; color: var(--accent-orange); display: block; margin-bottom: 0.5rem;">⛰️ Personalización de Imagen de Fondo de la Web:</label>
+                        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                            <!-- Fondo Predeterminado -->
+                            <button type="button" class="bg-theme-btn" data-bg="default" style="background: #1a1a1a; border: 2px solid #20b05b; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-tree" style="color: #00e676;"></i> Bosque Verde
+                            </button>
+                            <!-- Fondo Montaña Nevada -->
+                            <button type="button" class="bg-theme-btn" data-bg="snow" style="background: #1a1a1a; border: 2px solid #00b0ff; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-snowflake" style="color: #00b0ff;"></i> Nieve / Alta Montaña
+                            </button>
+                            <!-- Fondo Atardecer -->
+                            <button type="button" class="bg-theme-btn" data-bg="sunset" style="background: #1a1a1a; border: 2px solid #ffab00; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-mountain-sun" style="color: #ffab00;"></i> Atardecer Dorado
+                            </button>
+                            <!-- Fondo Valle Rocoso -->
+                            <button type="button" class="bg-theme-btn" data-bg="rocky" style="background: #1a1a1a; border: 2px solid #a1887f; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-mountain" style="color: #a1887f;"></i> Valle Rocoso
+                            </button>
+                            <!-- Solo Color Oscuro -->
+                            <button type="button" class="bg-theme-btn" data-bg="solid" style="background: #1a1a1a; border: 2px solid #555; color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; transition: transform 0.2s;">
+                                <i class="fa-solid fa-palette" style="color: #9e9e9e;"></i> Solo Color Oscuro
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+ 
+            <!-- SECTION 2: MAPS & DOWNLOADS -->
+            <section class="admin-section">
+                <h2><i class="fa-solid fa-map-location-dot"></i> Mapas e Hitos de Ruta</h2>
+                <div class="form-grid grid-3">
+                    <div class="input-group">
+                        <label for="gpxLink">Enlace GPX</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="gpxLink" placeholder="Ej: ./assets/ruta15k.gpx" style="flex: 1;">
+                            <input type="file" id="gpxLinkFile" accept=".gpx" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('gpxLinkFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="kmlLink">Enlace KML</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="kmlLink" placeholder="Ej: ./assets/ruta15k.kml" style="flex: 1;">
+                            <input type="file" id="kmlLinkFile" accept=".kml" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('kmlLinkFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="startLocationMapLink">Enlace del Punto de Largada</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="startLocationMapLink" placeholder="Ej: URL de ubicación en Google Maps" style="flex: 1;">
+                            <a id="btn-open-start-google-maps" href="#" target="_blank" class="btn-secondary" style="padding: 0.85rem 1rem; flex-shrink: 0; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mapa interactivo de largada y trazador de rutas -->
+                <div class="input-group" style="margin-top: 1.5rem;">
+                    <label style="font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem;">
+                        <span><i class="fa-solid fa-map-pin"></i> Marcar Punto de Largada y Trazar Ruta</span>
+                        <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-secondary);">Haz clic en el mapa para posicionar el punto de largada.</span>
+                    </label>
+                                <!-- Panel de Buscador Único para el Mapa -->
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem; background: rgba(0,0,0,0.15); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem; width: 100%;">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; width: 100%;">
+                            <input type="text" id="map-search-input" placeholder="Escribe un lugar o ciudad (ej: Las Leñas, Malargüe, Valle Grande...)" style="flex: 1; min-width: 250px; margin: 0; border-color: var(--accent-cyan);">
+                        </div>
+                        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; width: 100%;">
+                            <button type="button" class="btn-submit" id="btn-search-start-loc" style="margin: 0; background: #00f2fe; color: #000; font-weight: 600; padding: 0.8rem 1.2rem; flex: 1; min-width: 180px; box-shadow: 0 0 10px rgba(0,242,254,0.2);">
+                                <i class="fa-solid fa-location-crosshairs"></i> 1. Ir y Ubicar Largada
+                            </button>
+                            <button type="button" class="btn-submit" id="btn-calculate-route" style="margin: 0; background: var(--accent-orange); color: #000; font-weight: 600; padding: 0.8rem 1.2rem; flex: 1; min-width: 180px; box-shadow: 0 0 10px rgba(255,107,53,0.2);">
+                                <i class="fa-solid fa-route"></i> 2. Medir Ruta hasta aquí
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Panel de Bloqueo del Marcador -->
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; background: rgba(0,0,0,0.15); padding: 0.6rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); width: 100%;">
+                        <input type="checkbox" id="lock-start-marker" checked style="width: 20px; height: 20px; cursor: pointer; margin: 0;">
+                        <label for="lock-start-marker" style="font-weight: 600; color: var(--accent-cyan); cursor: pointer; user-select: none; margin: 0; font-size: 0.9rem;">
+                            🔒 Bloquear posición del marcador de Largada (Evita cambios accidentales al arrastrar el mapa)
+                        </label>
+                               <div id="admin-map" style="height: 380px; width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 5; margin-bottom: 1rem;"></div>
+
+                    <div id="route-result-panel" class="hidden" style="background: rgba(0, 242, 254, 0.1); border: 1px solid var(--accent-cyan); padding: 1.2rem; border-radius: var(--radius-md); font-size: 1rem; color: #fff; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; width: 100%; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15);">
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                            <span>Distancia por carretera a <strong id="route-city-name">-</strong>: <strong id="route-distance-value" style="color: var(--success); font-size: 1.2rem; text-shadow: 0 0 8px rgba(0,230,118,0.5);">-</strong></span>
+                        </div>
+                        <a id="btn-open-google-maps-route" href="#" target="_blank" class="btn-submit" style="margin: 0; background: #00e676; color: #000; font-weight: 800; padding: 1rem 2rem; font-size: 1.05rem; border-radius: var(--radius-md); text-decoration: none; display: inline-flex; align-items: center; gap: 0.6rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 0 15px rgba(0, 230, 118, 0.4); text-transform: uppercase; border: none; cursor: pointer;">
+                            <i class="fa-solid fa-map-location-dot" style="font-size: 1.2rem;"></i> ABRIR RUTA EN GOOGLE MAPS
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: BANK DETAILS -->
+            <section class="admin-section">
+                <h2><i class="fa-solid fa-wallet"></i> Datos de Facturación y Pago</h2>
+                <div class="input-group">
+                    <label for="paymentDetails">Instrucciones de Transferencia <span class="requirement">*</span></label>
+                    <textarea id="paymentDetails" rows="4" required placeholder="Ingresa los datos bancarios del organizador (CBU, Alias, Banco, Titular, etc.)"></textarea>
+                </div>
+            </section>
+
+            <!-- SECTION 4: DISTANCES -->
+            <section class="admin-section">
+                <h2>
+                    <span><i class="fa-solid fa-person-running"></i> Distancias y Costos</span>
+                </h2>
+                
+                <!-- Table for active distances -->
+                <table class="admin-table" id="distances-table">
+                    <thead>
+                        <tr>
+                            <th>ID / Código</th>
+                            <th>Nombre de Distancia</th>
+                            <th>Costo ($)</th>
+                            <th>¿Auto Cat?</th>
+                            <th>Detalles / Hitos</th>
+                            <th style="width: 80px; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="distances-list">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+
+                <!-- Form to add new distance -->
+                <div class="form-grid grid-3 mt-2" style="background: rgba(0,0,0,0.15); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div class="input-group">
+                        <label for="new-dist-id">Código (Ej: 15K)</label>
+                        <input type="text" id="new-dist-id" placeholder="Ej: 15K">
+                    </div>
+                    <div class="input-group">
+                        <label for="new-dist-name">Nombre de Distancia</label>
+                        <input type="text" id="new-dist-name" placeholder="Ej: 15K Competitivo">
+                    </div>
+                    <div class="input-group">
+                        <label for="new-dist-price">Precio ($)</label>
+                        <input type="number" id="new-dist-price" placeholder="Ej: 8500">
+                    </div>
+                    <div class="input-group" style="grid-column: span 3; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="checkbox" id="new-dist-auto-category" checked style="width: 22px; height: 22px; cursor: pointer; margin: 0;">
+                        <label for="new-dist-auto-category" style="font-weight: 600; color: var(--accent-orange); cursor: pointer; user-select: none; margin: 0;">Asignar categorías automáticamente según la edad del corredor</label>
+                    </div>
+                    <div class="input-group" style="grid-column: span 3;">
+                        <label for="new-dist-detail">Descripción del Circuito e Información de Distancia</label>
+                        <textarea id="new-dist-detail" rows="3" placeholder="Ej: Recorrido competitivo por senderos técnicos de montaña. Cuenta con 3 puestos de hidratación (Km 4, Km 8 y Km 12). Desnivel positivo acumulado de +650m. Obligatorio llevar silbato y manta térmica."></textarea>
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="new-dist-gpx">Ruta GPX específica de esta distancia (opcional)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="new-dist-gpx" placeholder="Ej: ./IMAGENES/circuito_5k.gpx" style="flex: 1;">
+                            <input type="file" id="new-dist-gpx-file" accept=".gpx" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('new-dist-gpx-file').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="new-dist-altitude">Imagen de Altimetría específica de esta distancia (opcional)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="new-dist-altitude" placeholder="Ej: ./IMAGENES/altimetria_5k.jpg" style="flex: 1;">
+                            <input type="file" id="new-dist-altitude-file" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('new-dist-altitude-file').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group" style="justify-content: flex-end; margin-top: 1.45rem;">
+                        <div style="display: flex; gap: 0.5rem; width: 100%;">
+                            <button type="button" class="btn-submit" id="btn-add-distance" style="padding: 0.8rem; flex: 1;">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
+                            <button type="button" class="btn-secondary hidden" id="btn-cancel-edit-distance" style="padding: 0.8rem; margin: 0;">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: CATEGORIES -->
+            <section class="admin-section">
+                <h2>
+                    <span><i class="fa-solid fa-users"></i> Categorías por Edades</span>
+                    <button type="button" class="btn-secondary" id="btn-load-default-categories" style="font-size: 0.8rem; padding: 0.4rem 1rem;">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> Cargar Estándar
+                    </button>
+                </h2>
+
+                <div class="input-group mb-2 select-distance-cat-container" style="max-width: 400px; display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem;">
+                    <label for="select-cat-distance" style="font-weight: 700; color: var(--accent-cyan); font-size: 0.95rem;">Gestionar categorías para la distancia:</label>
+                    <select id="select-cat-distance" style="padding: 0.75rem 1rem; font-size: 1.05rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: #fff; width: 100%; cursor: pointer;">
+                        <!-- Cargar dinámicamente -->
+                    </select>
+                </div>
+
+                <!-- Table for active categories -->
+                <table class="admin-table" id="categories-table">
+                    <thead>
+                        <tr>
+                            <th>Identificador</th>
+                            <th>Nombre de la Categoría</th>
+                            <th>Edad Mínima</th>
+                            <th>Edad Máxima</th>
+                            <th>¿Paga?</th>
+                            <th style="width: 100px; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categories-list">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+
+                <!-- Form to add new category -->
+                <div class="form-grid grid-3 mt-2" style="background: rgba(0,0,0,0.15); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div class="input-group">
+                        <label for="new-cat-id">ID Interno</label>
+                        <input type="text" id="new-cat-id" placeholder="Ej: master_a">
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="new-cat-name">Nombre de Categoría</label>
+                        <input type="text" id="new-cat-name" placeholder="Ej: Master A (30 a 39 años)">
+                    </div>
+                    <div class="input-group">
+                        <label for="new-cat-min">Edad Mínima</label>
+                        <input type="number" id="new-cat-min" placeholder="Ej: 30">
+                    </div>
+                    <div class="input-group">
+                        <label for="new-cat-max">Edad Máxima</label>
+                        <input type="number" id="new-cat-max" placeholder="Ej: 39">
+                    </div>
+                    <div class="input-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem;">
+                        <input type="checkbox" id="new-cat-requires-payment" checked style="width: 22px; height: 22px; cursor: pointer; margin: 0;">
+                        <label for="new-cat-requires-payment" style="font-weight: 600; color: var(--accent-orange); cursor: pointer; user-select: none; margin: 0;">¿Paga inscripción?</label>
+                    </div>
+                    <div class="input-group" style="justify-content: flex-end; display: flex; gap: 0.5rem; align-items: flex-end; grid-column: span 3; margin-top: 0.5rem;">
+                        <button type="button" class="btn-secondary hidden" id="btn-cancel-cat-edit" style="padding: 0.8rem; width: 200px; height: 46px;">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn-submit" id="btn-add-category" style="padding: 0.8rem; width: 200px; height: 46px;">
+                            <i class="fa-solid fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: SPONSORS -->
+            <section class="admin-section">
+                <h2><i class="fa-solid fa-handshake"></i> Auspiciantes / Sponsors</h2>
+                <p class="mb-2" style="color: var(--text-secondary); font-size: 0.95rem;">
+                    Agrega imágenes o logotipos de los auspiciantes de la carrera. Se mostrarán en un banner al final del portal público.
+                </p>
+                <div class="form-grid grid-2" style="margin-bottom: 1.5rem; align-items: flex-end;">
+                    <div class="input-group">
+                        <label>Subir Logo de Auspiciante</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="new-sponsor-logo" placeholder="Ej: ./IMAGENES/SPONSOR1.png" style="flex: 1;">
+                            <input type="file" id="sponsor-file-input" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('sponsor-file-input').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <button type="button" class="btn-submit" id="btn-add-sponsor" style="padding: 0.85rem 1rem; width: 100%;">
+                            <i class="fa-solid fa-plus"></i> Agregar Auspiciante
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="distances-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Vista Previa</th>
+                                <th>Ruta del Logo</th>
+                                <th style="width: 100px; text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sponsors-list-body">
+                            <!-- Dynamically loaded -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 6: ACTIONS & EXPORT -->
+            <section class="admin-section">
+                <h2><i class="fa-solid fa-download"></i> Guardar y Exportar</h2>
+                <p class="mb-2" style="color: var(--text-secondary); font-size: 0.95rem;">
+                    Una vez configurados los parámetros, haz clic en el botón de descarga. Se descargará el archivo <code>config.js</code>. Reemplázalo en la carpeta del proyecto para aplicar los cambios de inmediato en la web pública.
+                </p>
+
+                <div class="form-grid grid-3" style="grid-template-columns: 1fr 1fr 1fr; gap: 1rem; align-items: center;">
+                    <div>
+                        <button type="button" class="btn-submit" id="btn-save-disk" style="padding: 1.2rem; width: 100%; font-size: 1.1rem; background: #00f2fe; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); color: #000000; font-weight: 800;">
+                            <i class="fa-solid fa-floppy-disk"></i> GUARDAR EN DISCO
+                        </button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn-secondary" id="btn-download-config" style="padding: 1.2rem; width: 100%; font-size: 1.1rem; height: 100%;">
+                            <i class="fa-solid fa-file-arrow-down"></i> DESCARGAR CONFIG.JS
+                        </button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn-secondary" id="btn-copy-json" style="padding: 1.2rem; width: 100%; font-size: 1.1rem; height: 100%;">
+                            <i class="fa-solid fa-copy"></i> Copiar JSON
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <label style="font-weight: 600; color: var(--accent-cyan); display: block;">Vista previa del JSON generado:</label>
+                    <pre class="json-preview" id="json-preview"></pre>
+                </div>
+            </section>
+        </form>
+        <footer class="app-footer" style="text-align: center; margin-top: 3rem; padding-bottom: 2rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+            <p>&copy; 2026 Panel Administrativo. Todos los derechos reservados.</p>
+            <p style="margin-top: 0.3rem; font-size: 0.8rem; color: var(--text-muted);">
+                Diseño y Programación: <a href="https://wa.me/5492604552146" target="_blank" style="color: var(--accent-cyan); font-weight: 700; text-decoration: none; transition: color 0.2s;"><i class="fa-solid fa-laptop-code"></i> RR Cómputos! (Tel: 2604552146)</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Admin JavaScript Configuration & Logic -->
+    <script src="./config.js?v=2.2"></script>
+    <script>
+        (function() {
+            const config = window.RACE_CONFIG;
+            if (config) {
+                if (config.themeColors) {
+                    const root = document.documentElement;
+                    root.style.setProperty('--accent-orange', config.themeColors.primary);
+                    root.style.setProperty('--accent-orange-glow', config.themeColors.primaryGlow);
+                    root.style.setProperty('--accent-orange-dim', config.themeColors.primaryDim);
+                    root.style.setProperty('--accent-cyan', config.themeColors.secondary);
+                    root.style.setProperty('--accent-cyan-glow', config.themeColors.secondaryGlow);
+                }
+                if (config.themeBackground) {
+                    const bgOverlay = document.getElementById('bg-overlay');
+                    if (bgOverlay) {
+                        const BACKGROUND_THEMES = {
+                            default: './assets/trail_background.jpg',
+                            snow: './assets/snow_mountain.jpg',
+                            sunset: './assets/sunset_ridge.jpg',
+                            rocky: './assets/rocky_valley.jpg',
+                            solid: 'none'
+                        };
+                        const bgPath = BACKGROUND_THEMES[config.themeBackground] || BACKGROUND_THEMES.default;
+                        if (bgPath === 'none') {
+                            bgOverlay.style.backgroundImage = 'none';
+                        } else {
+                            bgOverlay.style.backgroundImage = "url('" + bgPath + "')";
+                        }
+                    }
+                }
+            }
+        })();
+    </script>
+    <script src="./admin.js?v=2.2"></script>
+</body>
+</html>
