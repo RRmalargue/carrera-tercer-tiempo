@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         altitudeMapImage: '',
         gpxLink: '',
         kmlLink: '',
+        stravaLink: '',
+        garminLink: '',
+        googleEarthLink: '',
         startLocationMapLink: '',
         deslindeLink: '',
         clasificacionesLink: '',
@@ -24,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             secondary: '#00f2fe',
             secondaryGlow: 'rgba(0, 242, 254, 0.35)'
         },
-        themeBackground: 'default'
+        themeBackground: 'default',
+        formFields: []
     };
 
     // DOM Elements - General Info
@@ -42,10 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements - Maps
     const inputGpxLink = document.getElementById('gpxLink');
     const inputKmlLink = document.getElementById('kmlLink');
+    const inputStravaLink = document.getElementById('stravaLink');
+    const inputGarminLink = document.getElementById('garminLink');
+    const inputGoogleEarthLink = document.getElementById('googleEarthLink');
     const inputStartLocationMapLink = document.getElementById('startLocationMapLink');
+    const inputStartLatitude = document.getElementById('startLatitude');
+    const inputStartLongitude = document.getElementById('startLongitude');
 
     // DOM Elements - Payments
     const inputPaymentDetails = document.getElementById('paymentDetails');
+
+    // DOM Elements - Form Fields Section
+    const fieldsDefaultTbody = document.getElementById('fields-default-tbody');
+    const fieldsCustomTbody = document.getElementById('fields-custom-tbody');
+    const inputNewFieldLabel = document.getElementById('new-field-label');
+    const inputNewFieldRequired = document.getElementById('new-field-required');
+    const btnAddCustomField = document.getElementById('btn-add-custom-field');
 
     // DOM Elements - Sponsors
     const inputNewSponsorLogo = document.getElementById('new-sponsor-logo');
@@ -60,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputNewDistPrice = document.getElementById('new-dist-price');
     const inputNewDistDetail = document.getElementById('new-dist-detail');
     const inputNewDistGpx = document.getElementById('new-dist-gpx');
+    const inputNewDistStrava = document.getElementById('new-dist-strava');
+    const inputNewDistGarmin = document.getElementById('new-dist-garmin');
+    const inputNewDistGoogleEarth = document.getElementById('new-dist-google-earth');
     const inputNewDistAltitude = document.getElementById('new-dist-altitude');
     const inputNewDistAutoCategory = document.getElementById('new-dist-auto-category');
     const btnAddDistance = document.getElementById('btn-add-distance');
@@ -183,7 +202,23 @@ document.addEventListener('DOMContentLoaded', () => {
         inputAltitudeMapImage.value = state.altitudeMapImage || '';
         inputGpxLink.value = state.gpxLink || '';
         inputKmlLink.value = state.kmlLink || '';
+        inputStravaLink.value = state.stravaLink || '';
+        inputGarminLink.value = state.garminLink || '';
+        inputGoogleEarthLink.value = state.googleEarthLink || '';
         inputStartLocationMapLink.value = state.startLocationMapLink || '';
+        if (state.startLocationMapLink) {
+            const coords = parseCoordsFromUrl(state.startLocationMapLink);
+            if (coords) {
+                if (inputStartLatitude) inputStartLatitude.value = coords[0].toFixed(6);
+                if (inputStartLongitude) inputStartLongitude.value = coords[1].toFixed(6);
+            } else {
+                if (inputStartLatitude) inputStartLatitude.value = '';
+                if (inputStartLongitude) inputStartLongitude.value = '';
+            }
+        } else {
+            if (inputStartLatitude) inputStartLatitude.value = '';
+            if (inputStartLongitude) inputStartLongitude.value = '';
+        }
         inputPaymentDetails.value = state.paymentDetails || '';
 
         // Sincronizar botón Ver de Google Maps de Largada
@@ -192,8 +227,155 @@ document.addEventListener('DOMContentLoaded', () => {
             viewBtn.href = state.startLocationMapLink || '#';
         }
 
+        // Inicializar y renderizar campos del formulario
+        if (!state.formFields || state.formFields.length === 0) {
+            state.formFields = [
+                { id: "nombre", label: "Nombre", required: true, enabled: true, isDefault: true },
+                { id: "apellido", label: "Apellido", required: true, enabled: true, isDefault: true },
+                { id: "cuil", label: "CUIL", required: true, enabled: true, isDefault: true },
+                { id: "fecha_nacimiento", label: "Fecha de Nacimiento", required: true, enabled: true, isDefault: true },
+                { id: "genero", label: "Género", required: true, enabled: true, isDefault: true },
+                { id: "telefono", label: "Teléfono", required: true, enabled: true, isDefault: true },
+                { id: "talle_remera", label: "Talle de Remera", required: true, enabled: true, isDefault: true },
+                { id: "team_origen", label: "Team o Lugar de Origen", required: false, enabled: true, isDefault: true }
+            ];
+        }
+        renderFormFieldsEditor();
+
         // Sincronizar tema de color activo
         highlightActiveThemeButton();
+    }
+
+    function renderFormFieldsEditor() {
+        if (!fieldsDefaultTbody || !fieldsCustomTbody) return;
+
+        fieldsDefaultTbody.innerHTML = '';
+        fieldsCustomTbody.innerHTML = '';
+
+        (state.formFields || []).forEach((field, index) => {
+            if (field.isDefault) {
+                const tr = document.createElement('tr');
+                
+                const tdName = document.createElement('td');
+                tdName.innerHTML = `<strong>${field.label}</strong> <span style="font-size: 0.8rem; color: var(--text-muted);">(ID: ${field.id})</span>`;
+                tr.appendChild(tdName);
+
+                const tdEnabled = document.createElement('td');
+                tdEnabled.style.textAlign = 'center';
+                const isCritical = ['nombre', 'apellido', 'fecha_nacimiento', 'genero'].includes(field.id);
+                tdEnabled.innerHTML = `<input type="checkbox" data-index="${index}" class="field-enable-check" ${field.enabled ? 'checked' : ''} ${isCritical ? 'disabled' : ''}>`;
+                tr.appendChild(tdEnabled);
+
+                const tdRequired = document.createElement('td');
+                tdRequired.style.textAlign = 'center';
+                tdRequired.innerHTML = `<input type="checkbox" data-index="${index}" class="field-require-check" ${field.required ? 'checked' : ''} ${isCritical ? 'disabled' : ''}>`;
+                tr.appendChild(tdRequired);
+
+                const tdType = document.createElement('td');
+                let typeText = 'Texto';
+                if (field.id === 'fecha_nacimiento') typeText = 'Fecha (Especial)';
+                if (field.id === 'genero' || field.id === 'talle_remera') typeText = 'Selección (Menú)';
+                tdType.textContent = typeText;
+                tr.appendChild(tdType);
+
+                fieldsDefaultTbody.appendChild(tr);
+            } else {
+                const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.innerHTML = `<strong>${field.label}</strong> <span style="font-size: 0.8rem; color: var(--text-muted);">(ID: ${field.id})</span>`;
+                tr.appendChild(tdName);
+
+                const tdRequired = document.createElement('td');
+                tdRequired.style.textAlign = 'center';
+                tdRequired.innerHTML = `<input type="checkbox" data-index="${index}" class="field-require-check" ${field.required ? 'checked' : ''}>`;
+                tr.appendChild(tdRequired);
+
+                const tdAction = document.createElement('td');
+                tdAction.style.textAlign = 'center';
+                tdAction.innerHTML = `<button type="button" class="btn-danger btn-delete-custom-field" data-index="${index}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #ff3b30; color: white; border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash-can"></i> Borrar</button>`;
+                tr.appendChild(tdAction);
+
+                fieldsCustomTbody.appendChild(tr);
+            }
+        });
+
+        // Add event listeners
+        document.querySelectorAll('.field-enable-check').forEach(chk => {
+            chk.addEventListener('change', (e) => {
+                const index = parseInt(e.target.dataset.index);
+                state.formFields[index].enabled = e.target.checked;
+                if (!e.target.checked) {
+                    state.formFields[index].required = false;
+                    const reqChk = document.querySelector(`.field-require-check[data-index="${index}"]`);
+                    if (reqChk) reqChk.checked = false;
+                }
+                updateJsonPreview();
+            });
+        });
+
+        document.querySelectorAll('.field-require-check').forEach(chk => {
+            chk.addEventListener('change', (e) => {
+                const index = parseInt(e.target.dataset.index);
+                state.formFields[index].required = e.target.checked;
+                if (e.target.checked) {
+                    state.formFields[index].enabled = true;
+                    const enChk = document.querySelector(`.field-enable-check[data-index="${index}"]`);
+                    if (enChk) enChk.checked = true;
+                }
+                updateJsonPreview();
+            });
+        });
+
+        document.querySelectorAll('.btn-delete-custom-field').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = parseInt(e.currentTarget.dataset.index);
+                state.formFields.splice(index, 1);
+                renderFormFieldsEditor();
+                updateJsonPreview();
+            });
+        });
+    }
+
+    // Event listener for adding custom field
+    if (btnAddCustomField) {
+        btnAddCustomField.addEventListener('click', () => {
+            const labelVal = inputNewFieldLabel.value.trim();
+            if (!labelVal) {
+                alert('Por favor, ingresa el nombre del nuevo campo.');
+                return;
+            }
+
+            const idVal = 'custom_' + labelVal
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9\s-_]/g, '')
+                .trim()
+                .replace(/\s+/g, '_');
+
+            const exists = state.formFields.some(f => f.id === idVal);
+            if (exists) {
+                alert('Ya existe un campo con este nombre o ID.');
+                return;
+            }
+
+            const requiredVal = inputNewFieldRequired.checked;
+
+            state.formFields.push({
+                id: idVal,
+                label: labelVal,
+                required: requiredVal,
+                enabled: true,
+                isDefault: false
+            });
+
+            inputNewFieldLabel.value = '';
+            inputNewFieldRequired.checked = true;
+
+            renderFormFieldsEditor();
+            updateJsonPreview();
+        });
     }
 
     function loadStandardDefaults() {
@@ -270,6 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>
                     <small style="display: block; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${dist.detail || ''}">${dist.detail || '-'}</small>
                     ${dist.gpxLink ? `<br><span class="badge" style="background: rgba(0, 242, 254, 0.1); color: var(--accent-cyan); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-route"></i> GPX: ${dist.gpxLink}</span>` : ''}
+                    ${dist.stravaLink ? `<br><span class="badge" style="background: rgba(252, 76, 2, 0.1); color: #fc4c02; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-brands fa-strava"></i> Strava: ${dist.stravaLink}</span>` : ''}
+                    ${dist.garminLink ? `<br><span class="badge" style="background: rgba(0, 150, 214, 0.1); color: #0096d6; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-compass"></i> Garmin: ${dist.garminLink}</span>` : ''}
+                    ${dist.googleEarthLink ? `<br><span class="badge" style="background: rgba(66, 133, 244, 0.1); color: #4285f4; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-earth-americas"></i> Earth: ${dist.googleEarthLink}</span>` : ''}
                     ${dist.altitudeMapImage ? `<br><span class="badge" style="background: rgba(255, 107, 53, 0.1); color: var(--accent-orange); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin-top: 0.2rem;"><i class="fa-solid fa-chart-area"></i> Altimetría: ${dist.altitudeMapImage}</span>` : ''}
                 </td>
                 <td style="text-align: center; white-space: nowrap;">
@@ -313,6 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewDistPrice.value = dist.price;
         inputNewDistDetail.value = dist.detail || '';
         inputNewDistGpx.value = dist.gpxLink || '';
+        inputNewDistStrava.value = dist.stravaLink || '';
+        inputNewDistGarmin.value = dist.garminLink || '';
+        inputNewDistGoogleEarth.value = dist.googleEarthLink || '';
         inputNewDistAltitude.value = dist.altitudeMapImage || '';
         inputNewDistAutoCategory.checked = dist.autoCategory !== false;
 
@@ -332,6 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
         inputNewDistPrice.value = '';
         inputNewDistDetail.value = '';
         inputNewDistGpx.value = '';
+        inputNewDistStrava.value = '';
+        inputNewDistGarmin.value = '';
+        inputNewDistGoogleEarth.value = '';
         inputNewDistAltitude.value = '';
         inputNewDistAutoCategory.checked = true;
 
@@ -349,6 +540,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const price = parseFloat(inputNewDistPrice.value);
         const detail = inputNewDistDetail.value.trim();
         const gpxLink = inputNewDistGpx.value.trim();
+        const stravaLink = inputNewDistStrava.value.trim();
+        const garminLink = inputNewDistGarmin.value.trim();
+        const googleEarthLink = inputNewDistGoogleEarth.value.trim();
         const altitudeMapImage = inputNewDistAltitude.value.trim();
         const autoCategory = inputNewDistAutoCategory.checked;
 
@@ -370,6 +564,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 price, 
                 detail, 
                 gpxLink, 
+                stravaLink,
+                garminLink,
+                googleEarthLink,
                 altitudeMapImage, 
                 autoCategory,
                 categories: existingDist.categories || []
@@ -387,6 +584,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 price, 
                 detail, 
                 gpxLink, 
+                stravaLink,
+                garminLink,
+                googleEarthLink,
                 altitudeMapImage, 
                 autoCategory,
                 categories: []
@@ -397,6 +597,9 @@ document.addEventListener('DOMContentLoaded', () => {
             inputNewDistPrice.value = '';
             inputNewDistDetail.value = '';
             inputNewDistGpx.value = '';
+            inputNewDistStrava.value = '';
+            inputNewDistGarmin.value = '';
+            inputNewDistGoogleEarth.value = '';
             inputNewDistAltitude.value = '';
             inputNewDistAutoCategory.checked = true;
         }
@@ -701,6 +904,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { el: inputAltitudeMapImage, prop: 'altitudeMapImage' },
         { el: inputGpxLink, prop: 'gpxLink' },
         { el: inputKmlLink, prop: 'kmlLink' },
+        { el: inputStravaLink, prop: 'stravaLink' },
+        { el: inputGarminLink, prop: 'garminLink' },
+        { el: inputGoogleEarthLink, prop: 'googleEarthLink' },
         { el: inputStartLocationMapLink, prop: 'startLocationMapLink' },
         { el: inputPaymentDetails, prop: 'paymentDetails' }
     ];
@@ -865,8 +1071,18 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
     // 7. MAPA INTERACTIVO DE LARGADA Y TRAZADO DE RUTA
     function parseCoordsFromUrl(url) {
         if (!url) return null;
-        // Extraer coordenadas de una URL tipo q=-34.603722,-58.381592
-        const match = url.match(/q=([-\d.]+),([-\d.]+)/);
+        // Extraer de q=lat,lng
+        let match = url.match(/q=([-\d.]+),([-\d.]+)/);
+        if (match) {
+            return [parseFloat(match[1]), parseFloat(match[2])];
+        }
+        // Extraer de query=lat,lng
+        match = url.match(/query=([-\d.]+),([-\d.]+)/);
+        if (match) {
+            return [parseFloat(match[1]), parseFloat(match[2])];
+        }
+        // Extraer si es una coordenada pura lat,lng
+        match = url.match(/^([-\d.]+)\s*,\s*([-\d.]+)$/);
         if (match) {
             return [parseFloat(match[1]), parseFloat(match[2])];
         }
@@ -972,19 +1188,20 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
 
     function updateStartLocationLink(lat, lng) {
         const input = document.getElementById('startLocationMapLink');
-        if (!input) return;
-
-        const newUrl = `https://maps.google.com/?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
-        input.value = newUrl;
+        if (input) {
+            // Formato oficial de Google Maps search API que abre directamente la App de Google Maps nativa en celulares
+            const newUrl = `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lng.toFixed(6)}`;
+            input.value = newUrl;
+            input.dispatchEvent(new Event('input'));
+        }
         
-        // Sincronizar botón Ver de Google Maps de Largada
+        if (inputStartLatitude) inputStartLatitude.value = lat.toFixed(6);
+        if (inputStartLongitude) inputStartLongitude.value = lng.toFixed(6);
+        
         const viewBtn = document.getElementById('btn-open-start-google-maps');
         if (viewBtn) {
-            viewBtn.href = newUrl;
+            viewBtn.href = `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lng.toFixed(6)}`;
         }
-
-        // Sincronizar con el state
-        input.dispatchEvent(new Event('input'));
     }
 
     async function searchCityAndRoute() {
@@ -1349,6 +1566,64 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
             selectBgTheme(bgName);
         });
     });
+
+    function handleCoordsInputChange() {
+        const lat = parseFloat(inputStartLatitude.value);
+        const lng = parseFloat(inputStartLongitude.value);
+        if (!isNaN(lat) && !isNaN(lng)) {
+            const isLocked = document.getElementById('lock-start-marker').checked;
+            if (startMarker) {
+                startMarker.setLatLng([lat, lng]);
+                if (isLocked) {
+                    startMarker.dragging.disable();
+                } else {
+                    startMarker.dragging.enable();
+                }
+            } else {
+                startMarker = L.marker([lat, lng], {
+                    draggable: !isLocked
+                }).addTo(adminMap);
+
+                startMarker.on('dragend', () => {
+                    const pos = startMarker.getLatLng();
+                    updateStartLocationLink(pos.lat, pos.lng);
+                    if (cityMarker) {
+                        recalculateActiveRoute();
+                    }
+                });
+            }
+
+            startMarker.bindPopup('<b>Largada de la Carrera</b>').openPopup();
+            
+            const inputLink = document.getElementById('startLocationMapLink');
+            if (inputLink) {
+                inputLink.value = `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lng.toFixed(6)}`;
+                inputLink.dispatchEvent(new Event('input'));
+            }
+            
+            const viewBtn = document.getElementById('btn-open-start-google-maps');
+            if (viewBtn) {
+                viewBtn.href = `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lng.toFixed(6)}`;
+            }
+
+            if (adminMap) {
+                adminMap.setView([lat, lng], adminMap.getZoom() || 12);
+            }
+            
+            if (cityMarker) {
+                recalculateActiveRoute();
+            }
+        }
+    }
+
+    if (inputStartLatitude) {
+        inputStartLatitude.addEventListener('input', handleCoordsInputChange);
+        inputStartLatitude.addEventListener('change', handleCoordsInputChange);
+    }
+    if (inputStartLongitude) {
+        inputStartLongitude.addEventListener('input', handleCoordsInputChange);
+        inputStartLongitude.addEventListener('change', handleCoordsInputChange);
+    }
 
     // INIT
     loadConfig();

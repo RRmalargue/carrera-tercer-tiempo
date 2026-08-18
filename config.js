@@ -20,6 +20,9 @@ window.RACE_CONFIG = {
       "price": 50000,
       "detail": "RECORRIDO COMPETITIVO, POR SENDEROS TECNICO, CON TREPADAS Y LUGARES MUY ATRACTIVOS DE MALARGUE, PUESTO DE HIDRATACION A LOS 2,5 KMS Y 8 KMS",
       "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
+      "stravaLink": "https://www.strava.com/routes/31248753",
+      "garminLink": "https://connect.garmin.com/modern/course/23847234",
+      "googleEarthLink": "https://earth.google.com/web/@-35.438479,-69.599445,1400a,30000d",
       "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
       "categories": [
         {
@@ -124,6 +127,9 @@ window.RACE_CONFIG = {
       "price": 35000,
       "detail": "EL RECORRIDO DE 5 KMS TRANSITARA POR SENDEROS TECNICOS, ARROYOS SECOS, Y ES LA DISTANCIA IDEAL PARA LOS QUE SE ESTAN INICIANDO EN EL CROSS-TRAIL.\nPUESTO DE HIDRATACION A LOS 2,5 KMS.",
       "gpxLink": "./IMAGENES/5 K 3 TIEMPO.gpx",
+      "stravaLink": "https://www.strava.com/routes/31248753",
+      "garminLink": "https://connect.garmin.com/modern/course/23847234",
+      "googleEarthLink": "https://earth.google.com/web/@-35.438479,-69.599445,1400a,30000d",
       "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg",
       "autoCategory": false,
       "categories": [
@@ -162,5 +168,70 @@ window.RACE_CONFIG = {
     "secondary": "#ff007f",
     "secondaryGlow": "rgba(255, 0, 127, 0.35)"
   },
-  "themeBackground": "sunset"
+  "themeBackground": "sunset",
+  "formFields": [
+    {
+      "id": "nombre",
+      "label": "Nombre",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "apellido",
+      "label": "Apellido",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "cuil",
+      "label": "CUIL",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "fecha_nacimiento",
+      "label": "Fecha de Nacimiento",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "genero",
+      "label": "Género",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "telefono",
+      "label": "Teléfono",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "talle_remera",
+      "label": "Talle de Remera",
+      "required": true,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "team_origen",
+      "label": "Team o Lugar de Origen",
+      "required": false,
+      "enabled": true,
+      "isDefault": true
+    },
+    {
+      "id": "custom_licencia_facimo",
+      "label": "Licencia FACIMO",
+      "required": true,
+      "enabled": true,
+      "isDefault": false
+    }
+  ]
 };

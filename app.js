@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let uploadedFileType = null;
 
     // IMPORTANT: Reemplazar esta URL con el Web App URL provisto por Google Apps Script al publicar el script.
-    // Si la URL contiene 'TU_SCRIPT_URL_AQUI', el sistema funcionará en MODO DEMOSTRACIÓN (simulación).
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_ey1wwIBjzMzbOmqURIgFgkfVCtX3PvRgVpxZbPv7xtNlLlKF4OoCXKTU8hvkMsLX/exec';
+    // Si la URL contiene 'https://script.google.com/macros/s/AKfycbwweMpaxheND7uCNibwxZPxV0fUqgXUTAGqUXeXcgwT84oGQFM5oIKtjfAhlhPTuQUT/exec', el sistema funcionará en MODO DEMOSTRACIÓN (simulación).
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHS9ynr4_4yra_VMVXT01nGcGIRm1-GtAVUcqRKy-OtSAgiGVe2WznKi1arEDdHl7y/exec';
 
     // HTML Elements
     const form = document.getElementById('registration-form');
@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const deslindeDownload = document.getElementById('deslinde-download');
     const gpxBtn = document.getElementById('gpx-btn');
     const kmlBtn = document.getElementById('kml-btn');
+    const stravaBtn = document.getElementById('strava-btn');
+    const garminBtn = document.getElementById('garmin-btn');
+    const earthBtn = document.getElementById('earth-btn');
     const startLocationBtn = document.getElementById('start-location-btn');
     const distancesContainer = document.getElementById('distances-container');
 
@@ -129,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Cargada configuración dinámica local desde config.js');
             config = window.RACE_CONFIG;
             renderRaceDetails();
+            setupDynamicFormFields();
+            loadPrefilledData();
         } else {
             // Intentar fetch config.json por compatibilidad hacia atrás
             try {
@@ -136,10 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 config = await response.json();
                 console.log('Cargada configuración dinámica desde config.json');
                 renderRaceDetails();
+                setupDynamicFormFields();
+                loadPrefilledData();
             } catch (error) {
                 console.warn('Advertencia: No se detectó config.js ni se pudo cargar config.json. Usando configuración de respaldo integrada.');
                 config = FALLBACK_CONFIG;
                 renderRaceDetails();
+                setupDynamicFormFields();
+                loadPrefilledData();
             }
         }
     }
@@ -193,6 +202,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (logoImageElement && logoHeaderContainer) {
                 logoImageElement.src = config.logoImage;
                 logoHeaderContainer.classList.remove('hidden');
+
+                // Easter Egg: 5 toques en el logo te llevan al panel de administración
+                if (!logoImageElement.dataset.hasEasterEgg) {
+                    logoImageElement.dataset.hasEasterEgg = 'true';
+                    let logoClicks = 0;
+                    let logoClicksTimeout;
+                    logoImageElement.addEventListener('click', () => {
+                        logoClicks++;
+                        clearTimeout(logoClicksTimeout);
+                        if (logoClicks >= 5) {
+                            logoClicks = 0;
+                            window.location.href = 'admin.html';
+                        } else {
+                            logoClicksTimeout = setTimeout(() => {
+                                logoClicks = 0;
+                            }, 3000); // 3 segundos para completar los 5 toques
+                        }
+                    });
+                }
             }
         } else {
             if (logoHeaderContainer) {
@@ -270,6 +298,27 @@ document.addEventListener('DOMContentLoaded', () => {
             kmlBtn.classList.remove('hidden');
         } else {
             kmlBtn.classList.add('hidden');
+        }
+
+        if (config.stravaLink && config.stravaLink !== '#') {
+            stravaBtn.href = config.stravaLink;
+            stravaBtn.classList.remove('hidden');
+        } else {
+            stravaBtn.classList.add('hidden');
+        }
+
+        if (config.garminLink && config.garminLink !== '#') {
+            garminBtn.href = config.garminLink;
+            garminBtn.classList.remove('hidden');
+        } else {
+            garminBtn.classList.add('hidden');
+        }
+
+        if (config.googleEarthLink && config.googleEarthLink !== '#') {
+            earthBtn.href = config.googleEarthLink;
+            earthBtn.classList.remove('hidden');
+        } else {
+            earthBtn.classList.add('hidden');
         }
 
         if (config.startLocationMapLink && config.startLocationMapLink !== '#') {
@@ -385,6 +434,157 @@ document.addEventListener('DOMContentLoaded', () => {
         loadGpxMap();
     }
 
+    function isFieldEnabled(fieldId) {
+        if (!config || !config.formFields) return true;
+        const f = config.formFields.find(x => x.id === fieldId);
+        return f ? f.enabled : true;
+    }
+
+    function isFieldRequired(fieldId) {
+        if (!config || !config.formFields) return true;
+        const f = config.formFields.find(x => x.id === fieldId);
+        return f ? f.required : true;
+    }
+
+    function setupDynamicFormFields() {
+        if (!config || !config.formFields) return;
+
+        const customFieldsContainer = document.getElementById('custom-fields-container');
+        if (customFieldsContainer) {
+            customFieldsContainer.innerHTML = '';
+        }
+
+        config.formFields.forEach(field => {
+            if (field.isDefault) {
+                let element = document.getElementById(field.id);
+                if (field.id === 'fecha_nacimiento') {
+                    const dobGroup = document.getElementById('dob-inputs-group');
+                    if (dobGroup) {
+                        const container = dobGroup.closest('.input-group');
+                        if (container) {
+                            container.style.display = field.enabled ? 'block' : 'none';
+                        }
+                    }
+                } else if (field.id === 'genero') {
+                    const container = element ? element.closest('.input-group') : null;
+                    if (container) {
+                        container.style.display = field.enabled ? 'block' : 'none';
+                    }
+                } else if (field.id === 'talle_remera') {
+                    const container = element ? element.closest('.input-group') : null;
+                    if (container) {
+                        container.style.display = field.enabled ? 'block' : 'none';
+                    }
+                } else {
+                    const container = element ? element.closest('.input-group') : null;
+                    if (container) {
+                        container.style.display = field.enabled ? 'block' : 'none';
+                    }
+                }
+
+                if (element) {
+                    if (field.required) {
+                        element.setAttribute('required', 'required');
+                        const label = element.previousElementSibling;
+                        if (label && !label.querySelector('.requirement')) {
+                            label.innerHTML += ' <span class="requirement">*</span>';
+                        }
+                    } else {
+                        element.removeAttribute('required');
+                        const label = element.previousElementSibling;
+                        if (label) {
+                            const req = label.querySelector('.requirement');
+                            if (req) req.remove();
+                        }
+                    }
+                }
+            } else {
+                if (field.enabled && customFieldsContainer) {
+                    const group = document.createElement('div');
+                    group.className = 'input-group';
+                    
+                    const label = document.createElement('label');
+                    label.setAttribute('for', field.id);
+                    label.innerHTML = `${field.label} ${field.required ? '<span class="requirement">*</span>' : ''}`;
+                    group.appendChild(label);
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = field.id;
+                    input.name = field.id;
+                    input.placeholder = `Ingresa tu ${field.label.toLowerCase()}`;
+                    if (field.required) {
+                        input.setAttribute('required', 'required');
+                    }
+                    group.appendChild(input);
+
+                    input.addEventListener('blur', () => {
+                        updateFieldHighlight(input);
+                    });
+                    input.addEventListener('input', () => {
+                        updateFieldHighlight(input);
+                    });
+
+                    customFieldsContainer.appendChild(group);
+                }
+            }
+        });
+    }
+
+    function loadPrefilledData() {
+        try {
+            if (localStorage.getItem('runner_pref_nombre')) {
+                if (isFieldEnabled('nombre')) inputNombre.value = localStorage.getItem('runner_pref_nombre') || '';
+                if (isFieldEnabled('apellido')) inputApellido.value = localStorage.getItem('runner_pref_apellido') || '';
+                if (isFieldEnabled('cuil')) inputCuil.value = localStorage.getItem('runner_pref_cuil') || '';
+                
+                let savedDate = localStorage.getItem('runner_pref_fecha_nacimiento') || '';
+                if (savedDate && savedDate.indexOf('-') !== -1) {
+                    const parts = savedDate.split('-');
+                    if (parts.length === 3) {
+                        savedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+                }
+                
+                if (isFieldEnabled('fecha_nacimiento') && savedDate && savedDate.indexOf('/') !== -1) {
+                    const dateParts = savedDate.split('/');
+                    if (dateParts.length === 3) {
+                        if (birthDayInput) birthDayInput.value = dateParts[0];
+                        if (birthMonthInput) birthMonthInput.value = dateParts[1];
+                        if (birthYearInput) birthYearInput.value = dateParts[2];
+                        inputFechaNacimiento.value = savedDate;
+                    }
+                } else {
+                    inputFechaNacimiento.value = '';
+                    if (birthDayInput) birthDayInput.value = '';
+                    if (birthMonthInput) birthMonthInput.value = '';
+                    if (birthYearInput) birthYearInput.value = '';
+                }
+                
+                if (isFieldEnabled('genero')) inputGenero.value = localStorage.getItem('runner_pref_genero') || '';
+                if (isFieldEnabled('telefono')) inputTelefono.value = localStorage.getItem('runner_pref_telefono') || '';
+                if (isFieldEnabled('talle_remera')) inputTalleRemera.value = localStorage.getItem('runner_pref_talle_remera') || '';
+                
+                const teamInput = document.getElementById('team_origen');
+                if (teamInput && isFieldEnabled('team_origen')) {
+                    teamInput.value = localStorage.getItem('runner_pref_team_origen') || '';
+                }
+                
+                if (isFieldEnabled('fecha_nacimiento') && inputFechaNacimiento.value) {
+                    recalculateCategory();
+                }
+
+                // Resaltar campos correspondientes
+                const fields = [inputNombre, inputApellido, inputCuil, inputTelefono, inputTalleRemera, teamInput];
+                fields.forEach(field => {
+                    if (field) updateFieldHighlight(field);
+                });
+            }
+        } catch (storageErr) {
+            console.warn('Error al cargar datos desde localStorage:', storageErr);
+        }
+    }
+
     // 2. SELECCIÓN DE DISTANCIA
     function selectDistance(cardElement) {
         document.querySelectorAll('.selector-card').forEach(card => {
@@ -414,6 +614,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Descargas específicas de la distancia
             const gpxBtn = document.getElementById('gpx-btn');
             const kmlBtn = document.getElementById('kml-btn');
+            const stravaBtn = document.getElementById('strava-btn');
+            const garminBtn = document.getElementById('garmin-btn');
+            const earthBtn = document.getElementById('earth-btn');
             const startLocationBtn = document.getElementById('start-location-btn');
 
             if (currentDist.gpxLink && currentDist.gpxLink !== '#') {
@@ -424,6 +627,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 gpxBtn.classList.remove('hidden');
             } else {
                 gpxBtn.classList.add('hidden');
+            }
+
+            // Strava
+            if (currentDist.stravaLink && currentDist.stravaLink !== '#') {
+                stravaBtn.href = currentDist.stravaLink;
+                stravaBtn.classList.remove('hidden');
+            } else if (config.stravaLink && config.stravaLink !== '#') {
+                stravaBtn.href = config.stravaLink;
+                stravaBtn.classList.remove('hidden');
+            } else {
+                stravaBtn.classList.add('hidden');
+            }
+
+            // Garmin
+            if (currentDist.garminLink && currentDist.garminLink !== '#') {
+                garminBtn.href = currentDist.garminLink;
+                garminBtn.classList.remove('hidden');
+            } else if (config.garminLink && config.garminLink !== '#') {
+                garminBtn.href = config.garminLink;
+                garminBtn.classList.remove('hidden');
+            } else {
+                garminBtn.classList.add('hidden');
+            }
+
+            // Google Earth
+            if (currentDist.googleEarthLink && currentDist.googleEarthLink !== '#') {
+                earthBtn.href = currentDist.googleEarthLink;
+                earthBtn.classList.remove('hidden');
+            } else if (config.googleEarthLink && config.googleEarthLink !== '#') {
+                earthBtn.href = config.googleEarthLink;
+                earthBtn.classList.remove('hidden');
+            } else {
+                earthBtn.classList.add('hidden');
             }
 
             // KML y Largada (usar específicos o globales como fallback)
@@ -844,35 +1080,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let error = null;
             
-            error = error || checkField(inputNombre, !inputNombre.value.trim(), 'El nombre es obligatorio.');
-            error = error || checkField(inputApellido, !inputApellido.value.trim(), 'El apellido es obligatorio.');
-            
-            const selectedDistId = document.getElementById('selected-distance-id').value;
-            const cuilVal = inputCuil.value.trim();
-            let isCuilInvalid = false;
-            let cuilErrorMsg = '';
-
-            if (selectedDistId === 'INFANTILES') {
-                if (cuilVal.length > 0 && cuilVal.length !== 11) {
-                    isCuilInvalid = true;
-                    cuilErrorMsg = 'Si ingresas el CUIL, debe tener exactamente 11 números.';
-                }
-            } else {
-                if (!cuilVal || cuilVal.length !== 11) {
-                    isCuilInvalid = true;
-                    cuilErrorMsg = 'El CUIL es obligatorio y debe tener exactamente 11 números.';
-                }
+            if (isFieldEnabled('nombre') && isFieldRequired('nombre')) {
+                error = error || checkField(inputNombre, !inputNombre.value.trim(), 'El nombre es obligatorio.');
             }
-            error = error || checkField(inputCuil, isCuilInvalid, cuilErrorMsg);
+            if (isFieldEnabled('apellido') && isFieldRequired('apellido')) {
+                error = error || checkField(inputApellido, !inputApellido.value.trim(), 'El apellido es obligatorio.');
+            }
             
-            error = error || checkField(inputFechaNacimiento, !inputFechaNacimiento.value, 'La fecha de nacimiento es obligatoria.');
-            error = error || checkField(inputGenero, !inputGenero.value, 'Debes seleccionar tu género.');
-            
-            const ageVal = parseInt(inputEdad.value);
-            error = error || checkField(inputFechaNacimiento, isNaN(ageVal) || ageVal < 4, isNaN(ageVal) ? 'Fecha de nacimiento inválida.' : 'La edad mínima para participar es de 4 años.');
+            if (isFieldEnabled('cuil')) {
+                const isCuilReq = isFieldRequired('cuil');
+                const selectedDistId = document.getElementById('selected-distance-id').value;
+                const cuilVal = inputCuil.value.trim();
+                let isCuilInvalid = false;
+                let cuilErrorMsg = '';
 
-            error = error || checkField(inputTelefono, !inputTelefono.value.trim(), 'El teléfono es obligatorio.');
-            error = error || checkField(inputTalleRemera, !inputTalleRemera.value, 'Debes seleccionar el talle de remera.');
+                if (selectedDistId === 'INFANTILES') {
+                    if (cuilVal.length > 0 && cuilVal.length !== 11) {
+                        isCuilInvalid = true;
+                        cuilErrorMsg = 'Si ingresas el CUIL, debe tener exactamente 11 números.';
+                    }
+                } else {
+                    if (isCuilReq) {
+                        if (!cuilVal || cuilVal.length !== 11) {
+                            isCuilInvalid = true;
+                            cuilErrorMsg = 'El CUIL es obligatorio y debe tener exactamente 11 números.';
+                        }
+                    } else if (cuilVal.length > 0 && cuilVal.length !== 11) {
+                        isCuilInvalid = true;
+                        cuilErrorMsg = 'Si ingresas el CUIL, debe tener exactamente 11 números.';
+                    }
+                }
+                error = error || checkField(inputCuil, isCuilInvalid, cuilErrorMsg);
+            }
+            
+            if (isFieldEnabled('fecha_nacimiento') && isFieldRequired('fecha_nacimiento')) {
+                error = error || checkField(inputFechaNacimiento, !inputFechaNacimiento.value, 'La fecha de nacimiento es obligatoria.');
+            }
+            if (isFieldEnabled('genero') && isFieldRequired('genero')) {
+                error = error || checkField(inputGenero, !inputGenero.value, 'Debes seleccionar tu género.');
+            }
+            
+            if (isFieldEnabled('fecha_nacimiento')) {
+                const ageVal = parseInt(inputEdad.value);
+                error = error || checkField(inputFechaNacimiento, isNaN(ageVal) || ageVal < 4, isNaN(ageVal) ? 'Fecha de nacimiento inválida.' : 'La edad mínima para participar es de 4 años.');
+            }
+
+            if (isFieldEnabled('telefono') && isFieldRequired('telefono')) {
+                error = error || checkField(inputTelefono, !inputTelefono.value.trim(), 'El teléfono es obligatorio.');
+            }
+            if (isFieldEnabled('talle_remera') && isFieldRequired('talle_remera')) {
+                error = error || checkField(inputTalleRemera, !inputTalleRemera.value, 'Debes seleccionar el talle de remera.');
+            }
+
+            // Validar campos personalizados dinámicos
+            if (config && config.formFields) {
+                config.formFields.forEach(field => {
+                    if (!field.isDefault && field.enabled) {
+                        const customInput = document.getElementById(field.id);
+                        if (customInput && field.required) {
+                            error = error || checkField(customInput, !customInput.value.trim(), `El campo "${field.label}" es obligatorio.`);
+                        }
+                    }
+                });
+            }
 
             // Validar la distancia seleccionada
             const distance = document.getElementById('selected-distance-id').value;
@@ -1125,16 +1395,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Compile payload
         const formData = {
-            nombre: inputNombre.value.trim(),
-            apellido: inputApellido.value.trim(),
-            cuil: inputCuil.value.trim(),
-            fecha_nacimiento: formattedBirthdate,
-            edad: inputEdad.value.replace(' años', ''),
+            nombre: isFieldEnabled('nombre') ? inputNombre.value.trim() : '',
+            apellido: isFieldEnabled('apellido') ? inputApellido.value.trim() : '',
+            cuil: isFieldEnabled('cuil') ? inputCuil.value.trim() : '',
+            fecha_nacimiento: isFieldEnabled('fecha_nacimiento') ? formattedBirthdate : '',
+            edad: isFieldEnabled('fecha_nacimiento') ? inputEdad.value.replace(' años', '') : '',
             categoria: inputCategoria.value,
-            telefono: inputTelefono.value.trim(),
-            genero: formattedGender,
-            talle_remera: inputTalleRemera.value,
-            team_origen: document.getElementById('team_origen').value.trim(),
+            telefono: isFieldEnabled('telefono') ? inputTelefono.value.trim() : '',
+            genero: isFieldEnabled('genero') ? formattedGender : '',
+            talle_remera: isFieldEnabled('talle_remera') ? inputTalleRemera.value : '',
+            team_origen: isFieldEnabled('team_origen') ? document.getElementById('team_origen').value.trim() : '',
             distancia: document.getElementById('selected-distance-id').value,
             costo: document.getElementById('selected-distance-price').value,
             comprobante_base64: uploadedFileBase64,
@@ -1143,17 +1413,29 @@ document.addEventListener('DOMContentLoaded', () => {
             timestamp: new Date().toISOString()
         };
 
+        // Incluir campos personalizados en el payload de envío
+        if (config && config.formFields) {
+            config.formFields.forEach(field => {
+                if (!field.isDefault && field.enabled) {
+                    const customInput = document.getElementById(field.id);
+                    if (customInput) {
+                        formData[field.id] = customInput.value.trim();
+                    }
+                }
+            });
+        }
+
         // Guardar datos en localStorage para recordar en este dispositivo
         try {
-            localStorage.setItem('runner_pref_nombre', inputNombre.value.trim());
-            localStorage.setItem('runner_pref_apellido', inputApellido.value.trim());
-            localStorage.setItem('runner_pref_cuil', inputCuil.value.trim());
-            localStorage.setItem('runner_pref_fecha_nacimiento', inputFechaNacimiento.value);
-            localStorage.setItem('runner_pref_genero', inputGenero.value);
-            localStorage.setItem('runner_pref_telefono', inputTelefono.value.trim());
-            localStorage.setItem('runner_pref_talle_remera', inputTalleRemera.value);
+            if (isFieldEnabled('nombre')) localStorage.setItem('runner_pref_nombre', inputNombre.value.trim());
+            if (isFieldEnabled('apellido')) localStorage.setItem('runner_pref_apellido', inputApellido.value.trim());
+            if (isFieldEnabled('cuil')) localStorage.setItem('runner_pref_cuil', inputCuil.value.trim());
+            if (isFieldEnabled('fecha_nacimiento')) localStorage.setItem('runner_pref_fecha_nacimiento', inputFechaNacimiento.value);
+            if (isFieldEnabled('genero')) localStorage.setItem('runner_pref_genero', inputGenero.value);
+            if (isFieldEnabled('telefono')) localStorage.setItem('runner_pref_telefono', inputTelefono.value.trim());
+            if (isFieldEnabled('talle_remera')) localStorage.setItem('runner_pref_talle_remera', inputTalleRemera.value);
             const teamInput = document.getElementById('team_origen');
-            if (teamInput) {
+            if (teamInput && isFieldEnabled('team_origen')) {
                 localStorage.setItem('runner_pref_team_origen', teamInput.value.trim());
             }
         } catch (storageErr) {
@@ -1524,60 +1806,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Las clasificaciones oficiales de la carrera estarán disponibles aquí una vez finalizado el evento. ¡Éxitos a todos los competidores!');
             }
         });
-    }
-
-    // Cargar datos guardados previamente del usuario en este dispositivo (localStorage)
-    try {
-        if (localStorage.getItem('runner_pref_nombre')) {
-            inputNombre.value = localStorage.getItem('runner_pref_nombre') || '';
-            inputApellido.value = localStorage.getItem('runner_pref_apellido') || '';
-            inputCuil.value = localStorage.getItem('runner_pref_cuil') || '';
-            let savedDate = localStorage.getItem('runner_pref_fecha_nacimiento') || '';
-            if (savedDate && savedDate.indexOf('-') !== -1) {
-                const parts = savedDate.split('-');
-                if (parts.length === 3) {
-                    savedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-                }
-            }
-            
-            // Rellenar campos de fecha individuales y sincronizar
-            if (savedDate && savedDate.indexOf('/') !== -1) {
-                const dateParts = savedDate.split('/');
-                if (dateParts.length === 3) {
-                    if (birthDayInput) birthDayInput.value = dateParts[0];
-                    if (birthMonthInput) birthMonthInput.value = dateParts[1];
-                    if (birthYearInput) birthYearInput.value = dateParts[2];
-                    inputFechaNacimiento.value = savedDate;
-                }
-            } else {
-                inputFechaNacimiento.value = '';
-                if (birthDayInput) birthDayInput.value = '';
-                if (birthMonthInput) birthMonthInput.value = '';
-                if (birthYearInput) birthYearInput.value = '';
-            }
-            
-            inputGenero.value = localStorage.getItem('runner_pref_genero') || '';
-            inputTelefono.value = localStorage.getItem('runner_pref_telefono') || '';
-            inputTalleRemera.value = localStorage.getItem('runner_pref_talle_remera') || '';
-            const teamInput = document.getElementById('team_origen');
-            if (teamInput) {
-                teamInput.value = localStorage.getItem('runner_pref_team_origen') || '';
-            }
-            
-            // Si cargamos fecha de nacimiento, forzar el cálculo de la edad y la categoría
-            if (inputFechaNacimiento.value) {
-                recalculateCategory();
-            }
-
-            // Actualizar el resaltado visual de los campos precargados
-            fieldsToTrack.forEach(field => {
-                if (field) updateFieldHighlight(field);
-            });
-            const teamInputAfter = document.getElementById('team_origen');
-            if (teamInputAfter) updateFieldHighlight(teamInputAfter);
-        }
-    } catch (e) {
-        console.warn('No se pudo precargar la información de localStorage:', e);
     }
 
     // INIT
