@@ -25,7 +25,7 @@ window.RACE_CONFIG = {
       "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
       "stravaLink": "https://www.strava.com/activities/19730387354/flyover?origin=shared&utm_source=android_share&utm_medium=social&share_sig=QVOS2D2N1787007742&_branch_match_id=1578937274638312499&_branch_referrer=H4sIAAAAAAAAA8soKSkottLXLy4pSixL1EssKNDLyczL1g%2FNqTIJMcv2dTdNsq8rSk1LLSrKzEuPTyrKLy9OLbJ1zijKz00FAAdQ7%2BI9AAAA",
       "garminLink": "https://connect.garmin.com/modern/course/23847234",
-      "googleEarthLink": "https://drive.google.com/file/d/13eqqTCy4H0j-IbTZzTKkGLuoEuRbRj5q/view?usp=sharing",
+      "googleEarthLink": "https://earth.google.com/earth/d/1nWgOAlbVpFdILoombku36G_g0a20-rQW?usp=sharing",
       "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
       "autoCategory": true,
       "categories": [
