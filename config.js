@@ -229,13 +229,6 @@ window.RACE_CONFIG = {
       "required": false,
       "enabled": true,
       "isDefault": true
-    },
-    {
-      "id": "custom_licencia_facimo",
-      "label": "Licencia FACIMO",
-      "required": true,
-      "enabled": true,
-      "isDefault": false
     }
   ]
 };
