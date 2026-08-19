@@ -1880,7 +1880,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (config && config.clasificacionesLink && config.clasificacionesLink.trim() !== '') {
                 window.open(config.clasificacionesLink, '_blank');
             } else {
-                alert('Las clasificaciones oficiales de la carrera estarán disponibles aquí una vez finalizado el evento. ¡Éxitos a todos los competidores!');
+                showCustomAlert('No todavía no, después de la carrera, estarán disponibles las clasificaciones. ¡Éxitos en tu carrera CROSS TRAIL TERCER TIEMPO!');
             }
         });
     }
@@ -1956,6 +1956,42 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // ==========================================
+    // SISTEMA DE ALERTA DIALOG MÓVIL PERSONALIZADO (SIN ENCABEZADO DOMINIO)
+    // ==========================================
+    const customAlertModal = document.getElementById('custom-alert-modal');
+    const customAlertMessage = document.getElementById('custom-alert-message');
+    const customAlertCloseBtn = document.getElementById('custom-alert-close-btn');
+
+    function showCustomAlert(message) {
+        if (customAlertModal && customAlertMessage) {
+            customAlertMessage.textContent = message;
+            customAlertModal.classList.remove('hidden');
+            customAlertModal.offsetHeight; // Force reflow
+            customAlertModal.style.opacity = '1';
+        }
+    }
+
+    function closeCustomAlert() {
+        if (customAlertModal && !customAlertModal.classList.contains('hidden')) {
+            customAlertModal.style.opacity = '0';
+            setTimeout(() => {
+                customAlertModal.classList.add('hidden');
+            }, 300);
+        }
+    }
+
+    if (customAlertModal && customAlertCloseBtn) {
+        customAlertCloseBtn.addEventListener('click', closeCustomAlert);
+        
+        // Cerrar al hacer clic en el fondo oscuro
+        customAlertModal.addEventListener('click', (e) => {
+            if (e.target === customAlertModal) {
+                closeCustomAlert();
+            }
+        });
+    }
 
     // INIT
     loadConfig();
