@@ -32,6 +32,68 @@ document.addEventListener('DOMContentLoaded', () => {
         formFields: []
     };
 
+    // Rastreador de archivos modificados para subir a GitHub
+    const modifiedFiles = new Set();
+    const uploadedMediaFiles = new Set();
+
+    function updateGitHubUploadGuide() {
+        const filesListEl = document.getElementById('github-files-list');
+        const badgeEl = document.getElementById('github-files-status-badge');
+        if (!filesListEl || !badgeEl) return;
+
+        filesListEl.innerHTML = '';
+        
+        const allFiles = [];
+        
+        // Si hay cambios en los inputs o se guardó config
+        if (modifiedFiles.has('config')) {
+            allFiles.push({ name: 'config.js', desc: 'Configuración principal para la web pública' });
+            allFiles.push({ name: 'config.json', desc: 'Configuración principal para este panel local' });
+        }
+
+        // Si se subieron archivos multimedia
+        uploadedMediaFiles.forEach(fileName => {
+            allFiles.push({ name: `IMAGENES/${fileName}`, desc: 'Archivo multimedia subido (foto/GPX/PDF/KML)' });
+        });
+
+        if (allFiles.length === 0) {
+            badgeEl.textContent = 'Sin cambios detectados';
+            badgeEl.style.background = 'rgba(255,255,255,0.1)';
+            badgeEl.style.color = 'var(--text-muted)';
+            badgeEl.style.border = 'none';
+            filesListEl.innerHTML = `<li style="color: var(--text-muted); font-style: italic;"><i class="fa-solid fa-circle-info"></i> No has realizado modificaciones ni guardado cambios aún.</li>`;
+        } else {
+            badgeEl.textContent = `${allFiles.length} archivo(s) por subir`;
+            badgeEl.style.background = 'var(--accent-orange)';
+            badgeEl.style.color = '#000';
+            badgeEl.style.fontWeight = 'bold';
+            
+            allFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.alignItems = 'center';
+                li.style.gap = '0.5rem';
+                li.style.padding = '0.4rem 0.6rem';
+                li.style.background = 'rgba(255,255,255,0.03)';
+                li.style.border = '1px solid rgba(255,255,255,0.05)';
+                li.style.borderRadius = 'var(--radius-sm)';
+                
+                const icon = file.name.endsWith('.gpx') || file.name.endsWith('.kml') 
+                    ? '<i class="fa-solid fa-route" style="color: var(--accent-orange);"></i>'
+                    : file.name.endsWith('.pdf')
+                    ? '<i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i>'
+                    : '<i class="fa-solid fa-file-image" style="color: var(--accent-cyan);"></i>';
+                
+                li.innerHTML = `
+                    ${icon}
+                    <strong style="color: #fff; font-family: monospace; font-size: 0.95rem;">${file.name}</strong>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">— ${file.desc}</span>
+                `;
+                filesListEl.appendChild(li);
+            });
+        }
+    }
+
     // DOM Elements - General Info
     const inputRaceName = document.getElementById('raceName');
     const inputRaceDescription = document.getElementById('raceDescription');
@@ -920,6 +982,8 @@ document.addEventListener('DOMContentLoaded', () => {
         binding.el.addEventListener('input', () => {
             state[binding.prop] = binding.el.value;
             updateJsonPreview();
+            modifiedFiles.add('config');
+            updateGitHubUploadGuide();
         });
     });
 
@@ -970,6 +1034,9 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
         // Clean up
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+
+        modifiedFiles.add('config');
+        updateGitHubUploadGuide();
     });
 
     btnSaveDisk.addEventListener('click', async () => {
@@ -995,6 +1062,8 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
 
             const result = await response.json();
             if (result && result.status === 'success') {
+                modifiedFiles.add('config');
+                updateGitHubUploadGuide();
                 alert('¡Configuración guardada en disco con éxito! Los cambios ya están activos en la web pública.');
             } else {
                 throw new Error(result.message || 'Respuesta fallida del servidor local.');
@@ -1042,6 +1111,9 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
                         // Sincronizar ruta en la entrada de texto
                         textInput.value = result.filePath;
                         textInput.dispatchEvent(new Event('input'));
+                        
+                        uploadedMediaFiles.add(file.name);
+                        updateGitHubUploadGuide();
                         
                         alert(`¡Archivo "${file.name}" subido y guardado exitosamente en tu servidor local!`);
                     } else {
