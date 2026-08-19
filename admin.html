@@ -113,6 +113,16 @@
                             </button>
                         </div>
                     </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label for="kitImage">Imagen del Kit de Competidor (Opcional - Formato A4/Imagen)</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="kitImage" placeholder="Ej: ./IMAGENES/KIT_COMPETIDOR.jpg" style="flex: 1;">
+                            <input type="file" id="kitImageFile" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('kitImageFile').click()" style="padding: 0.85rem 1rem; flex-shrink: 0;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Subir
+                            </button>
+                        </div>
+                    </div>
                     
                     <!-- Color Themes -->
                     <div class="input-group" style="grid-column: span 2; margin-top: 1rem;">

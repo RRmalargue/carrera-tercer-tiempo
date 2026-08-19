@@ -247,6 +247,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('tshirt-preview-card').classList.add('hidden');
         }
 
+        const kitButtonContainer = document.getElementById('kit-button-container');
+        const kitImageBtn = document.getElementById('kit-image-btn');
+        if (kitButtonContainer && kitImageBtn) {
+            if (config.kitImage && config.kitImage.trim() !== '') {
+                kitImageBtn.href = config.kitImage;
+                kitButtonContainer.classList.remove('hidden');
+            } else {
+                kitButtonContainer.classList.add('hidden');
+            }
+        }
+
         if (config.altitudeMapImage) {
             altimetryImage.src = config.altitudeMapImage;
             document.getElementById('altimetry-card').classList.remove('hidden');

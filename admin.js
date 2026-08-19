@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         posterImage: '',
         tshirtImage: '',
         altitudeMapImage: '',
+        kitImage: '',
         gpxLink: '',
         kmlLink: '',
         stravaLink: '',
@@ -42,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputPosterImage = document.getElementById('posterImage');
     const inputTshirtImage = document.getElementById('tshirtImage');
     const inputAltitudeMapImage = document.getElementById('altitudeMapImage');
+    const inputKitImage = document.getElementById('kitImage');
+    const inputKitImageFile = document.getElementById('kitImageFile');
 
     // DOM Elements - Maps
     const inputGpxLink = document.getElementById('gpxLink');
@@ -200,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputPosterImage.value = state.posterImage || '';
         inputTshirtImage.value = state.tshirtImage || '';
         inputAltitudeMapImage.value = state.altitudeMapImage || '';
+        inputKitImage.value = state.kitImage || '';
         inputGpxLink.value = state.gpxLink || '';
         inputKmlLink.value = state.kmlLink || '';
         inputStravaLink.value = state.stravaLink || '';
@@ -902,6 +906,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { el: inputPosterImage, prop: 'posterImage' },
         { el: inputTshirtImage, prop: 'tshirtImage' },
         { el: inputAltitudeMapImage, prop: 'altitudeMapImage' },
+        { el: inputKitImage, prop: 'kitImage' },
         { el: inputGpxLink, prop: 'gpxLink' },
         { el: inputKmlLink, prop: 'kmlLink' },
         { el: inputStravaLink, prop: 'stravaLink' },
@@ -1063,6 +1068,7 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
     setupFileUploader('logoImageFile', 'logoImage');
     setupFileUploader('tshirtImageFile', 'tshirtImage');
     setupFileUploader('altitudeMapImageFile', 'altitudeMapImage');
+    setupFileUploader('kitImageFile', 'kitImage');
     setupFileUploader('gpxLinkFile', 'gpxLink');
     setupFileUploader('kmlLinkFile', 'kmlLink');
     setupFileUploader('new-dist-gpx-file', 'new-dist-gpx');

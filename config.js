@@ -7,6 +7,7 @@ window.RACE_CONFIG = {
   "posterImage": "./IMAGENES/AFICHE TERCER.jpg",
   "tshirtImage": "./IMAGENES/REMERA TERCER.jpg",
   "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
+  "kitImage": "./IMAGENES/kit.jpg",
   "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
   "kmlLink": "",
   "stravaLink": "",
