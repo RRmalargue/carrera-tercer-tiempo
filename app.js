@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // IMPORTANT: Reemplazar esta URL con el Web App URL provisto por Google Apps Script al publicar el script.
     // Si la URL contiene 'https://script.google.com/macros/s/AKfycbwweMpaxheND7uCNibwxZPxV0fUqgXUTAGqUXeXcgwT84oGQFM5oIKtjfAhlhPTuQUT/exec', el sistema funcionará en MODO DEMOSTRACIÓN (simulación).
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHS9ynr4_4yra_VMVXT01nGcGIRm1-GtAVUcqRKy-OtSAgiGVe2WznKi1arEDdHl7y/exec';
+    let GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHS9ynr4_4yra_VMVXT01nGcGIRm1-GtAVUcqRKy-OtSAgiGVe2WznKi1arEDdHl7y/exec';
 
     // HTML Elements
     const form = document.getElementById('registration-form');
@@ -131,26 +131,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof window.RACE_CONFIG !== 'undefined' && window.RACE_CONFIG) {
             console.log('Cargada configuración dinámica local desde config.js');
             config = window.RACE_CONFIG;
-            renderRaceDetails();
-            setupDynamicFormFields();
-            loadPrefilledData();
         } else {
             // Intentar fetch config.json por compatibilidad hacia atrás
             try {
                 const response = await fetch('./config.json');
                 config = await response.json();
                 console.log('Cargada configuración dinámica desde config.json');
-                renderRaceDetails();
-                setupDynamicFormFields();
-                loadPrefilledData();
             } catch (error) {
                 console.warn('Advertencia: No se detectó config.js ni se pudo cargar config.json. Usando configuración de respaldo integrada.');
                 config = FALLBACK_CONFIG;
-                renderRaceDetails();
-                setupDynamicFormFields();
-                loadPrefilledData();
             }
         }
+
+        // Asignar dinámicamente la URL de Apps Script si está configurada
+        if (config.googleScriptUrl && config.googleScriptUrl.trim() !== '') {
+            GOOGLE_SCRIPT_URL = config.googleScriptUrl;
+            console.log('Apps Script conectado a:', GOOGLE_SCRIPT_URL);
+        }
+
+        renderRaceDetails();
+        setupDynamicFormFields();
+        loadPrefilledData();
     }
 
     function renderRaceDetails() {

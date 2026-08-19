@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Current Active State
     const state = {
         raceName: '',
+        googleScriptUrl: '',
         raceDescription: '',
         logoImage: '',
         contactWhatsapp: '',
@@ -96,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DOM Elements - General Info
     const inputRaceName = document.getElementById('raceName');
+    const inputGoogleScriptUrl = document.getElementById('googleScriptUrl');
     const inputRaceDescription = document.getElementById('raceDescription');
     const inputLogoImage = document.getElementById('logoImage');
     const inputLogoImageFile = document.getElementById('logoImageFile');
@@ -257,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateFormFields() {
         inputRaceName.value = state.raceName || '';
+        inputGoogleScriptUrl.value = state.googleScriptUrl || '';
         inputRaceDescription.value = state.raceDescription || '';
         inputLogoImage.value = state.logoImage || '';
         inputContactWhatsapp.value = state.contactWhatsapp || '';
@@ -960,6 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. LIVE UPDATE STATE & PREVIEW
     const inputsToSync = [
         { el: inputRaceName, prop: 'raceName' },
+        { el: inputGoogleScriptUrl, prop: 'googleScriptUrl' },
         { el: inputRaceDescription, prop: 'raceDescription' },
         { el: inputLogoImage, prop: 'logoImage' },
         { el: inputContactWhatsapp, prop: 'contactWhatsapp' },

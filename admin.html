@@ -44,6 +44,13 @@
                         <input type="text" id="raceName" required placeholder="Ej: CROSS TRAIL TERCER TIEMPO 2026">
                     </div>
                     <div class="input-group" style="grid-column: span 2;">
+                        <label for="googleScriptUrl">URL de la Aplicación Web de Google Apps Script <span class="requirement">*</span></label>
+                        <input type="text" id="googleScriptUrl" required placeholder="Ej: https://script.google.com/macros/s/.../exec">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+                            * Conecta el formulario de inscripciones con tu planilla de Google Sheets.
+                        </span>
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
                         <label for="raceDescription">Descripción o Información de la Carrera</label>
                         <textarea id="raceDescription" rows="4" placeholder="Ingresa una descripción o información clave sobre la carrera..." style="width: 100%; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: #fff; padding: 0.8rem; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
                     </div>
