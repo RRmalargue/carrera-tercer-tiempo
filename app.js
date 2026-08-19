@@ -308,7 +308,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const kitImageBtn = document.getElementById('kit-image-btn');
         if (kitButtonContainer && kitImageBtn) {
             if (config.kitImage && config.kitImage.trim() !== '') {
-                kitImageBtn.href = config.kitImage;
+                kitImageBtn.href = '#';
+                
+                // Clonar para evitar acumulamiento de event listeners al recargar
+                const newKitBtn = kitImageBtn.cloneNode(true);
+                kitImageBtn.parentNode.replaceChild(newKitBtn, kitImageBtn);
+
+                newKitBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openLightbox(config.kitImage);
+                });
                 kitButtonContainer.classList.remove('hidden');
             } else {
                 kitButtonContainer.classList.add('hidden');
@@ -1875,6 +1884,78 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ==========================================
+    // SISTEMA DE PREVISUALIZACIÓN DE IMÁGENES (LIGHTBOX MODAL)
+    // ==========================================
+    const lightboxModal = document.getElementById('image-lightbox-modal');
+    const lightboxImg = document.getElementById('lightbox-image');
+    const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
+
+    function openLightbox(src) {
+        if (lightboxModal && lightboxImg) {
+            lightboxImg.src = src;
+            lightboxModal.classList.remove('hidden');
+            // Forzar reflow para animación
+            lightboxModal.offsetHeight;
+            lightboxModal.style.opacity = '1';
+            
+            // Hash Navigation para soportar botón físico "Atrás" en celulares
+            window.location.hash = 'preview';
+        }
+    }
+
+    function closeLightbox() {
+        if (lightboxModal && !lightboxModal.classList.contains('hidden')) {
+            lightboxModal.style.opacity = '0';
+            setTimeout(() => {
+                lightboxModal.classList.add('hidden');
+            }, 300);
+
+            // Eliminar el hash si todavía está presente
+            if (window.location.hash === '#preview') {
+                history.back();
+            }
+        }
+    }
+
+    if (lightboxModal && lightboxCloseBtn) {
+        lightboxCloseBtn.addEventListener('click', closeLightbox);
+        
+        // Cerrar al hacer clic en el fondo oscuro
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) {
+                closeLightbox();
+            }
+        });
+    }
+
+    // Escuchar el botón físico "Atrás" del celular para cerrar la vista previa
+    window.addEventListener('hashchange', () => {
+        if (window.location.hash !== '#preview') {
+            closeLightbox();
+        }
+    });
+
+    // Hacer previsualizables otras imágenes clave del sitio al hacerles clic
+    const previewableImages = [
+        { el: document.getElementById('altimetry-image'), prop: () => config ? config.altitudeMapImage : '' },
+        { el: document.getElementById('tshirt-image'), prop: () => config ? config.tshirtImage : '' },
+        { el: document.getElementById('poster-banner'), prop: () => config ? config.posterImage : '' }
+    ];
+
+    previewableImages.forEach(item => {
+        if (item.el) {
+            item.el.style.cursor = 'pointer';
+            item.el.title = 'Haz clic para ampliar la imagen';
+            item.el.addEventListener('click', () => {
+                const src = item.prop();
+                if (src && src.trim() !== '') {
+                    openLightbox(src);
+                }
+            });
+        }
+    });
 
     // INIT
     loadConfig();
