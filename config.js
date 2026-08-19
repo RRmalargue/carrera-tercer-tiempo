@@ -131,7 +131,7 @@ window.RACE_CONFIG = {
       "price": 35000,
       "detail": "EL RECORRIDO DE 5 KMS TRANSITARA POR SENDEROS TECNICOS, ARROYOS SECOS, Y ES LA DISTANCIA IDEAL PARA LOS QUE SE ESTAN INICIANDO EN EL CROSS-TRAIL.\nPUESTO DE HIDRATACION A LOS 2,5 KMS.",
       "gpxLink": "./IMAGENES/5 K 3 TIEMPO.gpx",
-      "stravaLink": "https://www.strava.com/routes/31248753",
+      "stravaLink": "https://strava.app.link/YGjAtCpwI5b",
       "garminLink": "https://connect.garmin.com/app/course/504188649",
       "googleEarthLink": "",
       "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg",
