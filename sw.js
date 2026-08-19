@@ -1,5 +1,5 @@
 // sw.js - Service Worker para habilitar la instalación de la PWA
-const CACHE_NAME = 'trail-portal-v2.3';
+const CACHE_NAME = 'trail-portal-v2.4';
 const ASSETS = [
     './index.html',
     './index.css',
@@ -10,6 +10,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
+    self.skipWaiting();
     e.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(ASSETS).catch((err) => {
@@ -20,6 +21,7 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
+    self.clients.claim();
     e.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
