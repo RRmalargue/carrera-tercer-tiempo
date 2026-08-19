@@ -456,6 +456,16 @@
                     .then(reg => console.log('Service Worker registrado para PWA con éxito:', reg.scope))
                     .catch(err => console.error('Fallo al registrar Service Worker PWA:', err));
             });
+
+            // Recargar automáticamente la página cuando el nuevo Service Worker toma el control
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    console.log('Nueva versión de PWA detectada. Recargando automáticamente...');
+                    window.location.reload();
+                }
+            });
         }
     </script>
     <script src="./app.js?v=2.2"></script>
