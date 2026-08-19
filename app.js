@@ -165,6 +165,63 @@ document.addEventListener('DOMContentLoaded', () => {
         if (raceDescriptionText) {
             raceDescriptionText.textContent = config.raceDescription || '¡Prepárate para una gran carrera! Los detalles del desafío e inscripciones ya están abiertos.';
         }
+
+        // Lógica de "Leer más reglamento" interactivo
+        const descContainer = document.getElementById('race-description-container');
+        const fadeOverlay = document.getElementById('description-fade-overlay');
+        const readMoreContainer = document.getElementById('read-more-container');
+        const btnReadMore = document.getElementById('btn-read-more');
+
+        if (descContainer && fadeOverlay && readMoreContainer && btnReadMore) {
+            // Clonar para evitar acumulamiento de listeners de eventos
+            const newBtn = btnReadMore.cloneNode(true);
+            btnReadMore.parentNode.replaceChild(newBtn, btnReadMore);
+
+            // Estilos de colapso iniciales
+            descContainer.style.maxHeight = '180px';
+            fadeOverlay.style.opacity = '1';
+            fadeOverlay.style.display = 'block';
+            readMoreContainer.classList.remove('hidden');
+            newBtn.querySelector('span').textContent = 'Leer más reglamento';
+            newBtn.querySelector('i').className = 'fa-solid fa-chevron-down';
+
+            // Comprobación inteligente de la altura real del texto
+            setTimeout(() => {
+                if (descContainer.scrollHeight <= 180) {
+                    descContainer.style.maxHeight = 'none';
+                    fadeOverlay.style.display = 'none';
+                    readMoreContainer.classList.add('hidden');
+                }
+            }, 200);
+
+            newBtn.addEventListener('click', () => {
+                const isCollapsed = descContainer.style.maxHeight === '180px' || descContainer.style.maxHeight === '';
+                if (isCollapsed) {
+                    // Expandir
+                    descContainer.style.maxHeight = descContainer.scrollHeight + 'px';
+                    fadeOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        if (descContainer.style.maxHeight !== '180px') {
+                            fadeOverlay.style.display = 'none';
+                        }
+                    }, 300);
+                    newBtn.querySelector('span').textContent = 'Leer menos';
+                    newBtn.querySelector('i').className = 'fa-solid fa-chevron-up';
+                } else {
+                    // Colapsar
+                    fadeOverlay.style.display = 'block';
+                    setTimeout(() => {
+                        fadeOverlay.style.opacity = '1';
+                    }, 10);
+                    descContainer.style.maxHeight = '180px';
+                    newBtn.querySelector('span').textContent = 'Leer más reglamento';
+                    newBtn.querySelector('i').className = 'fa-solid fa-chevron-down';
+                    
+                    // Desplazar vista arriba de la tarjeta
+                    document.getElementById('race-description-card').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
         
         // Carga de fondo de la web (Background Overlay)
         const BACKGROUND_THEMES = {
