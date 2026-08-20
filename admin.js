@@ -1707,6 +1707,61 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
         inputStartLongitude.addEventListener('change', handleCoordsInputChange);
     }
 
+    // ==========================================
+    // CREAR NUEVA CARRERA (CLONAR PROYECTO)
+    // ==========================================
+    const btnCreateNewRace = document.getElementById('btn-create-new-race');
+    if (btnCreateNewRace) {
+        btnCreateNewRace.addEventListener('click', async () => {
+            const confirmClone = confirm(
+                'Esta acción creará una copia completa de este portal en una nueva carpeta en tu computadora, permitiéndote configurar otra carrera diferente manteniendo la actual activa.\n\n¿Deseas continuar?'
+            );
+            
+            if (!confirmClone) return;
+
+            const newName = prompt(
+                'Ingresa el nombre de la nueva carrera (usa solo letras, números y guiones, sin espacios):\nEjemplo: valle-grande-2026'
+            );
+
+            if (!newName || newName.trim() === '') {
+                alert('Operación cancelada o nombre no válido.');
+                return;
+            }
+
+            const cleanName = newName.trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]/g, '_');
+
+            try {
+                btnCreateNewRace.disabled = true;
+                btnCreateNewRace.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Copiando...';
+
+                const response = await fetch('http://localhost:3000/api/clone-project', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newProjectName: cleanName })
+                });
+
+                const result = await response.json();
+                if (result && result.status === 'success') {
+                    alert(
+                        `¡NUEVA CARRERA CREADA CON ÉXITO!\n\nSe creó la carpeta:\n📂 ${result.newFolderPath}\n\nPara empezar a configurarla:\n1. Abre una consola de comandos en esa nueva carpeta.\n2. Ejecuta "node server.js"\n3. Abre "http://localhost:3000/admin.html" en tu navegador.`
+                    );
+                } else {
+                    throw new Error(result.message || 'Error desconocido al clonar.');
+                }
+            } catch (err) {
+                console.error('Error al clonar proyecto:', err);
+                alert(`No se pudo crear la nueva carrera de forma automática:\n${err.message}`);
+            } finally {
+                btnCreateNewRace.disabled = false;
+                btnCreateNewRace.innerHTML = '<i class="fa-solid fa-folder-plus"></i> Crear Nueva Carrera';
+            }
+        });
+    }
+
     // INIT
     loadConfig();
 });

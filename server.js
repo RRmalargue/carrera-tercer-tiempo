@@ -56,6 +56,63 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // Ruta de API para clonar este proyecto a una nueva carpeta
+    if (req.method === 'POST' && req.url === '/api/clone-project') {
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', () => {
+            try {
+                const payload = JSON.parse(body);
+                const { newProjectName } = payload;
+                
+                if (!newProjectName || newProjectName.trim() === '') {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ status: 'error', message: 'Nombre de carrera no válido.' }));
+                    return;
+                }
+
+                // Limpiar el nombre para que sea seguro como carpeta
+                const safeFolderName = newProjectName.toLowerCase()
+                    .replace(/[^a-z0-9_-]/g, '_')
+                    .trim();
+
+                const sourceDir = PUBLIC_DIR;
+                const parentDir = path.dirname(sourceDir);
+                const destDirName = `trail-portal-${safeFolderName}`;
+                const destDir = path.join(parentDir, destDirName);
+
+                if (fs.existsSync(destDir)) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ status: 'error', message: `Ya existe una carpeta para esa carrera en: ${destDir}` }));
+                    return;
+                }
+
+                // Copiar recursivamente
+                fs.cpSync(sourceDir, destDir, { 
+                    recursive: true,
+                    filter: (src) => {
+                        const basename = path.basename(src);
+                        return !basename.startsWith('.git') && basename !== '.DS_Store';
+                    }
+                });
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ 
+                    status: 'success', 
+                    message: 'Proyecto clonado exitosamente.',
+                    newFolderPath: destDir,
+                    newFolderRelativeName: destDirName
+                }));
+                console.log(`[API] Proyecto clonado con éxito en: ${destDir}`);
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ status: 'error', message: err.message }));
+                console.error('[API] Error al clonar proyecto:', err);
+            }
+        });
+        return;
+    }
+
     // Ruta de API para subir archivos (imágenes, GPX, PDF, KML) y guardarlos en la carpeta IMAGENES
     if (req.method === 'POST' && req.url === '/api/upload-file') {
         let body = '';
@@ -102,7 +159,7 @@ const server = http.createServer((req, res) => {
     }
 
     // Servidor de archivos estáticos básico
-    const decodedUrl = decodeURIComponent(req.url);
+    const decodedUrl = decodeURIComponent(req.url).split('?')[0];
     let filePath = path.join(PUBLIC_DIR, decodedUrl === '/' || decodedUrl === '' ? 'index.html' : decodedUrl);
     
     // Validar seguridad de ruta (evitar directory traversal)

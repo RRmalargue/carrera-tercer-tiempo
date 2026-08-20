@@ -17,14 +17,19 @@
 
     <div class="admin-container">
         <!-- Header -->
-        <header class="admin-header">
+        <header class="admin-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem;">
             <div class="admin-title-group">
                 <h1><i class="fa-solid fa-sliders"></i> Panel de Configuración</h1>
                 <p>Configura los parámetros de tu carrera en orden cronológico paso a paso.</p>
             </div>
-            <a href="./index.html" class="btn-header-action">
-                <i class="fa-solid fa-circle-arrow-left"></i> Ir al Formulario Público
-            </a>
+            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="btn-create-new-race" class="btn-secondary" style="background: rgba(16, 185, 129, 0.15) !important; border-color: #10b981 !important; color: #10b981 !important; font-weight: 700; height: 46px; padding: 0 1.2rem; border-radius: var(--radius-md); cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; border: 1px solid;">
+                    <i class="fa-solid fa-folder-plus"></i> Crear Nueva Carrera
+                </button>
+                <a href="./index.html" class="btn-header-action" style="height: 46px; display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center; text-decoration: none; padding: 0 1.2rem; border-radius: var(--radius-md); font-weight: 600;">
+                    <i class="fa-solid fa-circle-arrow-left"></i> Ir al Formulario Público
+                </a>
+            </div>
         </header>
 
         <form id="admin-config-form" autocomplete="off">
