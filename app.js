@@ -1950,7 +1950,8 @@ document.addEventListener('DOMContentLoaded', () => {
             item.el.style.cursor = 'pointer';
             item.el.title = 'Haz clic para ampliar la imagen';
             item.el.addEventListener('click', () => {
-                const src = item.prop();
+                // Priorizar el src actual del elemento HTML para abrir la altimetría correcta
+                const src = item.el.src || item.prop();
                 if (src && src.trim() !== '') {
                     openLightbox(src);
                 }
