@@ -126,6 +126,66 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
     };
 
+    // APLICACIÓN DE ESTILOS DINÁMICOS (TEMAS Y BORDER RADIUS)
+    function applyDynamicStyles() {
+        if (!config) return;
+
+        let dynamicStyleEl = document.getElementById('dynamic-race-styles');
+        if (!dynamicStyleEl) {
+            dynamicStyleEl = document.createElement('style');
+            dynamicStyleEl.id = 'dynamic-race-styles';
+            document.head.appendChild(dynamicStyleEl);
+        }
+
+        let cssContent = '';
+
+        // 1. Aplicar colores de tema si están configurados
+        if (config.themeColors) {
+            const tc = config.themeColors;
+            cssContent += `
+                :root {
+                    --accent-orange: ${tc.primary || '#ff6b35'};
+                    --accent-orange-glow: ${tc.primaryGlow || 'rgba(255, 107, 53, 0.35)'};
+                    --accent-orange-dim: ${tc.primaryDim || 'rgba(255, 107, 53, 0.1)'};
+                    --accent-cyan: ${tc.secondary || '#00f2fe'};
+                    --accent-cyan-glow: ${tc.secondaryGlow || 'rgba(0, 242, 254, 0.35)'};
+                    --border-hover: ${tc.primaryGlow || 'rgba(255, 107, 53, 0.4)'};
+                }
+            `;
+        }
+
+        // 2. Aplicar border-radius si está configurado
+        if (config.borderRadiusStyle) {
+            const rad = config.borderRadiusStyle;
+            const numVal = parseInt(rad);
+            let radLg = '16px';
+            let radMd = '10px';
+            let radSm = '6px';
+
+            if (!isNaN(numVal)) {
+                if (numVal === 0) {
+                    radLg = '0px';
+                    radMd = '0px';
+                    radSm = '0px';
+                } else {
+                    radLg = (numVal + 4) + 'px';
+                    radMd = numVal + 'px';
+                    radSm = Math.max(0, numVal - 4) + 'px';
+                }
+            }
+
+            cssContent += `
+                :root {
+                    --radius-lg: ${radLg};
+                    --radius-md: ${radMd};
+                    --radius-sm: ${radSm};
+                }
+            `;
+        }
+
+        dynamicStyleEl.innerHTML = cssContent;
+    }
+
     // 1. CARGA DE CONFIGURACIÓN DINÁMICA
     async function loadConfig() {
         if (typeof window.RACE_CONFIG !== 'undefined' && window.RACE_CONFIG) {
@@ -149,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Apps Script conectado a:', GOOGLE_SCRIPT_URL);
         }
 
+        applyDynamicStyles();
         renderRaceDetails();
         setupDynamicFormFields();
         loadPrefilledData();

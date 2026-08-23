@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             secondaryGlow: 'rgba(0, 242, 254, 0.35)'
         },
         themeBackground: 'default',
+        borderRadiusStyle: '10px',
         formFields: []
     };
 
@@ -1588,6 +1589,7 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
         }
 
         highlightActiveBgButton();
+        highlightActiveRadiusButton();
     }
 
     // 9. PERSONALIZACIÓN DE FONDOS DE LA WEB
@@ -1634,7 +1636,47 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
         selectBgTheme(activeBg);
     }
 
-    // Registrar eventos de clic en los botones de selección de tema y fondo
+    // 9.2 PERSONALIZACIÓN DE BORDER RADIUS
+    function selectRadiusTheme(radiusValue) {
+        state.borderRadiusStyle = radiusValue;
+
+        // Cambiar dinámicamente las variables de border-radius del admin para previsualizar
+        const root = document.documentElement;
+        root.style.setProperty('--radius-md', radiusValue);
+        const numVal = parseInt(radiusValue);
+        if (numVal === 0) {
+            root.style.setProperty('--radius-lg', '0px');
+            root.style.setProperty('--radius-sm', '0px');
+        } else {
+            root.style.setProperty('--radius-lg', (numVal + 4) + 'px');
+            root.style.setProperty('--radius-sm', (numVal - 4) + 'px');
+        }
+
+        // Resaltar el botón activo y desmarcar el resto
+        document.querySelectorAll('.radius-btn').forEach(btn => {
+            const btnRadius = btn.getAttribute('data-radius');
+            if (btnRadius === radiusValue) {
+                btn.style.transform = 'scale(1.05)';
+                btn.style.boxShadow = '0 0 12px rgba(0,242,254,0.3)';
+                btn.style.background = 'rgba(255,255,255,0.06)';
+                btn.style.borderColor = 'var(--accent-cyan)';
+            } else {
+                btn.style.transform = '';
+                btn.style.boxShadow = '';
+                btn.style.background = '#1a1a1a';
+                btn.style.borderColor = '#555';
+            }
+        });
+
+        updateJsonPreview();
+    }
+
+    function highlightActiveRadiusButton() {
+        const activeRadius = state.borderRadiusStyle || '12px';
+        selectRadiusTheme(activeRadius);
+    }
+
+    // Registrar eventos de clic en los botones de selección de tema, fondo y esquinas
     document.querySelectorAll('.color-theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const themeName = btn.getAttribute('data-theme');
@@ -1646,6 +1688,13 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
         btn.addEventListener('click', () => {
             const bgName = btn.getAttribute('data-bg');
             selectBgTheme(bgName);
+        });
+    });
+
+    document.querySelectorAll('.radius-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const radiusValue = btn.getAttribute('data-radius');
+            selectRadiusTheme(radiusValue);
         });
     });
 
