@@ -1804,6 +1804,57 @@ document.addEventListener('DOMContentLoaded', () => {
                         trackMap.scrollWheelZoom.enable();
                     }
                 });
+
+                // Evitar el "secuestro de scroll" en celulares (Comportamiento cooperativo)
+                if (L.Browser.mobile) {
+                    trackMap.dragging.disable();
+                    
+                    const mapContainer = document.getElementById('map-track');
+                    mapContainer.style.position = 'relative'; // Asegurar posicionamiento
+                    
+                    // Crear cartel flotante de advertencia
+                    const msgDiv = document.createElement('div');
+                    msgDiv.style.position = 'absolute';
+                    msgDiv.style.top = '50%';
+                    msgDiv.style.left = '50%';
+                    msgDiv.style.transform = 'translate(-50%, -50%)';
+                    msgDiv.style.background = 'rgba(15, 23, 42, 0.9)';
+                    msgDiv.style.color = '#fff';
+                    msgDiv.style.padding = '0.6rem 1.2rem';
+                    msgDiv.style.borderRadius = '30px';
+                    msgDiv.style.fontSize = '0.85rem';
+                    msgDiv.style.fontWeight = 'bold';
+                    msgDiv.style.zIndex = '9999';
+                    msgDiv.style.pointerEvents = 'none';
+                    msgDiv.style.opacity = '0';
+                    msgDiv.style.transition = 'opacity 0.2s ease';
+                    msgDiv.style.textAlign = 'center';
+                    msgDiv.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+                    msgDiv.style.border = '1px solid rgba(255,255,255,0.1)';
+                    msgDiv.innerHTML = '🖐️ Usa dos dedos para mover el mapa';
+                    mapContainer.appendChild(msgDiv);
+                    
+                    let msgTimeout;
+                    
+                    mapContainer.addEventListener('touchmove', (e) => {
+                        if (e.touches.length === 1) {
+                            // Si arrastra con 1 dedo, mostramos advertencia y permitimos el scroll de la página
+                            msgDiv.style.opacity = '1';
+                            clearTimeout(msgTimeout);
+                            msgTimeout = setTimeout(() => {
+                                msgDiv.style.opacity = '0';
+                            }, 1000);
+                        } else if (e.touches.length > 1) {
+                            // Si usa 2 dedos, habilitamos el arrastre del mapa
+                            trackMap.dragging.enable();
+                            msgDiv.style.opacity = '0';
+                        }
+                    }, { passive: true });
+                    
+                    mapContainer.addEventListener('touchend', () => {
+                        trackMap.dragging.disable();
+                    });
+                }
             }
 
             // Remover dibujo previo si hay
