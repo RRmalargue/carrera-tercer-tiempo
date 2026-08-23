@@ -1,12 +1,14 @@
 // Configuración de Carrera autogenerada por el Panel Administrativo
 window.RACE_CONFIG = {
   "raceName": "CROSS TRAIL \"TERCER TIEMPO\"",
+  "googleScriptUrl": "",
   "raceDescription": " REGLAMENTO\n\nCarrera DE CROSS TRAIL a realizarse el 20 de setiembre de 2026 en Malargüe, lugar predio TERCER TIEMPO (LAS BARDAS SIN NUMERO BARRIO VIRGEN DE LOS VIENTOS MALARGUE, MENDOZA),con largada a las 09:00 hs.\n\nEn 2 distancias 5 km,  15 km \n\nCON LA INSCRIPCION SE ENTREGA REMERA DEL EVENTO  Cupo de 200 corredores\n\ncupo de REMERAS 200 UNIDADES.\n\nCosto de inscripción\n\n5 km: 35.000 pesos\n\n15 Km: 50.000 pesos\n\nCATEGORIA KID 18.000 pesos\n\nSOCIOS DEL CLUB TENDRAN 20% DE DESCUENTO.\n\nLa Organización podrá suspender y/o posponer el evento por cuestiones de seguridad pública, pandemia, climatológicas y/o razones de fuerza mayor.\n\nLos competidores al momento de acreditarse para retirar su número y kit deberán presentar obligatoriamente el DNI. La entrega de Kit se hará el día sábado 19 DE Setiembre en lugar a designar.\n\nPREMIACION\n\n\nPREMIACION EN EFECTIVO \n\n15 KMS PARA DAMAS Y CABALLEROS\n\n1 PUESTO     200.000 PESOS\n2 PUESTO     150.000 PESOS\n3 PUESTO     100.000 PESOS\n\n5 KM PARA DAMAS Y CABALLEROS\n\n1 PUESTO      70.000,00 PESOS\n2 PUESTO      50.000,00 PESOS\n3 PUESTO      35.000,00 PESOS\n\nMEDALLAS FINISHER PARA TODOS LOS PARTICIPANTES\n\nEN 15 KMS REGALOS EN TODAS LAS CATEGORIAS HASTA EL TERCER PUESTO\n\nEl Corredor que clasifique al podio; deberá estar presente para recibir su premio, no podrá subir otra persona en su lugar.",
   "logoImage": "./IMAGENES/LOGO.jpg",
   "contactWhatsapp": "5492604656244",
   "posterImage": "./IMAGENES/AFICHE TERCER.jpg",
   "tshirtImage": "./IMAGENES/REMERA TERCER.jpg",
   "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
+  "kitImage": "",
   "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
   "kmlLink": "",
   "stravaLink": "",
@@ -170,13 +172,14 @@ window.RACE_CONFIG = {
     "./IMAGENES/sponsor_auto_0_1786408456064.png"
   ],
   "themeColors": {
-    "primary": "#00f2fe",
-    "primaryGlow": "rgba(0, 242, 254, 0.35)",
-    "primaryDim": "rgba(0, 242, 254, 0.1)",
-    "secondary": "#ff007f",
-    "secondaryGlow": "rgba(255, 0, 127, 0.35)"
+    "primary": "#00e676",
+    "primaryGlow": "rgba(0, 230, 118, 0.35)",
+    "primaryDim": "rgba(0, 230, 118, 0.1)",
+    "secondary": "#00b0ff",
+    "secondaryGlow": "rgba(0, 176, 255, 0.35)"
   },
-  "themeBackground": "sunset",
+  "themeBackground": "snow",
+  "borderRadiusStyle": "12px",
   "formFields": [
     {
       "id": "nombre",
