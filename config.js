@@ -7,7 +7,6 @@ window.RACE_CONFIG = {
   "posterImage": "./IMAGENES/AFICHE TERCER.jpg",
   "tshirtImage": "./IMAGENES/REMERA TERCER.jpg",
   "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
-  "kitImage": "./IMAGENES/kit.jpg",
   "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
   "kmlLink": "",
   "stravaLink": "",
@@ -24,9 +23,9 @@ window.RACE_CONFIG = {
       "price": 50000,
       "detail": "RECORRIDO COMPETITIVO, POR SENDEROS TECNICO, CON TREPADAS Y LUGARES MUY ATRACTIVOS DE MALARGUE, PUESTO DE HIDRATACION A LOS 2,5 KMS Y 8 KMS",
       "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
-      "stravaLink": "https://www.strava.com/activities/19730387354/flyover?origin=shared&utm_source=android_share&utm_medium=social&share_sig=QVOS2D2N1787007742&_branch_match_id=1578937274638312499&_branch_referrer=H4sIAAAAAAAAA8soKSkottLXLy4pSixL1EssKNDLyczL1g%2FNqTIJMcv2dTdNsq8rSk1LLSrKzEuPTyrKLy9OLbJ1zijKz00FAAdQ7%2BI9AAAA",
-      "garminLink": "https://connect.garmin.com/app/course/504282287",
-      "googleEarthLink": "https://earth.google.com/earth/d/1nWgOAlbVpFdILoombku36G_g0a20-rQW?usp=sharing",
+      "stravaLink": "https://strava.app.link/Ulz4T6kMG5b",
+      "garminLink": "https://connect.garmin.com/modern/activity/23966685622?share_unique_id=7",
+      "googleEarthLink": "https://earth.google.com/web/@-35.438479,-69.599445,1400a,30000d",
       "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
       "autoCategory": true,
       "categories": [
@@ -80,7 +79,11 @@ window.RACE_CONFIG = {
       "price": 18000,
       "detail": "RECORRIDO PARA LOS MAS PEQUEÑOS, SE DESARROLLARÁ EN EL LUGAR DE LARGADA, 100 MTS, 200 MTS, 400 MTS, 800 MTS Y 12000 MTS.",
       "gpxLink": "./IMAGENES/circuito infantiles.gpx",
+      "stravaLink": "https://strava.app.link/ItiUAM7LG5b",
+      "garminLink": "https://connect.garmin.com/modern/activity/23828931697?share_unique_id=22",
+      "googleEarthLink": "",
       "altitudeMapImage": "./IMAGENES/altura infantiles.jpg",
+      "autoCategory": true,
       "categories": [
         {
           "id": "infantiles1",
@@ -132,10 +135,10 @@ window.RACE_CONFIG = {
       "price": 35000,
       "detail": "EL RECORRIDO DE 5 KMS TRANSITARA POR SENDEROS TECNICOS, ARROYOS SECOS, Y ES LA DISTANCIA IDEAL PARA LOS QUE SE ESTAN INICIANDO EN EL CROSS-TRAIL.\nPUESTO DE HIDRATACION A LOS 2,5 KMS.",
       "gpxLink": "./IMAGENES/5 K 3 TIEMPO.gpx",
-      "stravaLink": "",
-      "garminLink": "https://connect.garmin.com/app/course/504188649",
-      "googleEarthLink": "",
-      "altitudeMapImage": "./IMAGENES/ALTURA 5 K.jpg",
+      "stravaLink": "https://strava.app.link/ItiUAM7LG5b",
+      "garminLink": "https://connect.garmin.com/modern/activity/23828931697?share_unique_id=22",
+      "googleEarthLink": "https://earth.google.com/web/@-35.438479,-69.599445,1400a,30000d",
+      "altitudeMapImage": "./IMAGENES/MAPADEALTURA5.jpg",
       "autoCategory": false,
       "categories": [
         {
@@ -230,6 +233,13 @@ window.RACE_CONFIG = {
       "required": false,
       "enabled": true,
       "isDefault": true
+    },
+    {
+      "id": "custom_licencia_facimo",
+      "label": "Licencia FACIMO",
+      "required": true,
+      "enabled": true,
+      "isDefault": false
     }
   ]
 };
