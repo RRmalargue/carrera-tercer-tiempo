@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Rastreador de archivos modificados para subir a GitHub
     const modifiedFiles = new Set();
     const uploadedMediaFiles = new Set();
+    let isInitialLoad = true;
 
     function updateGitHubUploadGuide() {
         const filesListEl = document.getElementById('github-files-list');
@@ -215,6 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadStandardDefaults();
             }
         }
+        
+        isInitialLoad = false;
         
         // Inicializar el mapa de administración al final
         initAdminMap();
@@ -998,6 +1001,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateJsonPreview() {
         jsonPreview.textContent = getGeneratedConfig();
+        if (!isInitialLoad) {
+            modifiedFiles.add('config');
+            updateGitHubUploadGuide();
+        }
     }
 
     // 5. COPY & DOWNLOAD ACTIONS
