@@ -44,8 +44,38 @@ const server = http.createServer((req, res) => {
                 // Guardar config.json por compatibilidad
                 fs.writeFileSync(path.join(PUBLIC_DIR, 'config.json'), JSON.stringify(configData, null, 2), 'utf8');
 
+                // Incrementar automáticamente la versión de sw.js
+                let newSwVersion = null;
+                try {
+                    const swPath = path.join(PUBLIC_DIR, 'sw.js');
+                    if (fs.existsSync(swPath)) {
+                        let swContent = fs.readFileSync(swPath, 'utf8');
+                        const versionRegex = /const CACHE_NAME = (['"])trail-portal-v(\d+)\.(\d+)\1/;
+                        const match = swContent.match(versionRegex);
+                        
+                        if (match) {
+                            const quote = match[1];
+                            const major = parseInt(match[2]);
+                            const minor = parseInt(match[3]);
+                            const newMinor = minor + 1;
+                            const newVersionString = `const CACHE_NAME = ${quote}trail-portal-v${major}.${newMinor}${quote}`;
+                            
+                            swContent = swContent.replace(versionRegex, newVersionString);
+                            fs.writeFileSync(swPath, swContent, 'utf8');
+                            newSwVersion = `v${major}.${newMinor}`;
+                            console.log(`[API] sw.js actualizado automáticamente a la versión: ${newSwVersion}`);
+                        }
+                    }
+                } catch (swErr) {
+                    console.error('[API] Error al incrementar versión de sw.js:', swErr);
+                }
+
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ status: 'success', message: 'Configuración guardada exitosamente.' }));
+                res.end(JSON.stringify({ 
+                    status: 'success', 
+                    message: 'Configuración guardada exitosamente.',
+                    newSwVersion: newSwVersion
+                }));
                 console.log('[API] Configuración guardada en disco.');
             } catch (err) {
                 res.writeHead(500, { 'Content-Type': 'application/json' });

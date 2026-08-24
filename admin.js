@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modifiedFiles.has('config')) {
             allFiles.push({ name: 'config.js', desc: 'Configuración principal para la web pública' });
             allFiles.push({ name: 'config.json', desc: 'Configuración principal para este panel local' });
+            allFiles.push({ name: 'sw.js', desc: 'Controlador de caché (para que se actualicen los celulares)' });
         }
 
         // Si se subieron archivos multimedia
@@ -1076,7 +1077,13 @@ window.RACE_CONFIG = ${JSON.stringify(state, null, 2)};
             if (result && result.status === 'success') {
                 modifiedFiles.add('config');
                 updateGitHubUploadGuide();
-                alert('¡Configuración guardada en disco con éxito! Los cambios ya están activos en la web pública.');
+                
+                let successMsg = '¡Configuración guardada en disco con éxito!';
+                if (result.newSwVersion) {
+                    successMsg += `\n\nSe incrementó automáticamente la versión de sw.js a: ${result.newSwVersion}`;
+                }
+                successMsg += '\n\nLos cambios ya están listos en tu computadora para subir a GitHub.';
+                alert(successMsg);
             } else {
                 throw new Error(result.message || 'Respuesta fallida del servidor local.');
             }
