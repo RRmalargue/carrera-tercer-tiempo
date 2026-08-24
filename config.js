@@ -179,7 +179,7 @@ window.RACE_CONFIG = {
     "secondaryGlow": "rgba(0, 176, 255, 0.35)"
   },
   "themeBackground": "snow",
-  "borderRadiusStyle": "12px",
+  "borderRadiusStyle": "20px",
   "formFields": [
     {
       "id": "nombre",
