@@ -145,21 +145,21 @@ window.RACE_CONFIG = {
       "categories": [
         {
           "id": "damas_5_kms_libre",
-          "name": "5 KMS LIBRE",
+          "name": "LIBRE",
           "minAge": 0,
           "maxAge": 120,
           "requiresPayment": true
         },
         {
           "id": "caballeros_5_kms_libre",
-          "name": "5 KMS LIBRE",
+          "name": "LIBRE",
           "minAge": 0,
           "maxAge": 120,
           "requiresPayment": true
         },
         {
           "id": "disca1",
-          "name": "DISCA 5 KMS LIBRE",
+          "name": "DISCA  LIBRE",
           "minAge": 1,
           "maxAge": 80,
           "requiresPayment": false
