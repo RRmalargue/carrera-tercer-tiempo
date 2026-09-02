@@ -76,7 +76,7 @@ window.RACE_CONFIG = {
       ]
     },
     {
-      "id": "INFANTILES",
+      "id": "INFAN1K",
       "name": "INFANTILES",
       "price": 18000,
       "detail": "RECORRIDO PARA LOS MAS PEQUEÑOS, SE DESARROLLARÁ EN EL LUGAR DE LARGADA, 100 MTS, 200 MTS, 400 MTS, 800 MTS Y 12000 MTS.",
@@ -229,13 +229,6 @@ window.RACE_CONFIG = {
       "required": false,
       "enabled": true,
       "isDefault": true
-    },
-    {
-      "id": "custom_licencia_facimo",
-      "label": "Licencia FACIMO",
-      "required": true,
-      "enabled": true,
-      "isDefault": false
     }
   ]
 };
