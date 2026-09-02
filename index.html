@@ -176,7 +176,7 @@
                         <div class="info-card" style="margin-bottom: 1.5rem; background: rgba(0, 242, 254, 0.05); border: 1px dashed rgba(0, 242, 254, 0.3); padding: 0.8rem 1rem; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 0.8rem;">
                             <div style="font-size: 1.5rem;">💡</div>
                             <div style="font-size: 0.9rem; line-height: 1.4; color: var(--accent-cyan); text-align: left;">
-                                <strong>TIP RÁPIDO:</strong> Al tocar el campo <strong>Nombre</strong>, puedes usar la sugerencia de autocompletar de tu celular para rellenar toda la ficha en 1 segundo.
+                                <strong>TIP RÁPIDO:</strong> Al tocar el campo <strong>Nombre y Apellido</strong>, puedes usar la sugerencia de autocompletar de tu celular para rellenar toda la ficha en 1 segundo.
                             </div>
                         </div>
 
@@ -197,12 +197,9 @@
 
                             <!-- Datos Personales -->
                             <div class="input-group">
-                                <label for="nombre">Nombre <span class="requirement">*</span></label>
-                                <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo" autocomplete="given-name">
-                            </div>
-                            <div class="input-group">
-                                <label for="apellido">Apellido <span class="requirement">*</span></label>
-                                <input type="text" id="apellido" name="apellido" required placeholder="Tu apellido" autocomplete="family-name">
+                                <label for="nombre">Nombre y Apellido <span class="requirement">*</span></label>
+                                <input type="text" id="nombre" name="nombre" required placeholder="Ej: Juan Pérez" autocomplete="name">
+                                <input type="hidden" id="apellido" name="apellido">
                             </div>
                             <div class="input-group">
                                 <label for="cuil">CUIL <span class="requirement" id="cuil-req-indicator">* (11 dígitos exactos)</span></label>

@@ -1220,9 +1220,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let error = null;
             
             if (isFieldEnabled('nombre') && isFieldRequired('nombre')) {
-                error = error || checkField(inputNombre, !inputNombre.value.trim(), 'El nombre es obligatorio.');
+                error = error || checkField(inputNombre, !inputNombre.value.trim(), 'El nombre y apellido es obligatorio.');
             }
-            if (isFieldEnabled('apellido') && isFieldRequired('apellido')) {
+            if (inputApellido && inputApellido.type !== 'hidden' && isFieldEnabled('apellido') && isFieldRequired('apellido')) {
                 error = error || checkField(inputApellido, !inputApellido.value.trim(), 'El apellido es obligatorio.');
             }
             
@@ -1308,7 +1308,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSummary() {
         const cost = parseFloat(document.getElementById('selected-distance-price').value) || 0;
-        summaryCorredor.textContent = `${inputNombre.value} ${inputApellido.value}`;
+        const nomVal = inputNombre ? inputNombre.value.trim() : '';
+        const apeVal = inputApellido && inputApellido.value ? ' ' + inputApellido.value.trim() : '';
+        summaryCorredor.textContent = `${nomVal}${apeVal}`.trim();
         summaryDistancia.textContent = document.getElementById('selected-distance-id').value;
         summaryCategoria.textContent = inputCategoria.value || 'General';
         summaryMonto.textContent = `$${cost.toLocaleString('es-AR')}`;

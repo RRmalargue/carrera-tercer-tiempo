@@ -88,42 +88,42 @@
       "categories": [
         {
           "id": "infantiles1",
-          "name": "INFANTILES 4 Y 5 AÑOS",
+          "name": "4 Y 5 AÑOS",
           "minAge": 4,
           "maxAge": 5,
           "requiresPayment": true
         },
         {
           "id": "infantiles2",
-          "name": "INFANTILES 6 Y 7 AÑOS",
+          "name": "6 Y 7 AÑOS",
           "minAge": 6,
           "maxAge": 7,
           "requiresPayment": true
         },
         {
           "id": "infantiles3",
-          "name": "INFANTILES 8 Y 9 AÑOS",
+          "name": "8 Y 9 AÑOS",
           "minAge": 8,
           "maxAge": 9,
           "requiresPayment": true
         },
         {
           "id": "infantiles4",
-          "name": "INFANTILES 10 Y 11 AÑOS",
+          "name": "10 Y 11 AÑOS",
           "minAge": 10,
           "maxAge": 11,
           "requiresPayment": true
         },
         {
           "id": "infantiles5",
-          "name": "INFANTILES 12 Y 13 AÑOS",
+          "name": "12 Y 13 AÑOS",
           "minAge": 12,
           "maxAge": 13,
           "requiresPayment": true
         },
         {
           "id": "infantiles6",
-          "name": "INFANTILES 14 Y 15 AÑOS",
+          "name": "14 Y 15 AÑOS",
           "minAge": 14,
           "maxAge": 15,
           "requiresPayment": true
@@ -144,21 +144,21 @@
       "categories": [
         {
           "id": "damas_5_kms_libre",
-          "name": "LIBRE",
+          "name": "5 KMS LIBRE",
           "minAge": 0,
           "maxAge": 120,
           "requiresPayment": true
         },
         {
           "id": "caballeros_5_kms_libre",
-          "name": "LIBRE",
+          "name": "5 KMS LIBRE",
           "minAge": 0,
           "maxAge": 120,
           "requiresPayment": true
         },
         {
           "id": "disca1",
-          "name": "DISCA  LIBRE",
+          "name": "DISCA 5 KMS LIBRE",
           "minAge": 1,
           "maxAge": 80,
           "requiresPayment": false
@@ -171,25 +171,18 @@
     "./IMAGENES/sponsor_auto_0_1786408456064.png"
   ],
   "themeColors": {
-    "primary": "#00e676",
-    "primaryGlow": "rgba(0, 230, 118, 0.35)",
-    "primaryDim": "rgba(0, 230, 118, 0.1)",
-    "secondary": "#00b0ff",
-    "secondaryGlow": "rgba(0, 176, 255, 0.35)"
+    "primary": "#00f2fe",
+    "primaryGlow": "rgba(0, 242, 254, 0.35)",
+    "primaryDim": "rgba(0, 242, 254, 0.1)",
+    "secondary": "#ff007f",
+    "secondaryGlow": "rgba(255, 0, 127, 0.35)"
   },
-  "themeBackground": "snow",
-  "borderRadiusStyle": "20px",
+  "themeBackground": "sunset",
+  "borderRadiusStyle": "10px",
   "formFields": [
     {
       "id": "nombre",
-      "label": "Nombre",
-      "required": true,
-      "enabled": true,
-      "isDefault": true
-    },
-    {
-      "id": "apellido",
-      "label": "Apellido",
+      "label": "Nombre y Apellido",
       "required": true,
       "enabled": true,
       "isDefault": true
@@ -235,6 +228,13 @@
       "required": false,
       "enabled": true,
       "isDefault": true
+    },
+    {
+      "id": "custom_licencia_facimo",
+      "label": "Licencia FACIMO",
+      "required": true,
+      "enabled": true,
+      "isDefault": false
     }
   ]
 }

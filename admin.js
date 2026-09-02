@@ -304,8 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Inicializar y renderizar campos del formulario
         if (!state.formFields || state.formFields.length === 0) {
             state.formFields = [
-                { id: "nombre", label: "Nombre", required: true, enabled: true, isDefault: true },
-                { id: "apellido", label: "Apellido", required: true, enabled: true, isDefault: true },
+                { id: "nombre", label: "Nombre y Apellido", required: true, enabled: true, isDefault: true },
                 { id: "cuil", label: "CUIL", required: true, enabled: true, isDefault: true },
                 { id: "fecha_nacimiento", label: "Fecha de Nacimiento", required: true, enabled: true, isDefault: true },
                 { id: "genero", label: "Género", required: true, enabled: true, isDefault: true },
@@ -313,6 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 { id: "talle_remera", label: "Talle de Remera", required: true, enabled: true, isDefault: true },
                 { id: "team_origen", label: "Team o Lugar de Origen", required: false, enabled: true, isDefault: true }
             ];
+        } else {
+            // Migrar si existía apellido por separado
+            const nomField = state.formFields.find(f => f.id === 'nombre');
+            if (nomField && nomField.label === 'Nombre') {
+                nomField.label = 'Nombre y Apellido';
+            }
+            state.formFields = state.formFields.filter(f => f.id !== 'apellido');
         }
         renderFormFieldsEditor();
 
