@@ -1471,6 +1471,26 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             btnSubmit.disabled = false;
         }
+
+        const instantBtn = document.getElementById('btn-submit-instant');
+        if (instantBtn) {
+            instantBtn.disabled = btnSubmit.disabled;
+            instantBtn.style.opacity = btnSubmit.disabled ? '0.5' : '1';
+            instantBtn.style.cursor = btnSubmit.disabled ? 'not-allowed' : 'pointer';
+        }
+    }
+
+    // Listener para el botón instantáneo de confirmar inscripción dentro del contenedor de subida
+    const instantSubmitBtn = document.getElementById('btn-submit-instant');
+    if (instantSubmitBtn) {
+        instantSubmitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (btnSubmit && !btnSubmit.disabled) {
+                btnSubmit.click();
+            } else if (form) {
+                form.requestSubmit();
+            }
+        });
     }
 
     function updatePaymentStepVisibility() {
@@ -1583,6 +1603,38 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('No se pudo guardar en localStorage:', storageErr);
         }
 
+        function triggerWhatsAppSubmissionNotification(data) {
+            const orgPhone = (config && config.contactWhatsapp) ? config.contactWhatsapp.replace(/\D/g, '') : '5492604552146';
+            const raceTitle = (config && config.raceName) ? config.raceName : 'CROSS TRAIL TERCER TIEMPO';
+            const runnerName = `${data.nombre || ''} ${data.apellido || ''}`.trim();
+            
+            const msg = `¡Hola! 👋 Acabo de confirmar mi inscripción para el *${raceTitle}* 🏃‍♂️⛰️\n\n` +
+                  `👤 *Corredor:* ${runnerName}\n` +
+                  `📋 *DNI/CUIL:* ${data.cuil || '-'}\n` +
+                  `⚡ *Categoría:* ${data.categoria || '-'}\n` +
+                  `📏 *Distancia:* ${data.distancia || '-'}\n` +
+                  `📱 *Teléfono:* ${data.telefono || '-'}\n` +
+                  `👕 *Talle Remera:* ${data.talle_remera || '-'}\n` +
+                  `💰 *Monto:* $${data.costo || '0'}\n\n` +
+                  `✅ *Comprobante:* Ya adjuntado y subido en el portal.`;
+
+            const waLink = `https://api.whatsapp.com/send?phone=${orgPhone}&text=${encodeURIComponent(msg)}`;
+            
+            const waConfirmBtn = document.getElementById('wa-confirm-btn');
+            if (waConfirmBtn) {
+                waConfirmBtn.href = waLink;
+            }
+
+            // Redirigir a WhatsApp de forma automática en móvil y PC
+            setTimeout(() => {
+                try {
+                    window.location.href = waLink;
+                } catch (navErr) {
+                    console.warn('Error redirigiendo a WhatsApp:', navErr);
+                }
+            }, 750);
+        }
+
         // CHECK IF IN MOCK/DEMO MODE
         if (GOOGLE_SCRIPT_URL === 'TU_SCRIPT_URL_AQUI' || GOOGLE_SCRIPT_URL.trim() === '') {
             // Simulamos retraso de envío de red de 2 segundos en modo Demo
@@ -1592,7 +1644,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
                 successScreen.classList.remove('hidden');
-            }, 2500);
+                triggerWhatsAppSubmissionNotification(formData);
+            }, 2000);
             return;
         }
 
@@ -1610,6 +1663,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // En modo 'no-cors' la respuesta es opaca, por lo que asumimos éxito al no lanzar error de red
             loadingScreen.classList.add('hidden');
             successScreen.classList.remove('hidden');
+            triggerWhatsAppSubmissionNotification(formData);
 
         } catch (error) {
             console.error('Error al enviar registro:', error);
