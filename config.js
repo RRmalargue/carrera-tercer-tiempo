@@ -144,14 +144,7 @@ window.RACE_CONFIG = {
       "autoCategory": false,
       "categories": [
         {
-          "id": "damas_5_kms_libre",
-          "name": "LIBRE",
-          "minAge": 0,
-          "maxAge": 120,
-          "requiresPayment": true
-        },
-        {
-          "id": "caballeros_5_kms_libre",
+          "id": "damacaba_5_kms_libre",
           "name": "LIBRE",
           "minAge": 0,
           "maxAge": 120,
