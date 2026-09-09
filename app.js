@@ -1582,6 +1582,39 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('No se pudo guardar en localStorage:', storageErr);
         }
 
+        // Construir enlace directo de WhatsApp con los datos del inscripto
+        let rawPhone = (config.contactWhatsapp || '5492604552146').replace(/\D/g, '');
+        if (rawPhone.length === 10) rawPhone = '549' + rawPhone;
+        const targetWhatsapp = rawPhone;
+        const nl = '%0A';
+        const waMsg = `¡Hola! Acabo de registrar mi inscripción a *${encodeURIComponent(config.raceName || 'la carrera')}*.${nl}${nl}` +
+            `👤 *Corredor:* ${encodeURIComponent(formData.nombre)}${nl}` +
+            `🏃 *Distancia:* ${encodeURIComponent(formData.distancia)}${nl}` +
+            `🏅 *Categoría:* ${encodeURIComponent(formData.categoria)}${nl}` +
+            `🆔 *CUIL:* ${encodeURIComponent(formData.cuil)}${nl}` +
+            `📱 *Teléfono:* ${encodeURIComponent(formData.telefono)}${nl}` +
+            `💰 *Monto abonado:* $${encodeURIComponent(formData.costo)}${nl}${nl}` +
+            `📄 *Comprobante:* Adjunto aquí mi comprobante de pago para confirmación.`;
+        const whatsappUrl = `https://wa.me/${targetWhatsapp}?text=${waMsg}`;
+
+        function onSuccessfulSubmission() {
+            loadingScreen.classList.add('hidden');
+            successScreen.classList.remove('hidden');
+
+            // Configurar botón directo de WhatsApp en la pantalla de éxito
+            const btnSuccessWa = document.getElementById('btn-success-whatsapp');
+            if (btnSuccessWa) {
+                btnSuccessWa.href = whatsappUrl;
+            }
+
+            // Abrir WhatsApp automáticamente en una nueva pestaña
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (errOpen) {
+                console.warn('Popup bloqueado, el usuario tiene el botón directo en pantalla:', errOpen);
+            }
+        }
+
         // CHECK IF IN MOCK/DEMO MODE
         if (GOOGLE_SCRIPT_URL === 'TU_SCRIPT_URL_AQUI' || GOOGLE_SCRIPT_URL.trim() === '') {
             // Simulamos retraso de envío de red de 2 segundos en modo Demo
@@ -1589,8 +1622,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Datos enviados:', formData);
             
             setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-                successScreen.classList.remove('hidden');
+                onSuccessfulSubmission();
             }, 2500);
             return;
         }
@@ -1607,8 +1639,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // En modo 'no-cors' la respuesta es opaca, por lo que asumimos éxito al no lanzar error de red
-            loadingScreen.classList.add('hidden');
-            successScreen.classList.remove('hidden');
+            onSuccessfulSubmission();
 
         } catch (error) {
             console.error('Error al enviar registro:', error);

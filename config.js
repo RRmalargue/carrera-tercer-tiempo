@@ -1,14 +1,12 @@
 // Configuración de Carrera autogenerada por el Panel Administrativo
 window.RACE_CONFIG = {
   "raceName": "CROSS TRAIL \"TERCER TIEMPO\"",
-  "googleScriptUrl": "",
   "raceDescription": " REGLAMENTO\n\nCarrera DE CROSS TRAIL a realizarse el 20 de setiembre de 2026 en Malargüe, lugar predio TERCER TIEMPO (LAS BARDAS SIN NUMERO BARRIO VIRGEN DE LOS VIENTOS MALARGUE, MENDOZA),con largada a las 09:00 hs.\n\nEn 2 distancias 5 km,  15 km \n\nCON LA INSCRIPCION SE ENTREGA REMERA DEL EVENTO  Cupo de 200 corredores\n\ncupo de REMERAS 200 UNIDADES.\n\nCosto de inscripción\n\n5 km: 35.000 pesos\n\n15 Km: 50.000 pesos\n\nCATEGORIA KID 18.000 pesos\n\nSOCIOS DEL CLUB TENDRAN 20% DE DESCUENTO.\n\nLa Organización podrá suspender y/o posponer el evento por cuestiones de seguridad pública, pandemia, climatológicas y/o razones de fuerza mayor.\n\nLos competidores al momento de acreditarse para retirar su número y kit deberán presentar obligatoriamente el DNI. La entrega de Kit se hará el día sábado 19 DE Setiembre en lugar a designar.\n\nPREMIACION\n\n\nPREMIACION EN EFECTIVO \n\n15 KMS PARA DAMAS Y CABALLEROS\n\n1 PUESTO     200.000 PESOS\n2 PUESTO     150.000 PESOS\n3 PUESTO     100.000 PESOS\n\n5 KM PARA DAMAS Y CABALLEROS\n\n1 PUESTO      70.000,00 PESOS\n2 PUESTO      50.000,00 PESOS\n3 PUESTO      35.000,00 PESOS\n\nMEDALLAS FINISHER PARA TODOS LOS PARTICIPANTES\n\nEN 15 KMS REGALOS EN TODAS LAS CATEGORIAS HASTA EL TERCER PUESTO\n\nEl Corredor que clasifique al podio; deberá estar presente para recibir su premio, no podrá subir otra persona en su lugar.",
   "logoImage": "./IMAGENES/LOGO.jpg",
   "contactWhatsapp": "5492604552146",
   "posterImage": "./IMAGENES/AFICHE TERCER.jpg",
   "tshirtImage": "./IMAGENES/REMERA TERCER.jpg",
   "altitudeMapImage": "./IMAGENES/MAPADEALTURA15.jpg",
-  "kitImage": "",
   "gpxLink": "./IMAGENES/Zepp20260806144255.gpx",
   "kmlLink": "",
   "stravaLink": "",
@@ -89,42 +87,42 @@ window.RACE_CONFIG = {
       "categories": [
         {
           "id": "infantiles1",
-          "name": "4 Y 5 AÑOS",
+          "name": "INFANTILES 4 Y 5 AÑOS",
           "minAge": 4,
           "maxAge": 5,
           "requiresPayment": true
         },
         {
           "id": "infantiles2",
-          "name": "6 Y 7 AÑOS",
+          "name": "INFANTILES 6 Y 7 AÑOS",
           "minAge": 6,
           "maxAge": 7,
           "requiresPayment": true
         },
         {
           "id": "infantiles3",
-          "name": "8 Y 9 AÑOS",
+          "name": "INFANTILES 8 Y 9 AÑOS",
           "minAge": 8,
           "maxAge": 9,
           "requiresPayment": true
         },
         {
           "id": "infantiles4",
-          "name": "10 Y 11 AÑOS",
+          "name": "INFANTILES 10 Y 11 AÑOS",
           "minAge": 10,
           "maxAge": 11,
           "requiresPayment": true
         },
         {
           "id": "infantiles5",
-          "name": "12 Y 13 AÑOS",
+          "name": "INFANTILES 12 Y 13 AÑOS",
           "minAge": 12,
           "maxAge": 13,
           "requiresPayment": true
         },
         {
           "id": "infantiles6",
-          "name": "14 Y 15 AÑOS",
+          "name": "INFANTILES 14 Y 15 AÑOS",
           "minAge": 14,
           "maxAge": 15,
           "requiresPayment": true
@@ -144,15 +142,22 @@ window.RACE_CONFIG = {
       "autoCategory": false,
       "categories": [
         {
-          "id": "damacaba_5_kms_libre",
-          "name": "LIBRE",
+          "id": "damas_5_kms_libre",
+          "name": "5 KMS LIBRE",
+          "minAge": 0,
+          "maxAge": 120,
+          "requiresPayment": true
+        },
+        {
+          "id": "caballeros_5_kms_libre",
+          "name": "5 KMS LIBRE",
           "minAge": 0,
           "maxAge": 120,
           "requiresPayment": true
         },
         {
           "id": "disca1",
-          "name": "DISCA LIBRE",
+          "name": "DISCA 5 KMS LIBRE",
           "minAge": 1,
           "maxAge": 80,
           "requiresPayment": false
@@ -171,8 +176,7 @@ window.RACE_CONFIG = {
     "secondary": "#ff007f",
     "secondaryGlow": "rgba(255, 0, 127, 0.35)"
   },
-  "themeBackground": "snow",
-  "borderRadiusStyle": "20px",
+  "themeBackground": "sunset",
   "formFields": [
     {
       "id": "nombre",
@@ -222,6 +226,13 @@ window.RACE_CONFIG = {
       "required": false,
       "enabled": true,
       "isDefault": true
+    },
+    {
+      "id": "custom_licencia_facimo",
+      "label": "Licencia FACIMO",
+      "required": true,
+      "enabled": true,
+      "isDefault": false
     }
   ]
 };
