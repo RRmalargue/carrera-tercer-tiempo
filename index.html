@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=2.2">
+    <link rel="stylesheet" href="./index.css?v=4.1">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -448,7 +448,7 @@
     </div>
 
     <!-- App JavaScript Configuration -->
-    <script src="./config.js?v=2.2"></script>
+    <script src="./config.js?v=4.1"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -507,8 +507,11 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registrado para PWA con éxito:', reg.scope))
+                navigator.serviceWorker.register('./sw.js?v=4.1')
+                    .then(reg => {
+                        console.log('Service Worker registrado para PWA con éxito:', reg.scope);
+                        reg.update(); // Forzar verificación inmediata de nueva versión
+                    })
                     .catch(err => console.error('Fallo al registrar Service Worker PWA:', err));
             });
 
@@ -523,6 +526,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=2.2"></script>
+    <script src="./app.js?v=4.1"></script>
 </body>
 </html>

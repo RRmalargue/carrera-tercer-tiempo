@@ -1,10 +1,10 @@
-// sw.js - Service Worker para habilitar la instalación de la PWA
-const CACHE_NAME = 'trail-portal-v4.0';
+// sw.js - Service Worker para habilitar la instalación de la PWA y actualizaciones inmediatas
+const CACHE_NAME = 'trail-portal-v4.1';
 const ASSETS = [
     './index.html',
-    './index.css',
-    './app.js',
-    './config.js',
+    './index.css?v=4.1',
+    './app.js?v=4.1',
+    './config.js?v=4.1',
     './manifest.json',
     './IMAGENES/LOGO.jpg'
 ];
@@ -21,29 +21,42 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-    self.clients.claim();
     e.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        return caches.delete(key);
-                    }
-                })
-            );
-        })
+        Promise.all([
+            self.clients.claim(),
+            caches.keys().then((keys) => {
+                return Promise.all(
+                    keys.map((key) => {
+                        if (key !== CACHE_NAME) {
+                            return caches.delete(key);
+                        }
+                    })
+                );
+            })
+        ])
     );
 });
 
+// Estrategia Network-First: Siempre busca la versión más reciente en internet.
+// Si no hay conexión o falla la red, utiliza la versión guardada en caché.
 self.addEventListener('fetch', (e) => {
-    // Solo cachear peticiones GET de nuestro propio origen
     if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) {
         return;
     }
+
     e.respondWith(
-        caches.match(e.request).then((cachedResponse) => {
-            // Devolver del caché si existe, si no hacer fetch normal
-            return cachedResponse || fetch(e.request);
-        })
+        fetch(e.request)
+            .then((networkResponse) => {
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(e.request, responseClone);
+                    });
+                }
+                return networkResponse;
+            })
+            .catch(() => {
+                return caches.match(e.request);
+            })
     );
 });
