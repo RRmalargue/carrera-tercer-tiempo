@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=4.2">
+    <link rel="stylesheet" href="./index.css?v=4.3">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -319,7 +319,7 @@
                                     </label>
                                     
                                     <!-- Botón táctil grande y simple para subir comprobante -->
-                                    <div class="file-upload-box" id="file-dropzone" style="border: 2px dashed var(--accent-cyan); border-radius: var(--radius-lg); padding: 2.2rem 1.2rem; text-align: center; background: rgba(0, 242, 254, 0.04); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                                    <label for="comprobante" class="file-upload-box" id="file-dropzone" style="display: block; border: 2px dashed var(--accent-cyan); border-radius: var(--radius-lg); padding: 2.2rem 1.2rem; text-align: center; background: rgba(0, 242, 254, 0.04); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
                                         <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(0, 242, 254, 0.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1.5px solid var(--accent-cyan);">
                                             <i class="fa-solid fa-camera" style="font-size: 1.8rem; color: var(--accent-cyan);"></i>
                                         </div>
@@ -329,15 +329,15 @@
                                         <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">
                                             Elige una foto, captura de pantalla o PDF de tu transferencia
                                         </span>
-                                        <input type="file" id="comprobante" class="file-input" accept=".jpg,.jpeg,.png,.pdf,image/*">
-                                    </div>
+                                    </label>
+                                    <input type="file" id="comprobante" class="file-input" accept="image/*,application/pdf,.jpg,.jpeg,.png,.webp,.pdf,.heic" style="display: none;">
                                     
                                     <!-- File Preview Container cuando ya eligió archivo -->
                                     <div id="file-preview-container" class="file-preview hidden" style="background: rgba(0, 230, 118, 0.08); border: 2px solid #00e676; padding: 1.2rem; border-radius: var(--radius-lg); box-shadow: 0 0 20px rgba(0, 230, 118, 0.2); margin-top: 0.5rem;">
                                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                                             <div style="display: flex; align-items: center; gap: 0.8rem; text-align: left; overflow: hidden;">
                                                 <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 230, 118, 0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                    <i class="fa-solid fa-check" style="color: #00e676; font-size: 1.3rem;"></i>
+                                                    <i id="preview-icon" class="fa-solid fa-check" style="color: #00e676; font-size: 1.3rem;"></i>
                                                 </div>
                                                 <div style="overflow: hidden;">
                                                     <div style="font-weight: 800; color: #00e676; font-size: 0.95rem;">¡Comprobante cargado con éxito!</div>
@@ -451,7 +451,7 @@
     </div>
 
     <!-- App JavaScript Configuration -->
-    <script src="./config.js?v=4.2"></script>
+    <script src="./config.js?v=4.3"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -510,7 +510,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.2')
+                navigator.serviceWorker.register('./sw.js?v=4.3')
                     .then(reg => {
                         console.log('Service Worker registrado para PWA con éxito:', reg.scope);
                         reg.update(); // Forzar verificación inmediata de nueva versión
@@ -529,6 +529,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=4.2"></script>
+    <script src="./app.js?v=4.3"></script>
 </body>
 </html>

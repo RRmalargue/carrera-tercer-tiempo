@@ -1323,99 +1323,183 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. CARGA DE ARCHIVO Y PREVIEW
     // Drag & Drop
     ['dragenter', 'dragover'].forEach(eventName => {
-        fileDropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            fileDropzone.classList.add('dragover');
-        }, false);
+        if (fileDropzone) {
+            fileDropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                fileDropzone.classList.add('dragover');
+            }, false);
+        }
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        fileDropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            fileDropzone.classList.remove('dragover');
-        }, false);
-    });
-
-    fileDropzone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        if (files.length > 0) {
-            handleFile(files[0]);
+        if (fileDropzone) {
+            fileDropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                fileDropzone.classList.remove('dragover');
+            }, false);
         }
     });
 
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
-    });
+    if (fileDropzone) {
+        fileDropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt ? dt.files : null;
+            if (files && files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+    }
 
-    // Triggers input click on box click
-    fileDropzone.addEventListener('click', (e) => {
-        if (e.target !== fileInput) {
-            fileInput.click();
-        }
-    });
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+    }
+
+    function compressImageFile(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        let width = img.naturalWidth || img.width;
+                        let height = img.naturalHeight || img.height;
+                        const maxDimension = 1280;
+
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            } else {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                        const base64Data = dataUrl.split(',')[1];
+                        resolve({
+                            base64: base64Data,
+                            type: 'image/jpeg',
+                            approxBytes: Math.round((base64Data.length * 3) / 4)
+                        });
+                    } catch (canvasErr) {
+                        console.warn('Compresión en canvas falló, enviando imagen original:', canvasErr);
+                        const rawBase64 = e.target.result.split(',')[1];
+                        resolve({
+                            base64: rawBase64,
+                            type: file.type || 'image/jpeg',
+                            approxBytes: file.size
+                        });
+                    }
+                };
+                img.onerror = () => {
+                    console.warn('Error leyendo imagen para compresión, usando archivo directo');
+                    const rawBase64 = e.target.result.split(',')[1];
+                    resolve({
+                        base64: rawBase64,
+                        type: file.type || 'image/jpeg',
+                        approxBytes: file.size
+                    });
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = () => {
+                resolve({
+                    base64: '',
+                    type: file.type || 'image/jpeg',
+                    approxBytes: 0
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     async function handleFile(file) {
         hideError();
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+        if (!file) return;
 
-        if (!allowedTypes.includes(file.type)) {
-            showError('Formato no permitido. Solo se aceptan imágenes (JPG, PNG) o PDF.');
-            resetFileInput();
-            return;
-        }
+        const dropzoneText = document.querySelector('#file-dropzone p');
+        const originalText = dropzoneText ? dropzoneText.textContent : '📸 Toca aquí para adjuntar tu comprobante';
+        if (dropzoneText) dropzoneText.textContent = '⏳ Cargando comprobante...';
 
-        if (file.size > maxSize) {
-            showError('El archivo es demasiado grande. El límite es 5MB.');
-            resetFileInput();
-            return;
-        }
-
-        uploadedFileName = file.name;
-        uploadedFileType = file.type;
-
-        // Visual change
-        previewFilename.textContent = file.name;
-        previewFilesize.textContent = formatBytes(file.size);
-        
-        // Icon type
-        if (file.type === 'application/pdf') {
-            previewIcon.className = 'fa-solid fa-file-pdf file-preview-icon';
-            previewIcon.style.color = '#ff5252';
-        } else {
-            previewIcon.className = 'fa-solid fa-file-image file-preview-icon';
-            previewIcon.style.color = '#00f2fe';
-        }
-
-        // Base64 conversion
         try {
-            uploadedFileBase64 = await toBase64(file);
-            fileDropzone.classList.add('hidden');
-            filePreviewContainer.classList.remove('hidden');
+            uploadedFileName = file.name || 'comprobante.jpg';
+            const isPdf = file.type === 'application/pdf' || (file.name && file.name.toLowerCase().endsWith('.pdf'));
+
+            if (isPdf) {
+                if (file.size > 12 * 1024 * 1024) {
+                    showError('El archivo PDF es demasiado grande (máx 12MB). Por favor adjunta un archivo menor.');
+                    resetFileInput();
+                    return;
+                }
+                uploadedFileType = 'application/pdf';
+                uploadedFileBase64 = await toBase64(file);
+                if (previewFilesize) previewFilesize.textContent = formatBytes(file.size);
+            } else {
+                // Compresión inteligente en el navegador
+                const result = await compressImageFile(file);
+                if (!result.base64) {
+                    showError('No se pudo leer la imagen seleccionada. Por favor prueba con otra foto o captura.');
+                    resetFileInput();
+                    return;
+                }
+                uploadedFileBase64 = result.base64;
+                uploadedFileType = result.type;
+                if (previewFilesize) previewFilesize.textContent = formatBytes(result.approxBytes);
+            }
+
+            // Visual updates
+            if (previewFilename) previewFilename.textContent = uploadedFileName;
+
+            const iconEl = document.getElementById('preview-icon') || previewIcon;
+            if (iconEl) {
+                if (isPdf) {
+                    iconEl.className = 'fa-solid fa-file-pdf file-preview-icon';
+                    iconEl.style.color = '#ff5252';
+                } else {
+                    iconEl.className = 'fa-solid fa-check file-preview-icon';
+                    iconEl.style.color = '#00e676';
+                }
+            }
+
+            if (fileDropzone) fileDropzone.classList.add('hidden');
+            if (filePreviewContainer) filePreviewContainer.classList.remove('hidden');
             validateSubmitButton();
         } catch (err) {
-            console.error('Error convirtiendo archivo:', err);
-            showError('Ocurrió un error al procesar el archivo. Reinténtalo.');
+            console.error('Error al procesar archivo:', err);
+            showError('Ocurrió un problema al procesar el archivo. Reinténtalo con una foto o captura.');
             resetFileInput();
+        } finally {
+            if (dropzoneText) dropzoneText.textContent = originalText;
         }
     }
 
-    btnRemoveFile.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetFileInput();
-        hideError();
-    });
+    if (btnRemoveFile) {
+        btnRemoveFile.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            resetFileInput();
+            hideError();
+        });
+    }
 
     function resetFileInput() {
-        fileInput.value = '';
+        if (fileInput) fileInput.value = '';
         uploadedFileBase64 = null;
         uploadedFileName = null;
         uploadedFileType = null;
-        fileDropzone.classList.remove('hidden');
-        filePreviewContainer.classList.add('hidden');
+        if (fileDropzone) fileDropzone.classList.remove('hidden');
+        if (filePreviewContainer) filePreviewContainer.classList.add('hidden');
         validateSubmitButton();
     }
 
