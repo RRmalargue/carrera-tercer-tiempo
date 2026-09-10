@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=4.4">
+    <link rel="stylesheet" href="./index.css?v=4.5">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -230,10 +230,10 @@
                             </div>
                             <div class="input-group">
                                 <label for="genero">Género <span class="requirement">*</span></label>
-                                <select id="genero" name="genero" required autocomplete="sex">
-                                    <option value="" disabled selected>Selecciona tu género...</option>
-                                    <option value="Femenino">Femenino (Damas)</option>
-                                    <option value="Masculino">Masculino (Caballeros)</option>
+                                <select id="genero" name="genero" required autocomplete="sex" style="background-color: #0f1219; color: #ffffff;">
+                                    <option value="" disabled selected style="background-color: #0f1219; color: #9aa5b5;">Selecciona tu género...</option>
+                                    <option value="Femenino" style="background-color: #151a26; color: #ffffff;">Femenino (Damas)</option>
+                                    <option value="Masculino" style="background-color: #151a26; color: #ffffff;">Masculino (Caballeros)</option>
                                 </select>
                             </div>
                             <div class="input-group">
@@ -246,23 +246,21 @@
                             </div>
                             <div class="input-group">
                                 <label for="talle_remera">Talle de Remera <span class="requirement">*</span></label>
-                                <select id="talle_remera" name="talle_remera" required>
-                                    <option value="" disabled selected>Selecciona tu talle...</option>
-                                    <optgroup label="🧒 Talles Niños">
-                                        <option value="Talle 6 (Niños)">Talle 6 (Niños)</option>
-                                        <option value="Talle 8 (Niños)">Talle 8 (Niños)</option>
-                                        <option value="Talle 10 (Niños)">Talle 10 (Niños)</option>
-                                        <option value="Talle 12 (Niños)">Talle 12 (Niños)</option>
-                                        <option value="Talle 14 (Niños)">Talle 14 (Niños)</option>
-                                    </optgroup>
-                                    <optgroup label="🏃 Talles Adultos">
-                                        <option value="XS">XS</option>
-                                        <option value="S">S</option>
-                                        <option value="M">M</option>
-                                        <option value="L">L</option>
-                                        <option value="XL">XL</option>
-                                        <option value="XXL">XXL</option>
-                                    </optgroup>
+                                <select id="talle_remera" name="talle_remera" required style="background-color: #0f1219; color: #ffffff;">
+                                    <option value="" disabled selected style="background-color: #0f1219; color: #9aa5b5;">Selecciona tu talle...</option>
+                                    <option value="" disabled style="background-color: #060911; color: #00f2fe; font-weight: 800;">── 🧒 TALLES NIÑOS ──</option>
+                                    <option value="Talle 6 (Niños)" style="background-color: #151a26; color: #ffffff;">Talle 6 (Niños)</option>
+                                    <option value="Talle 8 (Niños)" style="background-color: #151a26; color: #ffffff;">Talle 8 (Niños)</option>
+                                    <option value="Talle 10 (Niños)" style="background-color: #151a26; color: #ffffff;">Talle 10 (Niños)</option>
+                                    <option value="Talle 12 (Niños)" style="background-color: #151a26; color: #ffffff;">Talle 12 (Niños)</option>
+                                    <option value="Talle 14 (Niños)" style="background-color: #151a26; color: #ffffff;">Talle 14 (Niños)</option>
+                                    <option value="" disabled style="background-color: #060911; color: #00f2fe; font-weight: 800;">── 🏃 TALLES ADULTOS ──</option>
+                                    <option value="XS" style="background-color: #151a26; color: #ffffff;">XS</option>
+                                    <option value="S" style="background-color: #151a26; color: #ffffff;">S</option>
+                                    <option value="M" style="background-color: #151a26; color: #ffffff;">M</option>
+                                    <option value="L" style="background-color: #151a26; color: #ffffff;">L</option>
+                                    <option value="XL" style="background-color: #151a26; color: #ffffff;">XL</option>
+                                    <option value="XXL" style="background-color: #151a26; color: #ffffff;">XXL</option>
                                 </select>
 
                                 <!-- Tshirt preview directly inside the talle selector cell -->
@@ -472,7 +470,7 @@
     </div>
 
     <!-- App JavaScript Configuration -->
-    <script src="./config.js?v=4.4"></script>
+    <script src="./config.js?v=4.5"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -531,7 +529,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.4')
+                navigator.serviceWorker.register('./sw.js?v=4.5')
                     .then(reg => {
                         console.log('Service Worker registrado para PWA con éxito:', reg.scope);
                         reg.update(); // Forzar verificación inmediata de nueva versión
@@ -550,6 +548,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=4.4"></script>
+    <script src="./app.js?v=4.5"></script>
 </body>
 </html>
