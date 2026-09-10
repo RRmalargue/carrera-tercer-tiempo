@@ -423,7 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Links de descargas y mapas
-        deslindeDownload.href = config.deslindeLink || '#';
+        if (deslindeDownload) {
+            deslindeDownload.href = config.deslindeLink || '#';
+        }
         
         if (config.gpxLink && config.gpxLink !== '#') {
             gpxBtn.href = config.gpxLink;
@@ -1467,8 +1469,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (requiresPayment) {
             btnSubmit.disabled = !uploadedFileBase64;
+            if (!uploadedFileBase64) {
+                btnSubmit.style.opacity = '0.55';
+                btnSubmit.style.filter = 'grayscale(0.5)';
+                btnSubmit.style.cursor = 'not-allowed';
+            } else {
+                btnSubmit.style.opacity = '1';
+                btnSubmit.style.filter = 'none';
+                btnSubmit.style.cursor = 'pointer';
+            }
         } else {
             btnSubmit.disabled = false;
+            btnSubmit.style.opacity = '1';
+            btnSubmit.style.filter = 'none';
+            btnSubmit.style.cursor = 'pointer';
         }
     }
 
@@ -1477,23 +1491,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const paymentInfoBox = document.querySelector('.payment-info-box');
         const beaconAlert = document.querySelector('.beacon-alert');
-        
-        // Buscar el asterisco de obligatoriedad en el label
-        const uploadLabel = document.querySelector('.file-upload-box').previousElementSibling;
+        const uploadBox = document.querySelector('.file-upload-box');
+        const uploadLabel = uploadBox ? uploadBox.previousElementSibling : null;
         const requirementAsterisk = uploadLabel ? uploadLabel.querySelector('.requirement') : null;
         const dropzoneText = document.querySelector('#file-dropzone p');
-        const summaryTotalText = document.querySelector('.summary-total');
 
         if (requiresPayment) {
             if (paymentInfoBox) paymentInfoBox.style.display = 'block';
             if (beaconAlert) beaconAlert.style.display = 'flex';
             if (requirementAsterisk) requirementAsterisk.style.display = 'inline';
-            if (dropzoneText) dropzoneText.textContent = 'Arrastra aquí tu comprobante de pago';
+            if (dropzoneText) dropzoneText.textContent = '📸 Toca aquí para adjuntar tu comprobante';
         } else {
             if (paymentInfoBox) paymentInfoBox.style.display = 'none';
             if (beaconAlert) beaconAlert.style.display = 'none';
             if (requirementAsterisk) requirementAsterisk.style.display = 'none';
-            if (dropzoneText) dropzoneText.textContent = 'Arrastra aquí un archivo o foto (Opcional)';
+            if (dropzoneText) dropzoneText.textContent = '📸 Toca aquí para adjuntar un archivo (Opcional)';
             
             // Forzar el monto en el resumen
             const costEl = document.getElementById('summary-monto');
