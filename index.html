@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=4.3">
+    <link rel="stylesheet" href="./index.css?v=4.4">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -206,14 +206,26 @@
                             </div>
                             <div class="input-group">
                                 <label for="fecha_nacimiento">Fecha de Nacimiento <span class="requirement">*</span></label>
-                                <div class="date-input-container" style="display: flex; align-items: center; gap: 0.4rem;">
-                                    <input type="text" id="birth_day" placeholder="DD" maxlength="2" style="width: 55px; text-align: center; font-size: 1.05rem; font-weight: 700; padding: 0.7rem 0.4rem;" required title="Día (2 dígitos)">
-                                    <span style="font-weight: 700; color: var(--text-muted); font-size: 1.2rem; user-select: none;">/</span>
-                                    <input type="text" id="birth_month" placeholder="MM" maxlength="2" style="width: 55px; text-align: center; font-size: 1.05rem; font-weight: 700; padding: 0.7rem 0.4rem;" required title="Mes (2 dígitos)">
-                                    <span style="font-weight: 700; color: var(--text-muted); font-size: 1.2rem; user-select: none;">/</span>
-                                    <input type="text" id="birth_year" placeholder="AAAA" maxlength="4" style="width: 75px; text-align: center; font-size: 1.05rem; font-weight: 700; padding: 0.7rem 0.4rem;" required title="Año (4 dígitos)">
-                                    
+                                <div class="date-input-container" style="display: flex; align-items: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">DÍA</span>
+                                        <input type="tel" id="birth_day" placeholder="Ej: 05" maxlength="2" inputmode="numeric" style="width: 65px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Día (ej: 05 o 21)">
+                                    </div>
+                                    <span style="font-weight: 700; color: var(--text-muted); font-size: 1.4rem; padding-bottom: 0.6rem; user-select: none;">/</span>
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">MES</span>
+                                        <input type="tel" id="birth_month" placeholder="Ej: 08" maxlength="2" inputmode="numeric" style="width: 65px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Mes (ej: 01 o 11)">
+                                    </div>
+                                    <span style="font-weight: 700; color: var(--text-muted); font-size: 1.4rem; padding-bottom: 0.6rem; user-select: none;">/</span>
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">AÑO (4 dígitos)</span>
+                                        <input type="tel" id="birth_year" placeholder="Ej: 1995" maxlength="4" inputmode="numeric" style="width: 105px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Año de 4 números (ej: 1992 o 2015)">
+                                    </div>
                                     <input type="hidden" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; background: rgba(0, 242, 254, 0.05); padding: 0.45rem 0.7rem; border-radius: var(--radius-sm); border: 1px dashed rgba(0, 242, 254, 0.2);">
+                                    <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan); margin-right: 0.3rem;"></i>
+                                    Escribe el año completo de 4 cifras (ejemplo: <strong>05 / 01 / 1995</strong> o <strong>12 / 07 / 2014</strong>).
                                 </div>
                             </div>
                             <div class="input-group">
@@ -236,12 +248,21 @@
                                 <label for="talle_remera">Talle de Remera <span class="requirement">*</span></label>
                                 <select id="talle_remera" name="talle_remera" required>
                                     <option value="" disabled selected>Selecciona tu talle...</option>
-                                    <option value="XS">XS</option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                    <option value="XL">XL</option>
-                                    <option value="XXL">XXL</option>
+                                    <optgroup label="🧒 Talles Niños">
+                                        <option value="Talle 6 (Niños)">Talle 6 (Niños)</option>
+                                        <option value="Talle 8 (Niños)">Talle 8 (Niños)</option>
+                                        <option value="Talle 10 (Niños)">Talle 10 (Niños)</option>
+                                        <option value="Talle 12 (Niños)">Talle 12 (Niños)</option>
+                                        <option value="Talle 14 (Niños)">Talle 14 (Niños)</option>
+                                    </optgroup>
+                                    <optgroup label="🏃 Talles Adultos">
+                                        <option value="XS">XS</option>
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                        <option value="XXL">XXL</option>
+                                    </optgroup>
                                 </select>
 
                                 <!-- Tshirt preview directly inside the talle selector cell -->
@@ -451,7 +472,7 @@
     </div>
 
     <!-- App JavaScript Configuration -->
-    <script src="./config.js?v=4.3"></script>
+    <script src="./config.js?v=4.4"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -510,7 +531,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.3')
+                navigator.serviceWorker.register('./sw.js?v=4.4')
                     .then(reg => {
                         console.log('Service Worker registrado para PWA con éxito:', reg.scope);
                         reg.update(); // Forzar verificación inmediata de nueva versión
@@ -529,6 +550,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=4.3"></script>
+    <script src="./app.js?v=4.4"></script>
 </body>
 </html>

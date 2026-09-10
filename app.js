@@ -1038,11 +1038,46 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sincronizar los 3 campos de fecha individuales con el campo oculto y manejar foco automático
     if (birthDayInput && birthMonthInput && birthYearInput && inputFechaNacimiento) {
         const updateHiddenDate = () => {
-            const day = birthDayInput.value.trim();
-            const month = birthMonthInput.value.trim();
-            const year = birthYearInput.value.trim();
+            let day = birthDayInput.value.trim();
+            let month = birthMonthInput.value.trim();
+            let year = birthYearInput.value.trim();
 
-            if (day.length === 2 && month.length === 2 && year.length === 4) {
+            if (!day && !month && !year) {
+                inputFechaNacimiento.value = '';
+                recalculateCategory();
+                updateFieldHighlight(inputFechaNacimiento);
+                return;
+            }
+
+            // Normalización inteligente:
+            // Día: si pusieron 1 dígito (ej: 5 -> 05)
+            let normDay = day;
+            if (day.length === 1 && parseInt(day, 10) > 0) {
+                normDay = '0' + day;
+            }
+
+            // Mes: si pusieron 1 dígito (ej: 1 -> 01)
+            let normMonth = month;
+            if (month.length === 1 && parseInt(month, 10) > 0) {
+                normMonth = '0' + month;
+            }
+
+            // Año: si pusieron 2 dígitos (ej: 21 -> 2021, 95 -> 1995)
+            let normYear = year;
+            if (year.length === 2) {
+                const currentYearShort = new Date().getFullYear() % 100;
+                const yNum = parseInt(year, 10);
+                normYear = (yNum <= currentYearShort ? '20' : '19') + year;
+            }
+
+            const dNum = parseInt(normDay, 10);
+            const mNum = parseInt(normMonth, 10);
+            const yNum = parseInt(normYear, 10);
+
+            if (normDay.length === 2 && normMonth.length === 2 && normYear.length === 4 &&
+                dNum >= 1 && dNum <= 31 && mNum >= 1 && mNum <= 12 && yNum >= 1920 && yNum <= new Date().getFullYear()) {
+                inputFechaNacimiento.value = `${normDay}/${normMonth}/${normYear}`;
+            } else if (day.length === 2 && month.length === 2 && year.length === 4) {
                 inputFechaNacimiento.value = `${day}/${month}/${year}`;
             } else {
                 inputFechaNacimiento.value = '';
@@ -1080,6 +1115,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const clean = birthYearInput.value.replace(/\D/g, '');
             if (birthYearInput.value !== clean) {
                 birthYearInput.value = clean;
+            }
+            updateHiddenDate();
+        });
+
+        // Al salir del campo (blur), auto-completar formato visual si escribieron 1 dígito o 2 dígitos en año
+        birthDayInput.addEventListener('blur', () => {
+            const val = birthDayInput.value.trim();
+            if (val.length === 1 && parseInt(val, 10) > 0) {
+                birthDayInput.value = '0' + val;
+            }
+            updateHiddenDate();
+        });
+
+        birthMonthInput.addEventListener('blur', () => {
+            const val = birthMonthInput.value.trim();
+            if (val.length === 1 && parseInt(val, 10) > 0) {
+                birthMonthInput.value = '0' + val;
+            }
+            updateHiddenDate();
+        });
+
+        birthYearInput.addEventListener('blur', () => {
+            const val = birthYearInput.value.trim();
+            if (val.length === 2) {
+                const currentYearShort = new Date().getFullYear() % 100;
+                const yNum = parseInt(val, 10);
+                birthYearInput.value = (yNum <= currentYearShort ? '20' : '19') + val;
             }
             updateHiddenDate();
         });
