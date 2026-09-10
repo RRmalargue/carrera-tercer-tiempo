@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=4.6">
+    <link rel="stylesheet" href="./index.css?v=5.0">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -209,23 +209,23 @@
                                 <div class="date-input-container" style="display: flex; align-items: flex-end; gap: 0.5rem; flex-wrap: wrap;">
                                     <div style="display: flex; flex-direction: column; align-items: center;">
                                         <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">DÍA</span>
-                                        <input type="tel" id="birth_day" placeholder="Ej: 05" maxlength="2" inputmode="numeric" style="width: 65px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Día (ej: 05 o 21)">
+                                        <input type="tel" id="birth_day" placeholder="DD" maxlength="2" inputmode="numeric" style="width: 65px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Día de nacimiento (ej: 05 o 21)">
                                     </div>
                                     <span style="font-weight: 700; color: var(--text-muted); font-size: 1.4rem; padding-bottom: 0.6rem; user-select: none;">/</span>
                                     <div style="display: flex; flex-direction: column; align-items: center;">
                                         <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">MES</span>
-                                        <input type="tel" id="birth_month" placeholder="Ej: 08" maxlength="2" inputmode="numeric" style="width: 65px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Mes (ej: 01 o 11)">
+                                        <input type="tel" id="birth_month" placeholder="MM" maxlength="2" inputmode="numeric" style="width: 65px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Mes de nacimiento (ej: 01 o 11)">
                                     </div>
                                     <span style="font-weight: 700; color: var(--text-muted); font-size: 1.4rem; padding-bottom: 0.6rem; user-select: none;">/</span>
                                     <div style="display: flex; flex-direction: column; align-items: center;">
-                                        <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">AÑO (4 dígitos)</span>
-                                        <input type="tel" id="birth_year" placeholder="Ej: 1995" maxlength="4" inputmode="numeric" style="width: 105px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Año de 4 números (ej: 1992 o 2015)">
+                                        <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.25rem; letter-spacing: 0.03em;">AÑO</span>
+                                        <input type="tel" id="birth_year" placeholder="AAAA" maxlength="4" inputmode="numeric" style="width: 105px; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.7rem 0.3rem;" required title="Año (4 cifras ej: 1992, o 2 cifras ej: 92)">
                                     </div>
                                     <input type="hidden" id="fecha_nacimiento" name="fecha_nacimiento" required>
                                 </div>
                                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; background: rgba(0, 242, 254, 0.05); padding: 0.45rem 0.7rem; border-radius: var(--radius-sm); border: 1px dashed rgba(0, 242, 254, 0.2);">
                                     <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan); margin-right: 0.3rem;"></i>
-                                    Escribe el año completo de 4 cifras (ejemplo: <strong>05 / 01 / 1995</strong> o <strong>12 / 07 / 2014</strong>).
+                                    Ingresa tu fecha completa: día, mes y año (ej: <strong>21 / 01 / 1985</strong> o año en 2 cifras como <strong>85</strong>). La edad se calcula sola.
                                 </div>
                             </div>
                             <div class="input-group">
@@ -237,8 +237,8 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label for="edad">Edad Calculada</label>
-                                <input type="text" id="edad" name="edad" readonly placeholder="Completa tu fecha de nacimiento">
+                                <label for="edad">Edad Calculada <span id="edad-indicator" style="font-size: 0.78rem; font-weight: 700; color: var(--accent-cyan); margin-left: 0.4rem;"></span></label>
+                                <input type="text" id="edad" name="edad" readonly placeholder="Completa tu fecha de nacimiento" style="font-weight: 700; color: var(--accent-cyan); background: rgba(0, 242, 254, 0.05); border-color: rgba(0, 242, 254, 0.3);">
                             </div>
                             <div class="input-group">
                                 <label for="telefono">Teléfono de Contacto <span class="requirement">*</span></label>
@@ -470,7 +470,7 @@
     </div>
 
     <!-- App JavaScript Configuration -->
-    <script src="./config.js?v=4.6"></script>
+    <script src="./config.js?v=5.0"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -527,17 +527,35 @@
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
+        // En entorno local (localhost o file:///), desregistrar Service Worker y borrar cachés para evitar código viejo
+        const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        if (isLocalHost) {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    for (let registration of registrations) {
+                        registration.unregister();
+                        console.log('SW desregistrado en localhost para desarrollo.');
+                    }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(keys => {
+                    for (let key of keys) {
+                        caches.delete(key);
+                        console.log('Caché eliminada en localhost:', key);
+                    }
+                });
+            }
+        } else if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.6')
+                navigator.serviceWorker.register('./sw.js?v=5.0')
                     .then(reg => {
                         console.log('Service Worker registrado para PWA con éxito:', reg.scope);
-                        reg.update(); // Forzar verificación inmediata de nueva versión
+                        reg.update();
                     })
                     .catch(err => console.error('Fallo al registrar Service Worker PWA:', err));
             });
 
-            // Recargar automáticamente la página cuando el nuevo Service Worker toma el control
             let refreshing = false;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!refreshing) {
@@ -548,6 +566,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=4.6"></script>
+    <script src="./app.js?v=5.0"></script>
 </body>
 </html>

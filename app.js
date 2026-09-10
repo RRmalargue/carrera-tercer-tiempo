@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const birthYearInput = document.getElementById('birth_year');
     const inputGenero = document.getElementById('genero');
     const inputEdad = document.getElementById('edad');
+    const edadIndicator = document.getElementById('edad-indicator');
     const inputCategoria = document.getElementById('categoria');
     const labelCategoria = document.getElementById('categoria-label');
     const inputTelefono = document.getElementById('telefono');
@@ -624,16 +625,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (element) {
+                    const group = element.closest('.input-group');
+                    const label = group ? group.querySelector(`label[for="${field.id}"]`) || group.querySelector('label') : null;
+
                     if (field.required) {
                         element.setAttribute('required', 'required');
-                        const label = element.previousElementSibling;
-                        if (label && !label.querySelector('.requirement')) {
-                            label.innerHTML += ' <span class="requirement">*</span>';
+                        if (field.id === 'fecha_nacimiento') {
+                            if (birthDayInput) birthDayInput.setAttribute('required', 'required');
+                            if (birthMonthInput) birthMonthInput.setAttribute('required', 'required');
+                            if (birthYearInput) birthYearInput.setAttribute('required', 'required');
+                        }
+                        if (label && label.tagName === 'LABEL' && !label.querySelector('.requirement')) {
+                            const reqSpan = document.createElement('span');
+                            reqSpan.className = 'requirement';
+                            reqSpan.textContent = ' *';
+                            label.appendChild(reqSpan);
                         }
                     } else {
                         element.removeAttribute('required');
-                        const label = element.previousElementSibling;
-                        if (label) {
+                        if (field.id === 'fecha_nacimiento') {
+                            if (birthDayInput) birthDayInput.removeAttribute('required');
+                            if (birthMonthInput) birthMonthInput.removeAttribute('required');
+                            if (birthYearInput) birthYearInput.removeAttribute('required');
+                        }
+                        if (label && label.tagName === 'LABEL') {
                             const req = label.querySelector('.requirement');
                             if (req) req.remove();
                         }
@@ -974,8 +989,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const parts = birthDateVal.split('/');
             if (parts.length === 3) {
                 const age = calculateAge(birthDateVal);
-                if (age >= 0 && !isNaN(age)) {
+                if (age !== null && age >= 0) {
                     inputEdad.value = `${age} años`;
+                    if (edadIndicator) edadIndicator.textContent = '(✓ Calculada)';
                 }
             }
         }
@@ -1011,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const age = calculateAge(birthDateVal);
-        if (age <= 0 || isNaN(age)) {
+        if (age === null || age <= 0) {
             populateCategoryOptions(null, null, null);
             return;
         }
@@ -1028,61 +1044,96 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function calculateAge(birthDateString) {
+        if (!birthDateString) return null;
+        const parts = birthDateString.split('/');
+        if (parts.length !== 3) return null;
+        
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+        if (year < 1920 || year > new Date().getFullYear()) return null;
+        if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+        
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1; // 1-12
+        const currentDay = today.getDate(); // 1-31
+        
+        let age = currentYear - year;
+        if (currentMonth < month || (currentMonth === month && currentDay < day)) {
+            age--;
+        }
+        return age >= 0 ? age : null;
+    }
+
+    function parseCurrentBirthDate(isBlur = false) {
+        if (!birthDayInput || !birthMonthInput || !birthYearInput) return null;
+        const dayRaw = birthDayInput.value.replace(/\D/g, '').trim();
+        const monthRaw = birthMonthInput.value.replace(/\D/g, '').trim();
+        const yearRaw = birthYearInput.value.replace(/\D/g, '').trim();
+
+        if (!dayRaw || !monthRaw || !yearRaw) return null;
+
+        let d = parseInt(dayRaw, 10);
+        let m = parseInt(monthRaw, 10);
+        let y = parseInt(yearRaw, 10);
+
+        if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+        if (d < 1 || d > 31 || m < 1 || m > 12) return null;
+
+        // Año: si son 2 dígitos (ej: 85 -> 1985, 21 -> 2021)
+        if (yearRaw.length === 2) {
+            if (y >= 30) {
+                y = 1900 + y;
+            } else if (isBlur) {
+                y = 2000 + y;
+            } else {
+                return null; // Esperar a que termine de escribir 4 dígitos (ej: 1985 o 2005)
+            }
+        } else if (yearRaw.length !== 4) {
+            return null; // Aún escribiendo el año
+        }
+
+        if (y < 1920 || y > new Date().getFullYear()) return null;
+
+        const padD = d < 10 ? '0' + d : '' + d;
+        const padM = m < 10 ? '0' + m : '' + m;
+        const padY = '' + y;
+
+        return {
+            day: d,
+            month: m,
+            year: y,
+            formattedDate: `${padD}/${padM}/${padY}`
+        };
+    }
+
     // Sincronizar los 3 campos de fecha individuales con el campo oculto y manejar foco automático
     if (birthDayInput && birthMonthInput && birthYearInput && inputFechaNacimiento) {
-        const updateHiddenDate = () => {
-            let day = birthDayInput.value.replace(/\D/g, '').trim();
-            let month = birthMonthInput.value.replace(/\D/g, '').trim();
-            let year = birthYearInput.value.replace(/\D/g, '').trim();
+        const updateHiddenDate = (isBlur = false) => {
+            const parsed = parseCurrentBirthDate(isBlur);
 
-            if (!day && !month && !year) {
-                inputFechaNacimiento.value = '';
-                inputEdad.value = '';
-                recalculateCategory();
-                updateFieldHighlight(inputFechaNacimiento);
-                return;
-            }
-
-            // Normalización
-            let normDay = day;
-            if (day.length === 1 && parseInt(day, 10) > 0) {
-                normDay = '0' + day;
-            }
-
-            let normMonth = month;
-            if (month.length === 1 && parseInt(month, 10) > 0) {
-                normMonth = '0' + month;
-            }
-
-            let normYear = year;
-            if (year.length === 2) {
-                const yNum = parseInt(year, 10);
-                normYear = (yNum <= 30 ? '20' : '19') + year;
-            }
-
-            const dNum = parseInt(normDay, 10);
-            const mNum = parseInt(normMonth, 10);
-            const yNum = parseInt(normYear, 10);
-
-            // Validar fecha
-            if (
-                dNum >= 1 && dNum <= 31 &&
-                mNum >= 1 && mNum <= 12 &&
-                normYear.length === 4 && yNum >= 1900 && yNum <= (new Date().getFullYear() + 1)
-            ) {
-                inputFechaNacimiento.value = `${normDay}/${normMonth}/${normYear}`;
-                const calculatedAge = calculateAge(inputFechaNacimiento.value);
-                if (calculatedAge >= 0 && !isNaN(calculatedAge)) {
+            if (parsed) {
+                inputFechaNacimiento.value = parsed.formattedDate;
+                const calculatedAge = calculateAge(parsed.formattedDate);
+                if (calculatedAge !== null && calculatedAge >= 0) {
                     inputEdad.value = `${calculatedAge} años`;
-                }
-            } else if (day.length === 2 && month.length === 2 && year.length === 4) {
-                inputFechaNacimiento.value = `${day}/${month}/${year}`;
-                const calculatedAge = calculateAge(inputFechaNacimiento.value);
-                if (calculatedAge >= 0 && !isNaN(calculatedAge)) {
-                    inputEdad.value = `${calculatedAge} años`;
+                    if (edadIndicator) edadIndicator.textContent = '(✓ Calculada)';
+                    console.log(`[Edad] ${calculatedAge} años calculados correctamente para fecha: ${parsed.formattedDate}`);
+                } else {
+                    inputEdad.value = '';
+                    if (edadIndicator) edadIndicator.textContent = '';
                 }
             } else {
                 inputFechaNacimiento.value = '';
+                // Si el usuario vació los 3 campos, limpiar la edad
+                if (!birthDayInput.value.trim() && !birthMonthInput.value.trim() && !birthYearInput.value.trim()) {
+                    inputEdad.value = '';
+                    if (edadIndicator) edadIndicator.textContent = '';
+                }
             }
 
             recalculateCategory();
@@ -1093,25 +1144,37 @@ document.addEventListener('DOMContentLoaded', () => {
             birthDayInput.addEventListener(evt, () => {
                 const clean = birthDayInput.value.replace(/\D/g, '');
                 if (birthDayInput.value !== clean) birthDayInput.value = clean;
-                if (clean.length === 2 && evt === 'input') {
-                    birthMonthInput.focus();
+
+                if (evt === 'input') {
+                    if (clean.length === 2) {
+                        birthMonthInput.focus();
+                    } else if (clean.length === 1 && parseInt(clean, 10) >= 4) {
+                        birthDayInput.value = '0' + clean;
+                        birthMonthInput.focus();
+                    }
                 }
-                updateHiddenDate();
+                updateHiddenDate(false);
             });
 
             birthMonthInput.addEventListener(evt, () => {
                 const clean = birthMonthInput.value.replace(/\D/g, '');
                 if (birthMonthInput.value !== clean) birthMonthInput.value = clean;
-                if (clean.length === 2 && evt === 'input') {
-                    birthYearInput.focus();
+
+                if (evt === 'input') {
+                    if (clean.length === 2) {
+                        birthYearInput.focus();
+                    } else if (clean.length === 1 && parseInt(clean, 10) >= 2) {
+                        birthMonthInput.value = '0' + clean;
+                        birthYearInput.focus();
+                    }
                 }
-                updateHiddenDate();
+                updateHiddenDate(false);
             });
 
             birthYearInput.addEventListener(evt, () => {
                 const clean = birthYearInput.value.replace(/\D/g, '');
                 if (birthYearInput.value !== clean) birthYearInput.value = clean;
-                updateHiddenDate();
+                updateHiddenDate(false);
             });
         });
 
@@ -1121,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val.length === 1 && parseInt(val, 10) > 0) {
                 birthDayInput.value = '0' + val;
             }
-            updateHiddenDate();
+            updateHiddenDate(true);
         });
 
         birthMonthInput.addEventListener('blur', () => {
@@ -1129,16 +1192,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (val.length === 1 && parseInt(val, 10) > 0) {
                 birthMonthInput.value = '0' + val;
             }
-            updateHiddenDate();
+            updateHiddenDate(true);
         });
 
         birthYearInput.addEventListener('blur', () => {
             const val = birthYearInput.value.trim();
             if (val.length === 2) {
                 const yNum = parseInt(val, 10);
-                birthYearInput.value = (yNum <= 30 ? '20' : '19') + val;
+                const curYearShort = new Date().getFullYear() % 100;
+                birthYearInput.value = (yNum <= curYearShort ? '20' : '19') + val;
             }
-            updateHiddenDate();
+            updateHiddenDate(true);
         });
 
         // Salto hacia atrás (Backspace)
@@ -1156,29 +1220,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     inputGenero.addEventListener('change', recalculateCategory);
-
-    function calculateAge(birthDateString) {
-        if (!birthDateString) return 0;
-        const parts = birthDateString.split('/');
-        if (parts.length !== 3) return 0;
-        
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10);
-        const year = parseInt(parts[2], 10);
-        
-        if (isNaN(day) || isNaN(month) || isNaN(year) || year < 1900) return 0;
-        
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth() + 1; // 1-12
-        const currentDay = today.getDate(); // 1-31
-        
-        let age = currentYear - year;
-        if (currentMonth < month || (currentMonth === month && currentDay < day)) {
-            age--;
-        }
-        return age >= 0 ? age : 0;
-    }
 
 
 
@@ -1320,8 +1361,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFieldEnabled('fecha_nacimiento')) {
                 let ageVal = parseInt(inputEdad.value, 10);
                 if ((isNaN(ageVal) || ageVal <= 0) && inputFechaNacimiento.value) {
-                    ageVal = calculateAge(inputFechaNacimiento.value);
-                    if (ageVal > 0) inputEdad.value = `${ageVal} años`;
+                    const calc = calculateAge(inputFechaNacimiento.value);
+                    if (calc !== null && calc > 0) {
+                        ageVal = calc;
+                        inputEdad.value = `${ageVal} años`;
+                        if (edadIndicator) edadIndicator.textContent = '(✓ Calculada)';
+                    }
                 }
                 error = error || checkField(inputFechaNacimiento, isNaN(ageVal) || ageVal < 4, isNaN(ageVal) ? 'Fecha de nacimiento inválida.' : 'La edad mínima para participar es de 4 años.');
             }
