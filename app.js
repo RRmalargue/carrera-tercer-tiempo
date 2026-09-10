@@ -1465,24 +1465,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function validateSubmitButton() {
+        if (!btnSubmit) return;
+        btnSubmit.disabled = false;
         const requiresPayment = checkIfCategoryRequiresPayment();
 
-        if (requiresPayment) {
-            btnSubmit.disabled = !uploadedFileBase64;
-            if (!uploadedFileBase64) {
-                btnSubmit.style.opacity = '0.55';
-                btnSubmit.style.filter = 'grayscale(0.5)';
-                btnSubmit.style.cursor = 'not-allowed';
-            } else {
-                btnSubmit.style.opacity = '1';
-                btnSubmit.style.filter = 'none';
-                btnSubmit.style.cursor = 'pointer';
-            }
+        if (requiresPayment && !uploadedFileBase64) {
+            btnSubmit.style.opacity = '0.88';
+            btnSubmit.style.boxShadow = '0 4px 15px rgba(37, 211, 102, 0.3)';
         } else {
-            btnSubmit.disabled = false;
             btnSubmit.style.opacity = '1';
-            btnSubmit.style.filter = 'none';
-            btnSubmit.style.cursor = 'pointer';
+            btnSubmit.style.boxShadow = '0 0 25px rgba(37, 211, 102, 0.6)';
         }
     }
 
@@ -1523,7 +1515,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const requiresPayment = checkIfCategoryRequiresPayment();
 
         if (requiresPayment && !uploadedFileBase64) {
-            return showError('El comprobante de pago es un archivo obligatorio.');
+            const dropzone = document.getElementById('file-dropzone');
+            if (dropzone) {
+                dropzone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                dropzone.style.borderColor = '#ff1744';
+                dropzone.style.boxShadow = '0 0 25px rgba(255, 23, 68, 0.5)';
+                setTimeout(() => {
+                    dropzone.style.borderColor = 'var(--accent-cyan)';
+                    dropzone.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
+                }, 2000);
+            }
+            return showError('📸 Por favor, toca el recuadro arriba de este botón para adjuntar la foto o PDF de tu comprobante antes de confirmar.');
         }
 
         // Show loading screen

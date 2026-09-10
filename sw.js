@@ -1,10 +1,10 @@
 // sw.js - Service Worker para habilitar la instalación de la PWA y actualizaciones inmediatas
-const CACHE_NAME = 'trail-portal-v4.1';
+const CACHE_NAME = 'trail-portal-v4.2';
 const ASSETS = [
     './index.html',
-    './index.css?v=4.1',
-    './app.js?v=4.1',
-    './config.js?v=4.1',
+    './index.css?v=4.2',
+    './app.js?v=4.2',
+    './config.js?v=4.2',
     './manifest.json',
     './IMAGENES/LOGO.jpg'
 ];

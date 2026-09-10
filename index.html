@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
     <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=4.1">
+    <link rel="stylesheet" href="./index.css?v=4.2">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -329,7 +329,7 @@
                                         <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">
                                             Elige una foto, captura de pantalla o PDF de tu transferencia
                                         </span>
-                                        <input type="file" id="comprobante" class="file-input" accept=".jpg,.jpeg,.png,.pdf,image/*" required>
+                                        <input type="file" id="comprobante" class="file-input" accept=".jpg,.jpeg,.png,.pdf,image/*">
                                     </div>
                                     
                                     <!-- File Preview Container cuando ya eligió archivo -->
@@ -352,7 +352,15 @@
                                     </div>
                                 </div>
 
-                                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: 0.9rem; text-align: center; margin-top: 1rem;">
+                                <!-- BOTÓN DE CONFIRMAR INSCRIPCIÓN BIEN PEGADO AL COMPROBANTE -->
+                                <div style="margin-top: 1.2rem;">
+                                    <button type="submit" class="btn-submit" id="btn-submit" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.8rem; background: #25D366; box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4); padding: 1.2rem; font-size: 1.15rem; border-radius: var(--radius-md); font-weight: 800; cursor: pointer; border: none; color: #fff; text-transform: uppercase; letter-spacing: 0.03em; transition: all 0.3s ease;">
+                                        <i class="fa-brands fa-whatsapp" style="font-size: 1.5rem;"></i>
+                                        <span>Confirmar Inscripción y Enviar WhatsApp</span>
+                                    </button>
+                                </div>
+
+                                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: 0.8rem; text-align: center; margin-top: 0.8rem;">
                                     <span style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                                         <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan);"></i> Tus datos y comprobante viajan encriptados y seguros
                                     </span>
@@ -362,17 +370,12 @@
                     </div>
 
                     <!-- Navigation Footer -->
-                    <div class="wizard-footer">
-                        <button type="button" class="btn-nav" id="btn-prev" disabled>
-                            <i class="fa-solid fa-arrow-left"></i> Anterior
+                    <div class="wizard-footer" style="margin-top: 1rem;">
+                        <button type="button" class="btn-nav" id="btn-prev" disabled style="padding: 0.8rem 1.5rem; font-size: 0.95rem;">
+                            <i class="fa-solid fa-arrow-left"></i> Modificar mis datos
                         </button>
                         <button type="button" class="btn-nav btn-submit" id="btn-next">
                             Siguiente <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                        <!-- Submit button initially hidden, replaces Next on Step 2 -->
-                        <button type="submit" class="btn-submit hidden" id="btn-submit" disabled style="display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);">
-                            <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i>
-                            <span>Confirmar Inscripción y Enviar WhatsApp</span>
                         </button>
                     </div>
 
@@ -448,7 +451,7 @@
     </div>
 
     <!-- App JavaScript Configuration -->
-    <script src="./config.js?v=4.1"></script>
+    <script src="./config.js?v=4.2"></script>
     <script>
         (function() {
             const config = window.RACE_CONFIG;
@@ -507,7 +510,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.1')
+                navigator.serviceWorker.register('./sw.js?v=4.2')
                     .then(reg => {
                         console.log('Service Worker registrado para PWA con éxito:', reg.scope);
                         reg.update(); // Forzar verificación inmediata de nueva versión
@@ -526,6 +529,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=4.1"></script>
+    <script src="./app.js?v=4.2"></script>
 </body>
 </html>
