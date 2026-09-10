@@ -4,8 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripciones | Trail Running Portal</title>
-    <meta name="description" content="Inscríbete a la carrera de trail de forma rápida y sencilla. Completa tus datos, selecciona tu distancia y asegura tu lugar.">
-    <link rel="stylesheet" href="./index.css?v=5.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script>
+        // Forzar limpieza inmediata de caché si cambia la versión
+        const CURRENT_APP_VERSION = 'v5.2';
+        if (localStorage.getItem('trail_app_version') !== CURRENT_APP_VERSION) {
+            localStorage.setItem('trail_app_version', CURRENT_APP_VERSION);
+            if ('caches' in window) {
+                caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+            }
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    regs.forEach(r => r.unregister());
+                });
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="./index.css?v=5.2">
     <!-- PWA Manifest & Mobile Config -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#00f2fe">
@@ -548,7 +565,7 @@
             }
         } else if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=5.0')
+                navigator.serviceWorker.register('./sw.js?v=5.2')
                     .then(reg => {
                         console.log('Service Worker registrado para PWA con éxito:', reg.scope);
                         reg.update();
@@ -566,6 +583,6 @@
             });
         }
     </script>
-    <script src="./app.js?v=5.0"></script>
+    <script src="./app.js?v=5.2"></script>
 </body>
 </html>
